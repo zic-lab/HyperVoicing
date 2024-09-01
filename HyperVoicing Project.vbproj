@@ -1,0 +1,648 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{71A502D8-F39D-41A6-B42D-436AFEA5CF03}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>HyperVoicing.My.MyApplication</StartupObject>
+    <RootNamespace>HyperVoicing</RootNamespace>
+    <AssemblyName>HyperVoicing</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>WindowsForms</MyType>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+    <HockeyAppResourceId>50e34637ba1947bea5a4e0ba91270fc8</HockeyAppResourceId>
+    <PublishUrl>H:\DEV\86 - Hypervoicing II\2011- HyperVoicing\publier\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <SupportUrl>https://ww.compomusic.fr</SupportUrl>
+    <ErrorReportUrl>https://ww.compomusic.fr</ErrorReportUrl>
+    <TargetCulture>fr</TargetCulture>
+    <ProductName>HyperVoicing</ProductName>
+    <PublisherName>CompoMusic</PublisherName>
+    <SuiteName>CompoMusic</SuiteName>
+    <ApplicationRevision>6</ApplicationRevision>
+    <ApplicationVersion>2.0.3.6</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>HyperVoicing.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>HyperVoicing.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>HyperVoicing.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>HyperVoicing.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>Off</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>DD4833DAA325AD086F0EE45B0767381431593CDA</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>HyperVoicing-48x48.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>Internet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FlexCell, Version=4.3.6.0, Culture=neutral, PublicKeyToken=6f86587eb70ee309, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\FlexCell Technologies\FlexCell.NET4\bin\FlexCell.dll</HintPath>
+    </Reference>
+    <Reference Include="Midi">
+      <HintPath>Références\midi-dot-net_1.1.0\Midi.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="FlexCell" />
+    <Import Include="HyperVoicing" />
+    <Import Include="HyperVoicing.My" />
+    <Import Include="HyperVoicing.My.Resources" />
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="Midi" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Reflection" />
+    <Import Include="System.Runtime.Hosting" />
+    <Import Include="System.Security" />
+    <Import Include="System.Security.Permissions" />
+    <Import Include="System.Security.Policy" />
+    <Import Include="System.Windows.Forms" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+    <Import Include="System.Threading.Tasks" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutBox1.Designer.vb">
+      <DependentUpon>AboutBox1.vb</DependentUpon>
+    </Compile>
+    <Compile Include="AboutBox1.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ActionsPianoRoll.designer.vb">
+      <DependentUpon>ActionsPianoRoll.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ActionsPianoRoll.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ApplicationEvents.vb" />
+    <Compile Include="Clavier.designer.vb">
+      <DependentUpon>Clavier.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Clavier.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form2.designer.vb">
+      <DependentUpon>Form2.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Form2.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CalquesMIDI.Designer.vb">
+      <DependentUpon>CalquesMIDI.vb</DependentUpon>
+    </Compile>
+    <Compile Include="CalquesMIDI.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Licence.Designer.vb">
+      <DependentUpon>Licence.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Licence.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QBlues2.Designer.vb">
+      <DependentUpon>QBlues2.vb</DependentUpon>
+    </Compile>
+    <Compile Include="QBlues2.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Substitutions.Designer.vb">
+      <DependentUpon>Substitutions.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Substitutions.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MidifileX.vb" />
+    <Compile Include="MoteurMIDI.vb" />
+    <Compile Include="DrumEdit.vb" />
+    <Compile Include="Form1.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.vb">
+      <DependentUpon>Form1.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageHV.Designer.vb">
+      <DependentUpon>MessageHV.vb</DependentUpon>
+    </Compile>
+    <Compile Include="MessageHV.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Mixage.vb" />
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PianoRoll.vb" />
+    <Compile Include="RechercheG_v2.vb" />
+    <Compile Include="Splash.Designer.vb">
+      <DependentUpon>Splash.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Splash.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Harmonie.vb" />
+    <Compile Include="Signature.Designer.vb">
+      <DependentUpon>Signature.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Signature.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Module1.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Transport.designer.vb">
+      <DependentUpon>Transport.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Transport.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VéloAleat.Designer.vb">
+      <DependentUpon>VéloAleat.vb</DependentUpon>
+    </Compile>
+    <Compile Include="VéloAleat.vb">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AboutBox1.resx">
+      <DependentUpon>AboutBox1.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ActionsPianoRoll.resx">
+      <DependentUpon>ActionsPianoRoll.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Clavier.resx">
+      <DependentUpon>Clavier.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form2.resx">
+      <DependentUpon>Form2.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CalquesMIDI.resx">
+      <DependentUpon>CalquesMIDI.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Licence.resx">
+      <DependentUpon>Licence.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="QBlues2.resx">
+      <DependentUpon>QBlues2.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Substitutions.resx">
+      <DependentUpon>Substitutions.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageHV.resx">
+      <DependentUpon>MessageHV.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Signature.resx">
+      <DependentUpon>Signature.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Splash.resx">
+      <DependentUpon>Splash.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Transport.resx">
+      <DependentUpon>Transport.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VéloAleat.resx">
+      <DependentUpon>VéloAleat.vb</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="HyperVoicing.ruleset" />
+    <None Include="My Project\app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\FR_Hypervoicing_Manuel.pdf" />
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FichierListeAccords.csv" />
+    <None Include="Resources\FichierListeGammes-Cubasev2.csv" />
+    <None Include="Resources\FichierListeGammes-Cubasev4.csv" />
+    <None Include="Resources\FichierListeGammes.csv" />
+    <None Include="Resources\NEW_png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\OPEN_png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UNGROUP_png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DELETE_png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UNDO_png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CUT_png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\COPY_png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PASTE-png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Gomme_png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HELP2_png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Loupe_moins.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loupePlus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loupeMoins.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Etoile.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\star.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Base Binaire.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Base Ternaire.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SAVE-png.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SAVE-png1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Culture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Mappemonde.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CultureHome.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Mappemonde2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Mappemonde21.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CultureHome2_modifié-1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NOTEBOOK.BMP" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\flèhe_gauche.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\flèche_droite.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\flèhe_gauche_v-1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\flèche_droite_v-1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\flèche_haut_v1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\flèche_bas_v1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\flèche_bas_v2..png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\flèche_haut_v2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\VOLUME01.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\VOLUME02.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rimshot.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rimshot.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rimshotV2.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UNGROUP_png1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ARW06LT.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Notes.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Marqueurs3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Capture.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Marqeur4.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Marqueurs5.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Marqueurs6.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NotesAccord2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NotesAccord.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NotesAccord3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Accord3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Accord4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Accord5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 et x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Appli9.ico" />
+    <Content Include="HyperVoicing-48x48.ico" />
+    <Content Include="HyperVoicing-New-48x48.ico" />
+    <None Include="Resources\fleche-gauche-verte.png" />
+    <None Include="Resources\48x43-Transp-vert -échelle3-.png" />
+    <None Include="Resources\48x48-Transp-vert -échelle3-.png" />
+    <None Include="Resources\32x32-Transp-vert -échelle3-.png" />
+    <None Include="Resources\icons-2188729_1920_ICON2.png" />
+    <None Include="Resources\fleche-gauche-Bleu.png" />
+    <None Include="Resources\fleche-gauche_Orange copie.png" />
+    <None Include="Resources\globe-earth24x24.png" />
+    <None Include="Resources\globe-earth32x32.png" />
+    <None Include="Resources\language-32x32.png" />
+    <None Include="Resources\globe-earth.png" />
+    <None Include="Resources\concentrer.png" />
+    <None Include="Resources\language-v2.png" />
+    <None Include="Resources\language-skill.png" />
+    <None Include="Resources\a-propos_v2.png" />
+    <None Include="Resources\domain %281%29.png" />
+    <None Include="Resources\domain.png" />
+    <None Include="Resources\49229.png" />
+    <None Include="Resources\Icon1.ico" />
+    <None Include="Resources\03_splash.png" />
+    <None Include="Resources\03- splash.png" />
+    <None Include="Resources\03- splash.jpg" />
+    <None Include="Resources\01 - Final-pour soundcloud._V2.jpg" />
+    <None Include="Resources\01 - Final-pour soundcloud.jpg" />
+    <None Include="Resources\Stop11-64.png" />
+    <None Include="Resources\Play11_64.png" />
+    <None Include="Resources\Clavier.png" />
+    <None Include="Resources\Interrog.PNG" />
+    <None Include="Resources\Fonctionnalités_Windows.PNG" />
+    <None Include="Resources\Fonctionnalité W.bmp" />
+    <None Include="Resources\FR_Manuel.bmp" />
+    <None Include="Resources\WRENCH.ICO" />
+    <None Include="Resources\exportHTML3.png" />
+    <None Include="Resources\exportHTML2.png" />
+    <None Include="Resources\exportHTML.png" />
+    <None Include="Resources\VersLocators.png" />
+    <None Include="Resources\Stop24.png" />
+    <None Include="Resources\Stop24bis.png" />
+    <None Include="Resources\Start24bis.png" />
+    <None Include="Resources\Start24.png" />
+    <None Include="Resources\IconeJouerGammeDescendre.png" />
+    <None Include="Resources\IconeJouerGammeMonter.png" />
+    <None Include="Resources\IconeJouerGammeInverse copie.png" />
+    <None Include="Resources\IconeJouerGamme.PNG" />
+    <None Include="Resources\Play Inverse.png" />
+    <None Include="Resources\Play1.png" />
+    <None Include="Resources\ARW06LT bisVerte.png" />
+    <None Include="Resources\ARW06LT bis.png" />
+    <None Include="Resources\PRINT55.png" />
+    <None Include="Resources\PRINT1.BMP" />
+    <None Include="Resources\PRINT.BMP" />
+    <None Include="Resources\VW-DTLS.BMP" />
+    <None Include="Resources\PLAN.BMP" />
+    <None Include="Resources\MISC31.png" />
+    <None Include="Resources\GraphPour Modes.png" />
+    <None Include="Resources\Play22pxVert.png" />
+    <None Include="Resources\Play Inverse22Vertpx.png" />
+    <None Include="Resources\Play22px.png" />
+    <None Include="Resources\Play Inverse22px.png" />
+    <None Include="Resources\us.png" />
+    <None Include="Resources\00Preset.jpg" />
+    <None Include="Resources\12Preset.jpg" />
+    <None Include="Resources\11Preset.jpg" />
+    <None Include="Resources\10Preset.jpg" />
+    <None Include="Resources\09Preset.jpg" />
+    <None Include="Resources\08Preset.jpg" />
+    <None Include="Resources\07Preset.jpg" />
+    <None Include="Resources\06Preset.jpg" />
+    <None Include="Resources\05Preset.jpg" />
+    <None Include="Resources\04Preset.jpg" />
+    <None Include="Resources\03Preset.jpg" />
+    <None Include="Resources\02Preset.jpg" />
+    <None Include="Resources\01Preset.jpg" />
+    <None Include="Resources\02Preset.bmp" />
+    <None Include="Resources\01Preset.bmp" />
+    <None Include="Resources\01jpg.jpg" />
+    <None Include="Resources\Appli9.png" />
+    <None Include="Resources\Appli7.bmp" />
+    <None Include="Resources\Appli10.ico" />
+    <None Include="Resources\France.PNG" />
+    <None Include="Resources\Grande Bretagne.PNG" />
+    <None Include="Resources\emoticon.png" />
+    <None Include="Resources\images.jpg" />
+    <None Include="Resources\DELETE.BMP" />
+    <None Include="Resources\RazClavier.ICO" />
+    <None Include="Resources\RazClavier.bmp" />
+    <None Include="Resources\métro.wav" />
+    <None Include="Resources\métro.bmp" />
+    <None Include="Resources\ReinitGraph.png" />
+    <None Include="Resources\USA-UK3.PNG" />
+    <None Include="Resources\USA-UK.PNG" />
+    <None Include="Resources\Grande Bretagne20x18.PNG" />
+    <None Include="Resources\France16x11.png" />
+    <None Include="Resources\Quitter.png" />
+    <None Include="Resources\Culture2.png" />
+    <None Include="Resources\NOTE6.png" />
+    <None Include="Resources\NOTE5.png" />
+    <None Include="Resources\Accords16x16.png" />
+    <None Include="Resources\03 - Spalsh.PNG" />
+    <None Include="Resources\Image1.bmp" />
+    <None Include="Resources\Splash3.PNG" />
+    <None Include="Resources\Splash2.PNG" />
+    <None Include="Resources\Splash1.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <FileAssociation Include=".zic3">
+      <Visible>False</Visible>
+      <Description>Extension du logiciel HyperVoicing</Description>
+      <Progid>HVClef_GV67hui%2a</Progid>
+      <DefaultIcon>HyperVoicing-48x48.ico</DefaultIcon>
+    </FileAssociation>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
