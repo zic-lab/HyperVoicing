@@ -1,7 +1,4 @@
-﻿Imports System.Windows.Controls
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement
-
-Public Class QBlues2
+﻿Public Class QBlues2
     Dim ligne As Integer = 0
     Dim Mode As String
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
@@ -81,8 +78,10 @@ Public Class QBlues2
         Maj_TabNotes_Majus()
         Dim i As Integer = Array.IndexOf(TabNotes, Trim(tbl(0))) ' index de la tonique de l'accord
         Dim Tona As String = Trim(TabNotes(i + 5)) + " Maj"
+        Tona = TradTonaD2(Tona)
         Dim Mode As String = Tona
         Dim Gamme As String = Trim(tbl(0)) + " Blues"
+
         '
         Form1.ECR_Acc(Accord, Degré, Position, Tona, Mode, Gamme)
         '

@@ -1,4 +1,9 @@
 ﻿Public Class Transport
+    Inherits Form
+
+
+
+
     Dim Ouvert As Boolean = True
     Dim Enchargement As Boolean = True
     ''' <summary>
@@ -10,6 +15,8 @@
         If Terme.BackColor <> Color.Red Then ' backcolor=rouge quand les délimiteurs ont des valeurs incohérentes (Début > Terme)
             Me.Cursor = Cursors.WaitCursor
             If Module1.JeuxActif = False Then
+                Play.Image = My.Resources.TIMER01
+                Play.Refresh()
                 Me.Terme.BackColor = Color.White
                 TermeFin = Me.Terme.Value
                 'i = Form1.Det_DerEventH2()
@@ -23,37 +30,44 @@
                 'Me.Terme.Value = nbMesures
                 'End If
                 Form1.Calcul_AutoVoicingZ_PLAY()
-                    INIT_LesPistes()
-                        CalculMusique(False)
-                        '
-                        Module1.JeuxActif = True
-                        Play.Enabled = False
-                        Form1.PlayArp()
+                INIT_LesPistes()
+                CalculMusique(False)
+                '
+                Module1.JeuxActif = True
+                Play.Enabled = False
+                Form1.PlayArp()
                 '
                 'End If
+
             End If
         End If
         '
         Me.Cursor = Cursors.Default
+        Play.Image = My.Resources.Play1
+        Play.Refresh()
     End Sub
+
+
+
     ''' <summary>
     ''' Bouton Stop
     ''' </summary>
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     Private Sub Arrêt_Click(sender As Object, e As EventArgs) Handles Arrêt.Click
-        StopPlay()
+        StopPlayTransp()
     End Sub
-    Public Sub StopPlay()
+    Public Sub StopPlayTransp()
         'Form1.Horloge1.Stop()
         'ArrêterTimer = True ' permet d'appeler la procédure FIN dans la tempo Tempo_Aff_EventH_Tick
         'Form1.Tempo_Aff_EventH.Stop()
+
+
         Form1.StopPlay()
-        'Form1.MIDIReset()
         Play.Enabled = True
+        Play.Focus()
         Form1.Enabled = True
         Module1.JeuxActif = False
-        Form1.MIDIReset()
     End Sub
     Private Sub Transport_Activated(sender As Object, e As EventArgs) Handles Me.Activated
         'Me.Opacity = 1
@@ -77,21 +91,11 @@
 
         Dim i As Integer
 
-        Dim s1 As New Size(477, 83) ' Size(514, 83) 
-        Dim s2 As New Size(560, 83)
-
-        'Dim P1 As New Point(380, 25) ' 411
-        'Dim P2 As New Point(502, 6)
-
+        Dim s1 As New Size(420, 83) ' Size(514, 83) 
+        '
+        Me.KeyPreview = True
         Me.Size = s1
-        'Label2.Location = P1 ' label2 = compteur de secondes
-        If Remote.Visible = True Then
-            Me.Size = s2
-            'Label2.Location = P2
-        End If
-
-
-        ' Me.FormBorderStyle = FormBorderStyle.FixedToolWindow
+        ' 
         Label1.Text = "--"
         Label1.ForeColor = Color.Yellow 'Color.FromArgb(255, 213, 91)
         '
@@ -125,7 +129,7 @@
         '
         Terme.Minimum = 1
         Terme.Maximum = nbMesuresUtiles
-        Terme.Value = nbMesures
+        Terme.Value = 8 'nbMesures
 
         'Tempo.Minimum = 30
         'Tempo.Maximum = 240
@@ -145,23 +149,40 @@
         Label2.Text = TempsInterval()
         Enchargement = False
 
-
-        If LangueIHM = "fr" Then
-            ToolTip1.SetToolTip(Début, "Début = N° de mesure")
-            ToolTip1.SetToolTip(Terme, "Fin = N° de mesure")
-            ToolTip1.SetToolTip(Comp, "Compression des longueurs de notes")
+        If Module1.LangueIHM = "fr" Then
+            ToolTip1.SetToolTip(Début, "Pointeur de Début = N° de mesure")
+            ToolTip1.SetToolTip(Terme, "Pointeur de Fin = N° de mesure - max = " + nbMesures.ToString)
+            ToolTip1.SetToolTip(Comp, "Réduction des longueurs de notes sur la Piste Accords")
             ToolTip1.SetToolTip(LoopNumber, "Nombre de répétitions")
             ToolTip1.SetToolTip(LFinal, "Longueur en mesures du dernier accord")
             ToolTip1.SetToolTip(Play, "Ecouter")
             ToolTip1.SetToolTip(Arrêt, "Arrêter")
         Else
-            ToolTip1.SetToolTip(Début, "Start = measure number")
-            ToolTip1.SetToolTip(Terme, "End = measure number")
-            ToolTip1.SetToolTip(Comp, "Notes lenght compression")
+            ToolTip1.SetToolTip(Début, "Start locator = measure number")
+            ToolTip1.SetToolTip(Terme, "End locator= measure number- max = " + nbMesures.ToString)
+            ToolTip1.SetToolTip(Comp, "Notes length compression")
             ToolTip1.SetToolTip(LoopNumber, "Loop number")
             ToolTip1.SetToolTip(LFinal, "Measure length of the last chord")
             ToolTip1.SetToolTip(Play, "Play")
             ToolTip1.SetToolTip(Arrêt, "Stop")
+        End If
+    End Sub
+    ' *******************************************************
+    ' * PLay / Stop par Barrre d'espace                     *
+    ' *******************************************************
+    ' * Méthode Transport_KeyDown permettant d'utiliser      * 
+    ' * la barre d'espace pour lancer ou arrêter la lecture *
+    ' * à partir de la barre de transport                   *
+    ' *******************************************************
+    Private Sub Transport_KeyDown(sender As Object, e As KeyEventArgs) Handles MyBase.KeyDown
+        If e.KeyCode = Keys.Space Then ' détection de la barre d'espace
+            ' Empêcher la touche espace de déclencher l'événement Click du bouton ayant le focus
+            e.SuppressKeyPress = True
+            If Play.Enabled Then
+                Play.PerformClick() ' lancer l'évènement Play_Click du bouton Play
+            Else
+                Arrêt.PerformClick() ' lancer l'évènement Arrêt_Click du bouton Arrêt
+            End If
         End If
     End Sub
     Function TempsInterval() As String
@@ -179,6 +200,7 @@
     End Sub
 
     Private Sub Transport_KeyUp(sender As Object, e As KeyEventArgs) Handles Me.KeyUp
+        'e.KeyCode = Keys.Space
         ' PLAY, RECALCUL : F5
         ' *******************
         'If e.KeyCode = Keys.F5 Then
@@ -224,18 +246,7 @@
         Form1.Horloge1.BeatsPerMinute = Tempo.Value
         If Not Enchargement Then Label2.Text = TempsInterval()
     End Sub
-    Private Sub Terme_ValueChanged(sender As Object, e As EventArgs) Handles Terme.ValueChanged
-        'If Terme.Value < Début.Value Then
-        'Terme.Value = Terme.Value + 1
-        'End If
-        ' Temps en secondes de l'interval désigné Par Début et Terme et calculé par TempsInterval
-        ' ***************************************************************************************
-        'If Terme.Value >= Début.Value Then
-        'If Not (Enchargement) Then Label2.Text = TempsInterval()
-        'Else
-        'Label2.Text = "?"
-        'End If
-        '
+    Private Sub Terme_ValueChanged(sender As Object, e As EventArgs) Handles Terme.ValueChanged      '
         Cohérence_Délim()
     End Sub
 
@@ -374,7 +385,7 @@
     Public Sub TRANSPORT_Refresh()
         Tempo.Value = 120
         Début.Value = 1
-        Terme.Value = nbMesures
+        Terme.Value = 8 'nbMesures
         'LoopNumber.Value = 1 ' <--- la valeur de loopnumber vient de la base de regsitre au chargement de l'appli (voir CreationRegsitry)
         Comp.Value = 0
         LFinal.Value = 2
@@ -389,12 +400,9 @@
         Form1.Calcul_AutoVoicingZ()
     End Sub
 
-    Private Sub Label1_Click(sender As Object, e As EventArgs) Handles Label1.Click
-
-    End Sub
-
     Private Sub Label1_DoubleClick(sender As Object, e As EventArgs) Handles Label1.DoubleClick
         ' OngletCours_Edition
         Form1.AllerVerPR(Trim(Label1.Text))
     End Sub
+
 End Class

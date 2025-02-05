@@ -6,7 +6,7 @@
     ' ***********
     ' Classe utilisée par l'export MIDI : détermine le nombre de pistes à créer dans le fichier MIDI
     Class NbPistesUtiles
-            Public Nb As Integer ' nombre de pistes utilisées
+        Public Nb As Integer ' nombre de pistes utilisées
         Public TPisteUtil(0 To nb_TotalPistes) As Boolean ' table des pistes utilisées (booleen indique si la piste est utilisée ou non)
 
 
@@ -50,14 +50,14 @@
                 If TPisteUtil(i) Then Nb = Nb + 1 ' Nb est une propriété publique de la classe qui donne le nombre de piste utilzs
             Next i
         End Sub
-        End Class
+    End Class
 
-        ' Classe Partition
-        ' ****************
-        Public Class Partition
-            Public Tempo As String = String.Empty
-            Public Métrique = String.Empty
-            Public NomFichier As String = String.Empty
+    ' Classe Partition
+    ' ****************
+    Public Class Partition
+        Public Tempo As String = String.Empty
+        Public Métrique = String.Empty
+        Public NomFichier As String = String.Empty
         ' Public ReadOnly Nb_Magnetos As Integer = 7
         ' Public ReadOnly Nb_PistesMidi As Integer = NombrePistes - 2 ' cette info fournit l'index de la dernière piste
         ' Public ReadOnly Nb_Pistes As Integer = Nb_Magnetos * 6 ' Pistes (dans NB_Pistes) est pris ici au sens de générateurs
@@ -65,110 +65,110 @@
         Public NumAccords As New AffAcc
 
         Class AffAcc
-                Public NumAcc As New List(Of String)
-                Public LectEcr As Boolean
-                Public PointeurLect As Integer
-            End Class
-            '
-            ' **********************************************************************
-            ' Récup_NumAcc : récupération du N° du 1er accord devant être joué     *
-            ' **********************************************************************
-            Public ReadOnly Property PAcc(num As Integer) As Integer
-                Get
-                    Dim i As Integer = Me.NumAccords.NumAcc(num)
-                    Return i
-                End Get
-            End Property
-            Public Sub New(oMétrique As String, oNomFichier As String) ' oTempo As String,
-                'Tempo = Form1.Tempo.Value.ToString
-                Métrique = oMétrique
-                NomFichier = oNomFichier
-            End Sub
+            Public NumAcc As New List(Of String)
+            Public LectEcr As Boolean
+            Public PointeurLect As Integer
         End Class
-        ' Classe DEBUG : outils de debug
-        '        *****   ***************
-        Public Class DbgParNotes
-            Public durée As String
-            Public note As String
-            Public dyn As String
-            Public canal As String
-            Public numPiste As String
-            Public position As String
-        End Class
+        '
+        ' **********************************************************************
+        ' Récup_NumAcc : récupération du N° du 1er accord devant être joué     *
+        ' **********************************************************************
+        Public ReadOnly Property PAcc(num As Integer) As Integer
+            Get
+                Dim i As Integer = Me.NumAccords.NumAcc(num)
+                Return i
+            End Get
+        End Property
+        Public Sub New(oMétrique As String, oNomFichier As String) ' oTempo As String,
+            'Tempo = Form1.Tempo.Value.ToString
+            Métrique = oMétrique
+            NomFichier = oNomFichier
+        End Sub
+    End Class
+    ' Classe DEBUG : outils de debug
+    '        *****   ***************
+    Public Class DbgParNotes
+        Public durée As String
+        Public note As String
+        Public dyn As String
+        Public canal As String
+        Public numPiste As String
+        Public position As String
+    End Class
 
-        ''' <summary>
-        ''' CLASSE PISTE : La classe PISTE de décomposer le travail de génération du fichier MIDI et du Scheduler MIDI. Les notes
-        ''' et les contrôleuers sont placées dans la liste .part de cette classe sous un format "propriétaire" qui est utilisé p
-        ''' our la génération MIDI.
-        ''' </summary>
-        Public Class Piste
-            ' Constantes
-            ' **********
-            Public ValNote As New List(Of String) From {
-                   "C-1", "C#-1", "D-1", "D#-1", "E-1", "F-1", "F#-1", "G-1", "G#-1", "A-1", "A#-1", "B-1",
-                   "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0",
-                    "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1",
-                    "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
-                    "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3",
-                    "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
-                    "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5",
-                    "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6", "A#6", "B6",
-                    "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7",
-                    "C8", "C#8", "D8", "D#8", "E8", "F8", "F#8", "G8", "G#8", "A8", "A#8", "B8",
-                    "C9", "C#9", "D9", "D#9", "E9", "F9", "F#9", "G9"}
+    ''' <summary>
+    ''' CLASSE PISTE : La classe PISTE de décomposer le travail de génération du fichier MIDI et du Scheduler MIDI. Les notes
+    ''' et les contrôleuers sont placées dans la liste .part de cette classe sous un format "propriétaire" qui est utilisé p
+    ''' our la génération MIDI.
+    ''' </summary>
+    Public Class Piste
+        ' Constantes
+        ' **********
+        Public ValNote As New List(Of String) From {
+               "C-1", "C#-1", "D-1", "D#-1", "E-1", "F-1", "F#-1", "G-1", "G#-1", "A-1", "A#-1", "B-1",
+               "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0",
+                "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1",
+                "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
+                "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3",
+                "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
+                "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5",
+                "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6", "A#6", "B6",
+                "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7",
+                "C8", "C#8", "D8", "D#8", "E8", "F8", "F#8", "G8", "G#8", "A8", "A#8", "B8",
+                "C9", "C#9", "D9", "D#9", "E9", "F9", "F#9", "G9"}
 
-            Public ValNoteCubase As New List(Of String) From {
-                   "C-2", "C#-2", "D-2", "D#-2", "E-2", "F-2", "F#-2", "G-2", "G#-2", "A-2", "A#-2", "B-2",
-                   "C-1", "C#-1", "D-1", "D#-1", "E-1", "F-1", "F#-1", "G-1", "G#-1", "A-1", "A#-1", "B-1",
-                   "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0",
-                    "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1",
-                    "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
-                    "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3",
-                    "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
-                    "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5",
-                    "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6", "A#6", "B6",
-                    "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7",
-                    "C8", "C#8", "D8", "D#8", "E8", "F8", "F#8", "G8"}
+        Public ValNoteCubase As New List(Of String) From {
+               "C-2", "C#-2", "D-2", "D#-2", "E-2", "F-2", "F#-2", "G-2", "G#-2", "A-2", "A#-2", "B-2",
+               "C-1", "C#-1", "D-1", "D#-1", "E-1", "F-1", "F#-1", "G-1", "G#-1", "A-1", "A#-1", "B-1",
+               "C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0",
+                "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1",
+                "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
+                "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3",
+                "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
+                "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5",
+                "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6", "A#6", "B6",
+                "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7",
+                "C8", "C#8", "D8", "D#8", "E8", "F8", "F#8", "G8"}
 
-            ' Attributs
-            ' *********
-            Public part As New List(Of String)
-            ' Propriétés
-            ' **********
-            ' Piste
-            Public NumPiste As Byte = 0
-            Public NomPiste As String = String.Empty
-            ' 
-            Public PositCours As Integer = 0
-            Public Début As Integer ' exprimé en nombre de doubles croches (= 0 si départ immédiat, ensuite on part toujours en début d'une autre mesure jamais au milieu d'une mesure)
-            Public intervAccent As Integer = 4
-            Public valeurAccent As Integer = 10
-            Public actifAccent As Boolean = False
-            Public NbEvts As Double = -1 '
+        ' Attributs
+        ' *********
+        Public part As New List(Of String)
+        ' Propriétés
+        ' **********
+        ' Piste
+        Public NumPiste As Byte = 0
+        Public NomPiste As String = String.Empty
+        ' 
+        Public PositCours As Integer = 0
+        Public Début As Integer ' exprimé en nombre de doubles croches (= 0 si départ immédiat, ensuite on part toujours en début d'une autre mesure jamais au milieu d'une mesure)
+        Public intervAccent As Integer = 4
+        Public valeurAccent As Integer = 10
+        Public actifAccent As Boolean = False
+        Public NbEvts As Double = -1 '
 
-            ' MIDI
-            Public Marq As New List(Of String)
-            Public Mute As New List(Of Boolean)
-            Public Motifs As New List(Of String)
-            Public Durée As New List(Of Double) 'Public DuréeNote As Double = SN ' DuréeNote
-            Public Octave As New List(Of Integer)
-            Public Volume As Byte = 0
-            Public Dyn As New List(Of Byte)
-            Public PRG As New List(Of Integer) ' on utilise integer pour gérer off=-1 - piano acc par défaut
-            Public Canal As Byte = 0
-            Public PAN As New List(Of Byte)
-            Public Accent As New List(Of String)
-            Public Souche As New List(Of Byte)
-            Public Delay As New List(Of Boolean)
-            Public DébutSouche As New List(Of Boolean)
-            Public Retard As New List(Of Byte)
-            Public Start As Integer
-            '
-            Public LongDerNote As New List(Of Integer)
-            Public DelayAvant As Boolean = False
-            '
-            ' Autres Variables 
-            Private SilenceDéjàCompt As Boolean = False
+        ' MIDI
+        Public Marq As New List(Of String)
+        Public Mute As New List(Of Boolean)
+        Public Motifs As New List(Of String)
+        Public Durée As New List(Of Double) 'Public DuréeNote As Double = SN ' DuréeNote
+        Public Octave As New List(Of Integer)
+        Public Volume As Byte = 0
+        Public Dyn As New List(Of Byte)
+        Public PRG As New List(Of Integer) ' on utilise integer pour gérer off=-1 - piano acc par défaut
+        Public Canal As Byte = 0
+        Public PAN As New List(Of Byte)
+        Public Accent As New List(Of String)
+        Public Souche As New List(Of Byte)
+        Public Delay As New List(Of Boolean)
+        Public DébutSouche As New List(Of Boolean)
+        Public Retard As New List(Of Byte)
+        Public Start As Integer
+        '
+        Public LongDerNote As New List(Of Integer)
+        Public DelayAvant As Boolean = False
+        '
+        ' Autres Variables 
+        Private SilenceDéjàCompt As Boolean = False
         Public Répétition As Integer
         Public PrésenceNotes As Boolean = False
 
@@ -176,12 +176,12 @@
 
         '
         Public DbgTabNotes As New List(Of DbgParNotes)
-            '
-            ' Constructeur
-            ' ************
-            Public Sub New(NomPiste As String, NumPiste As Byte, Canal As Byte)
-                Me.NomPiste = Trim(NomPiste)
-                Me.NumPiste = NumPiste
+        '
+        ' Constructeur
+        ' ************
+        Public Sub New(NomPiste As String, NumPiste As Byte, Canal As Byte)
+            Me.NomPiste = Trim(NomPiste)
+            Me.NumPiste = NumPiste
             Me.Canal = Canal ' No canal = No Piste sauf batterie
         End Sub
 
@@ -210,49 +210,49 @@
             Me.part.Add("MRQ" + " " + marq + " " + Convert.ToString(Me.PositCours))
         End Sub
         Public Sub AddAcc(Chiff As String, Numacc As Integer) ' As String
-                Dim a As String
-                Chiff = Chiff.Replace(" ", "")
-                a = "Acc" + " " + Chiff + " " + Convert.ToString(Me.NumPiste) + " " + Convert.ToString(Numacc) + " " + Convert.ToString(Me.PositCours)
-                Me.part.Add(a)
-            End Sub
-            Private Function CalcOctave(Octave As Integer, valeurNote As Integer) As Byte
-                Dim OctNote As Integer = 0
-                CalcOctave = CByte(valeurNote)
+            Dim a As String
+            Chiff = Chiff.Replace(" ", "")
+            a = "Acc" + " " + Chiff + " " + Convert.ToString(Me.NumPiste) + " " + Convert.ToString(Numacc) + " " + Convert.ToString(Me.PositCours)
+            Me.part.Add(a)
+        End Sub
+        Private Function CalcOctave(Octave As Integer, valeurNote As Integer) As Byte
+            Dim OctNote As Integer = 0
+            CalcOctave = CByte(valeurNote)
 
-                OctNote = valeurNote + Octave
-                If Not (OctNote < 0 Or OctNote > 127) Then
-                    CalcOctave = CByte(OctNote)
-                End If
-                'End If
-            End Function
-            Public Function Det_PositionPrésente() As Integer
-                Dim i As Integer
-                Dim tbl() As String
+            OctNote = valeurNote + Octave
+            If Not (OctNote < 0 Or OctNote > 127) Then
+                CalcOctave = CByte(OctNote)
+            End If
+            'End If
+        End Function
+        Public Function Det_PositionPrésente() As Integer
+            Dim i As Integer
+            Dim tbl() As String
 
-                Det_PositionPrésente = 0
-                i = IndexNotePrécédente() ' note précédente
-                If i <> -1 Then ' avant le 1er enregistrement dans part count = 0 donc Me.part.Count - 1 = -1
-                    tbl = Split(part(i))
-                    Det_PositionPrésente = Val(tbl(4))
-                End If
-            End Function
-            Public Function Det_Position(Delay As Boolean) As Integer
-                Dim i As Integer
-                Dim SommeSilences As Integer = 0
-                Dim tbl() As String
+            Det_PositionPrésente = 0
+            i = IndexNotePrécédente() ' note précédente
+            If i <> -1 Then ' avant le 1er enregistrement dans part count = 0 donc Me.part.Count - 1 = -1
+                tbl = Split(part(i))
+                Det_PositionPrésente = Val(tbl(4))
+            End If
+        End Function
+        Public Function Det_Position(Delay As Boolean) As Integer
+            Dim i As Integer
+            Dim SommeSilences As Integer = 0
+            Dim tbl() As String
 
-                Det_Position = 0
-                i = IndexNotePrécédente() ' note précédente
-                If i <> -1 Then ' avant le 1er enregistrement dans part count = 0 donc Me.part.Count - 1 = -1 --> Det_Position = 0
-                    tbl = Split(part(i))
-                    Det_Position = Val(tbl(4)) + Val(tbl(5)) '+ SommeSilences 'Position=position derniere note+Durée dernière note+ mesures de silences précédentes
-                Else ' position 1ere note
-                    Det_Position = 0 ' + SommeSilences
-                    If Delay Then Det_Position = 1 ' + SommeSilences
-                End If
-                '
-                Me.PositCours = Det_Position
-            End Function
+            Det_Position = 0
+            i = IndexNotePrécédente() ' note précédente
+            If i <> -1 Then ' avant le 1er enregistrement dans part count = 0 donc Me.part.Count - 1 = -1 --> Det_Position = 0
+                tbl = Split(part(i))
+                Det_Position = Val(tbl(4)) + Val(tbl(5)) '+ SommeSilences 'Position=position derniere note+Durée dernière note+ mesures de silences précédentes
+            Else ' position 1ere note
+                Det_Position = 0 ' + SommeSilences
+                If Delay Then Det_Position = 1 ' + SommeSilences
+            End If
+            '
+            Me.PositCours = Det_Position
+        End Function
 
         Function IndexNotePrécédente() As Integer
             Dim i As Integer
@@ -267,45 +267,45 @@
             Next i
         End Function
     End Class
-        '
-        ' *********************************************************
-        ' *                                                       *
-        ' *                FIN DE DELA CLASSE PISTE               *
-        ' *                                                       *
-        ' *********************************************************
+    '
+    ' *********************************************************
+    ' *                                                       *
+    ' *                FIN DE DELA CLASSE PISTE               *
+    ' *                                                       *
+    ' *********************************************************
 
 
-        ' *********************************************************
-        ' *                                                       *
-        ' *                DEBUT DU MODULE MAINARP                *
-        ' *                                                       *
-        ' *********************************************************
+    ' *********************************************************
+    ' *                                                       *
+    ' *                DEBUT DU MODULE MAINARP                *
+    ' *                                                       *
+    ' *********************************************************
 
-        ' ***************************
-        ' * VARIABLES ET CONSTANTES *
-        ' ***************************
-        ' Valeur de durée de notes
-        Public Const WN = 4
-        Public Const HN = 2
-        Public Const QN = 1
-        Public Const EN = 0.5
-        Public Const SN = 0.25
-        '
-        Public Const RN = 4
-        Public Const BL = 2
-        Public Const NR = 1
-        Public Const CR = 0.5
-        Public Const DC = 0.25
+    ' ***************************
+    ' * VARIABLES ET CONSTANTES *
+    ' ***************************
+    ' Valeur de durée de notes
+    Public Const WN = 4
+    Public Const HN = 2
+    Public Const QN = 1
+    Public Const EN = 0.5
+    Public Const SN = 0.25
+    '
+    Public Const RN = 4
+    Public Const BL = 2
+    Public Const NR = 1
+    Public Const CR = 0.5
+    Public Const DC = 0.25
 
-        ' Valeurs de dynamique
-        Public Const FFF = 120
-        Public Const FF = 100
-        Public Const F = 85
-        Public Const MF = 70
-        Public Const MP = 60
-        Public Const P = 50
-        Public Const PP = 25
-        Public Const PPP = 10
+    ' Valeurs de dynamique
+    Public Const FFF = 120
+    Public Const FF = 100
+    Public Const F = 85
+    Public Const MF = 70
+    Public Const MP = 60
+    Public Const P = 50
+    Public Const PP = 25
+    Public Const PPP = 10
 
 
 
@@ -326,8 +326,8 @@
     Dim nbMesuresUtiles As Integer
     '
     Dim Numérateur As Integer
-        Dim Dénominateur As Integer
-        Dim DivisionMes As Integer
+    Dim Dénominateur As Integer
+    Dim DivisionMes As Integer
 
     ' NOTES
     ' Syntaxe des notes dans .part de "Les Pistes"
@@ -392,10 +392,10 @@
             ExtFin = Transport.LFinal.Value - 1
         End If
         If Midifi Then
-            TermeFin = Form1.Det_DerMesure()
-            Transport.Terme.Value = TermeFin
+            TermeFin = Transport.Terme.Value 'Form1.Det_DerMesure()
+            'Transport.Terme.Value = TermeFin
         End If
-        PositFin = (((((TermeFin - Transport.Début.Value) + 1) * 16)) * Boucle) + (Transport.LFinal.Value * 16)
+        PositFin = (((((TermeFin - Transport.Début.Value) + 1) * 16)) * Boucle) '+ (Transport.LFinal.Value * 16)
         '
         ' Mise à jour de la piste des Accords
         ' ***********************************
@@ -707,9 +707,9 @@
         End Select
     End Function
     Function Det_Numérateur(Métrique As String) As Integer
-            Dim tbl() As String = Métrique.Split("/")
-            Det_Numérateur = Convert.ToInt16(tbl(0))
-        End Function
+        Dim tbl() As String = Métrique.Split("/")
+        Det_Numérateur = Convert.ToInt16(tbl(0))
+    End Function
     Function Det_Dénominateur(Métrique As String) As Integer
         Dim tbl() As String = Métrique.Split("/")
         Det_Dénominateur = Convert.ToInt16(tbl(1))

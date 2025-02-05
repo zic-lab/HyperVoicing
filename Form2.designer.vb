@@ -81,6 +81,7 @@ Partial Class Form2
         Me.Button2.TabIndex = 3
         Me.Button2.Text = "OK"
         Me.Button2.UseVisualStyleBackColor = False
+        Me.Button2.Visible = False
         '
         'Button3
         '
@@ -117,11 +118,11 @@ Partial Class Form2
         '
         Me.Button4.BackColor = System.Drawing.Color.AliceBlue
         Me.Button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.Button4.Location = New System.Drawing.Point(206, 174)
+        Me.Button4.Location = New System.Drawing.Point(205, 107)
         Me.Button4.Name = "Button4"
         Me.Button4.Size = New System.Drawing.Size(75, 23)
         Me.Button4.TabIndex = 7
-        Me.Button4.Text = "Cancel"
+        Me.Button4.Text = "Fermer"
         Me.Button4.UseVisualStyleBackColor = False
         '
         'SplitContainer1
@@ -149,7 +150,7 @@ Partial Class Form2
         Me.SplitContainer1.Panel2.Controls.Add(Me.Button3)
         Me.SplitContainer1.Panel2.Controls.Add(Me.Button4)
         Me.SplitContainer1.Panel2.Controls.Add(Me.Button2)
-        Me.SplitContainer1.Size = New System.Drawing.Size(290, 303)
+        Me.SplitContainer1.Size = New System.Drawing.Size(290, 338)
         Me.SplitContainer1.SplitterDistance = 71
         Me.SplitContainer1.TabIndex = 8
         '
@@ -165,11 +166,12 @@ Partial Class Form2
         '
         'Label3
         '
-        Me.Label3.Location = New System.Drawing.Point(15, 255)
+        Me.Label3.Location = New System.Drawing.Point(32, 260)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(237, 57)
+        Me.Label3.Size = New System.Drawing.Size(237, 41)
         Me.Label3.TabIndex = 10
         Me.Label3.Text = "Label3"
+        Me.Label3.Visible = False
         '
         'TextBox2
         '
@@ -177,12 +179,11 @@ Partial Class Form2
         Me.TextBox2.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.TextBox2.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox2.ForeColor = System.Drawing.Color.RoyalBlue
-        Me.TextBox2.Location = New System.Drawing.Point(0, 203)
+        Me.TextBox2.Location = New System.Drawing.Point(0, 206)
         Me.TextBox2.Multiline = True
         Me.TextBox2.Name = "TextBox2"
-        Me.TextBox2.Size = New System.Drawing.Size(290, 25)
+        Me.TextBox2.Size = New System.Drawing.Size(290, 57)
         Me.TextBox2.TabIndex = 8
-        Me.TextBox2.WordWrap = False
         '
         'Button5
         '
@@ -200,10 +201,11 @@ Partial Class Form2
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.LightSteelBlue
-        Me.ClientSize = New System.Drawing.Size(290, 303)
-        Me.ControlBox = False
+        Me.ClientSize = New System.Drawing.Size(290, 338)
         Me.Controls.Add(Me.SplitContainer1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "Form2"
         Me.ShowIcon = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen

@@ -364,55 +364,55 @@
         '
 
         Dim minV, i, j As Integer
-            minV = Det_MinVolume()
-            j = minV - 5
-            If j >= 0 Then
+        minV = Det_MinVolume()
+        j = minV - 5
+        If j >= 0 Then
             For i = 0 To nb_TotalCurseurs - 1
                 PisteVolume.Item(i).Value = PisteVolume.Item(i).Value - 5
                 labelAff.Item(i).Text = Convert.ToString(PisteVolume.Item(i).Value)
             Next i
         End If
-            '
-            Form1.Send_AllVolumes()
+        '
+        Form1.Send_AllVolumes()
 
     End Sub
     Private Sub Plus5_Click(sender As Object, e As EventArgs)
 
         Dim maxV, i, j As Integer
-            maxV = Det_MaxVolume()
-            j = maxV + 5
-            If j <= 127 Then
+        maxV = Det_MaxVolume()
+        j = maxV + 5
+        If j <= 127 Then
             For i = 0 To nb_TotalCurseurs - 1
                 PisteVolume.Item(i).Value = PisteVolume.Item(i).Value + 5
                 labelAff.Item(i).Text = Convert.ToString(PisteVolume.Item(i).Value)
             Next i
         End If
-            '
-            Form1.Send_AllVolumes()
+        '
+        Form1.Send_AllVolumes()
 
     End Sub
 
     Private Sub Max_Click(sender As Object, e As EventArgs)
 
         Dim maxV, i, j As Integer
-            maxV = Det_MaxVolume()
-            j = 127 - maxV
-            '
-            If j > 0 Then
+        maxV = Det_MaxVolume()
+        j = 127 - maxV
+        '
+        If j > 0 Then
             For i = 0 To nb_TotalCurseurs - 1
                 PisteVolume.Item(i).Value = PisteVolume.Item(i).Value + j
                 labelAff.Item(i).Text = Convert.ToString(PisteVolume.Item(i).Value)
             Next i
             Form1.ValCompress = j
-            Else
-                If Form1.ValCompress <> -1 Then
+        Else
+            If Form1.ValCompress <> -1 Then
                 For i = 0 To nb_TotalCurseurs - 1
                     PisteVolume.Item(i).Value = PisteVolume.Item(i).Value - Form1.ValCompress
                     labelAff.Item(i).Text = Convert.ToString(PisteVolume.Item(i).Value)
                 Next i
             End If
-            End If
-            Form1.Send_AllVolumes()
+        End If
+        Form1.Send_AllVolumes()
 
     End Sub
     Private Sub Tous_Click(sender As Object, e As EventArgs)
@@ -647,7 +647,7 @@
         Titre.Size = New Size(530, 25)
         Titre.TextAlign = ContentAlignment.TopCenter
         Titre.Font = fnt9
-        Titre.Text = "HyperVoicing"
+        Titre.Text = "Piste Accords"
         Titre.BringToFront()
         Titre.Visible = False
     End Sub
@@ -857,7 +857,7 @@
                 PisteVolume.Item(i).Enabled = False  ' PisteVolume est le trackbar du volume
                 'soloVolume.Item(i).Checked = False   ' soloVolume est le checkbox d'activation d'une tranche placé en haut des trackbar
                 soloPiste.Item(i).Enabled = False     '  sauvegarde de l'état des mutes
-                    CouperVolume(i) ' on commence par couper tous les volumes
+                CouperVolume(i) ' on commence par couper tous les volumes
                 'End If
             Next
             ' on rétablit le volume de la piste en solo

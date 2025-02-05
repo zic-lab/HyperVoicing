@@ -1,5 +1,4 @@
 ﻿Imports System.IO
-Imports System.Text
 Public Class DrumEdit
     ' PROPRIETES
     ' **********
@@ -64,11 +63,20 @@ Public Class DrumEdit
         End Set
     End Property
     Private GridOrigine As String
-    Public ReadOnly Property PGridOrigine As String
+    'Public ReadOnly Property PGridOrigine As String
+    'Get
+    'Return GridOrigine
+    'End Get
+    'End Property
+    Public Property PGridOrigine As String
         Get
             Return GridOrigine
         End Get
+        Set(value As String)
+            GridOrigine = value
+        End Set
     End Property
+
     Private EcrNomPerso_Visible As Boolean = False
     Public ReadOnly Property PEcrNomPerso_Visible As Boolean
         Get
@@ -98,7 +106,7 @@ Public Class DrumEdit
     Private Const HautLignesGrid1 = 37 '38 '24
     Private Const LargeColNom = 170 '260
     Private Const LargeColNotes = 85
-    Private Const NbLignesGrid1 = 51 '13
+    Private Const NbLignesGrid1 = 51 '13             
 
     ' Fonts
     ' *****
@@ -121,6 +129,7 @@ Public Class DrumEdit
     Public Panneau2 As New SplitContainer
 
     Public Grid1 As New FlexCell.Grid ' grille drum edit
+    Private TitreGrid1 As New Label  ' titre de la grille drum edit
     Public Grid2 As New FlexCell.Grid ' grille de time line de positionnement des variation D1..D8
     Dim ComBoVar As New System.Windows.Forms.ComboBox ' liste des présets à choisir dans la time line
     '
@@ -133,18 +142,22 @@ Public Class DrumEdit
     Private LabelDyn As New Label
     Private ToolTip1 As New ToolTip
     Private DockButton As New Button
+    Private LabelAide As New Label
 
+
+    Private PanelGauche As New Panel
     Private ListNomGS As New System.Windows.Forms.ComboBox   '  entrer instrument par son Nom
     Private ListNotesGS As New System.Windows.Forms.ComboBox '  entrer instrument par sa note
     Private EntrerNomPerso As New TextBox ' changer le nom d'un instrument
-    Private BoutInit As New Button  ' bouton de réinitialisation du drum edit
-    Private BoutClear As New Button ' bouton effacement des notes
-    Private BoutCopier As New Button ' bouton effacement des notes
-    Private BoutColler As New Button ' bouton effacement des notes
+    Private WithEvents BoutInit As New Button  ' bouton de réinitialisation du drum edit
+    Private WithEvents BoutClear As New Button ' bouton effacement des notes
+    Private WithEvents BoutCopier As New Button ' bouton effacement des notes
+    Private WithEvents BoutColler As New Button ' bouton effacement des notes
     Private ListPrésets As New ListBox ' liste de présets
     Private SauvPrésets As New Button ' bouton de sauvegarde de présets
     Public NomPréset As New TextBox ' changer le nom d'un instrument
     Public NoteClic As New CheckBox ' pour envoi d'une note sur clic dans Grid1
+
 
 
 
@@ -283,6 +296,17 @@ Public Class DrumEdit
                     "C 6", "C# 6", "D 6", "D# 6", "E 6", "F 6", "F# 6", "G 6", "G# 6", "A 6", "A# 6", "B 6",
                     "C 7", "C# 7", "D 7", "D# 7", "E 7", "F 7", "F# 7", "G 7", "G# 7", "A 7", "A# 7", "B 7",
                     "C 8", "C# 8", "D 8", "D# 8", "E 8", "F 8", "F# 8", "G 8"}
+    ' Affichage pour Aide
+    ' *******************
+    Private ChkAide As New CheckBox
+    Private PanelAide As New Panel
+    Private H1 As New Label
+    Private H2 As New Label
+    Private H3 As New TextBox
+
+
+
+
     ''' <summary>
     ''' New : Constructeur du drumedit
     ''' </summary>
@@ -349,6 +373,8 @@ Public Class DrumEdit
         For i = 0 To Module1.NbDrumPrésets - 1
             ListClipAnnuler.Add(New LClip)
         Next
+        '
+
     End Sub
     Public Sub FocusSurA()
         ' Focus sur le préset "A"
@@ -424,7 +450,8 @@ Public Class DrumEdit
         Grid1.AutoRedraw = False
 
         ' dimensionnement
-        Grid1.Dock = DockStyle.Fill 'DockStyle.Fill
+        Grid1.Dock = DockStyle.None 'DockStyle.Fill
+        Grid1.Location = New Point(0, 25)
         Grid1.SelectionMode = SelectionModeEnum.Free
 
         '
@@ -435,8 +462,8 @@ Public Class DrumEdit
         Grid1.AllowUserSort = False
 
         Dim s As New Size With {
-            .Width = 1200, '1200
-            .Height = HautLigne1Grid1 + HautLignesGrid1 * NbLignesGrid1
+            .Width = 905, '1200
+            .Height = 470' HautLigne1Grid1 + HautLignesGrid1 * NbLignesGrid1
         }
         Grid1.Size = s
         Grid1.ScrollBars = ScrollBarsEnum.Vertical
@@ -568,15 +595,21 @@ Public Class DrumEdit
         AddHandler Grid1.MouseUp, AddressOf Grid1_MouseUp
         AddHandler Grid1.KeyDown, AddressOf Grid1_Keydown
         AddHandler Grid1.KeyUp, AddressOf Grid1_KeyUp
+        AddHandler Grid1.MouseMove, AddressOf Grid1_MouseMove
         AddHandler ListNomGS.SelectedIndexChanged, AddressOf ListNomGS_SelectedIndexChanged
         AddHandler ListNotesGS.SelectedIndexChanged, AddressOf ListNotesGS_SelectedIndexChanged
         AddHandler EntrerNomPerso.KeyPress, AddressOf EntrerNomPerso_KeyPress
+
         AddHandler BoutInit.MouseClick, AddressOf BoutInit_MouseClick
+        AddHandler BoutInit.MouseMove, AddressOf BoutInit_MouseMove
+        '
         AddHandler BoutClear.MouseClick, AddressOf Boutclear_MouseClick
         AddHandler BoutCopier.MouseClick, AddressOf BoutCopier_MouseClick
         AddHandler BoutColler.MouseClick, AddressOf BoutColler_MouseClick
         AddHandler SauvPrésets.MouseClick, AddressOf SauvPrésets_MouseClick
+        AddHandler SauvPrésets.MouseMove, AddressOf SauvPrésets_MouseMove
         AddHandler DockButton.MouseClick, AddressOf DockButton_MouseClick
+
         AddHandler NomPréset.KeyUp, AddressOf NomPréset_KeyUp
         AddHandler ListPrésets.SelectedIndexChanged, AddressOf ListPrésets_SelectedIndexChanged
 
@@ -584,6 +617,7 @@ Public Class DrumEdit
         AddHandler ComBoVar.KeyDown, AddressOf ComBoVar_KeyDown
         AddHandler ListTypNote.KeyDown, AddressOf ListTypNote_KeyDown
         AddHandler ListDynF2.KeyDown, AddressOf ListDynF2_Keydown
+        AddHandler ListDynF2.SelectedIndexChanged, AddressOf ListDynF2_SelectedIndexChanged
         AddHandler ListNomGS.KeyDown, AddressOf ListNomGS__KeyDown
         AddHandler ListNotesGS.KeyDown, AddressOf ListNotesGS_Keydown
         '
@@ -1162,6 +1196,7 @@ Public Class DrumEdit
         EntrerNomPerso.Visible = False ' textbox permettant d'entrer un nom d'instrument personnalisé
         '
         ' Jouer la note sur simple clic
+        ' *****************************
         Dim ii As Integer = Grid1.MouseRow
         Dim jj As Integer = Grid1.MouseCol
         '
@@ -1407,9 +1442,7 @@ Public Class DrumEdit
             End If
         Next
     End Sub
-    Private Sub Grid1_Keypress()
 
-    End Sub
     Private Sub Grid1_Keydown(Sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs)
         Dim i As Integer = Grid1.ActiveCell.Row
         Dim j As Integer = Grid1.ActiveCell.Col
@@ -1428,7 +1461,7 @@ Public Class DrumEdit
 
         ' Incrémenter/décrémenter les valeurs de dynamique
 
-        If e.KeyCode = Keys.Add Or e.KeyCode = Keys.Subtract Then
+        If e.KeyCode = Keys.Add Or e.KeyCode = Keys.Subtract Or e.KeyCode = Keys.P Or e.KeyCode = Keys.M Then
             ' arrowdirection
             b = CellDyn()
             ' traitement des dynamiques avec les touches + et -
@@ -1440,13 +1473,13 @@ Public Class DrumEdit
                     j = tbl2(1) ' col
                     k = Convert.ToInt16(Grid1.Cell(i, j).Text)
                     ' détermination de la nécessité d'incrémenter
-                    If k >= 127 And e.KeyCode = Keys.Add Then
+                    If k >= 127 And (e.KeyCode = Keys.Add Or e.KeyCode = Keys.P) Then
                         sortir = True ' si l'une des valeurs =127 alors on n'augmente plus aucune valeur de la sélection --> sortir = true
                         Exit For
                     End If
                     ' détermination de la nécessité de décrémenter
-                    If k <= 0 And e.KeyCode = Keys.Subtract Then
-                        sortir = True ' si l'une des valeurs =127 alors on n'augmente plus aucune valeur de la sélection  --> sortir = true
+                    If k <= 0 And (e.KeyCode = Keys.Subtract Or e.KeyCode = Keys.M) Then
+                        sortir = True  ' si l'une des valeurs =127 alors on n'augmente plus aucune valeur de la sélection  --> sortir = true
                         Exit For
                     End If
                     '
@@ -1458,20 +1491,16 @@ Public Class DrumEdit
                         i = tbl2(0)
                         j = tbl2(1)
                         a = Trim(Grid1.Cell(i, j).Text)
-                        'If IsNumeric(a) Then
-                        If e.KeyCode = Keys.Add Then
+                        '
+                        If e.KeyCode = Keys.Add Or e.KeyCode = Keys.P Then
                             k = Convert.ToInt16(a) + 1
                             If k <= 127 Then
-                                'DéVérouillerGrid1()
                                 Grid1.Cell(i, j).Text = Convert.ToString(k)
-                                'VérouillerGrid1()
                             End If
-                        ElseIf e.KeyCode = Keys.Subtract Then
+                        ElseIf e.KeyCode = Keys.Subtract Or e.KeyCode = Keys.M Then
                             k = Convert.ToInt16(a) - 1
                             If k >= 0 Then
-                                'DéVérouillerGrid1()
                                 Grid1.Cell(i, j).Text = Convert.ToString(k)
-                                'VérouillerGrid1()
                             End If
                         End If
                         'End If
@@ -1587,6 +1616,7 @@ Public Class DrumEdit
         Grid2.AutoRedraw = False
         AddHandler Grid2.KeyDown, AddressOf Grid2_KeyDown
         AddHandler Grid2.MouseDown, AddressOf Grid2_MouseDown
+        AddHandler Grid2.MouseMove, AddressOf Grid2_MouseMove
 
         '
         Grid2.AllowDrop = False
@@ -1599,8 +1629,8 @@ Public Class DrumEdit
         ' dimensionnement
         Grid2.Cols = nbMesures + 1 ' Me.nbRépétitionMax
         Grid2.FixedCols = 1 ' le minimum est 1
-        Grid2.FixedRows = 3
-        Grid2.Rows = 4
+        Grid2.FixedRows = 4
+        Grid2.Rows = 4 ' toutes les lignes sont des lignes fixes
         ' 
         For i = 0 To Grid2.Rows - 1
             Grid2.Row(i).Height = 20
@@ -1641,19 +1671,19 @@ Public Class DrumEdit
             Grid2.Cell(0, j).Font = f2
         Next
         Grid2.Cell(0, 0).Font = f1
-
+        Grid2.Cell(3, 0).Font = f1
 
 
         If Me.Langue = "fr" Then
             Grid2.Cell(0, 0).Text = "Mesures"
             Grid2.Cell(1, 0).Text = "Marqueurs"
             Grid2.Cell(2, 0).Text = "Accords"
-            Grid2.Cell(3, 0).Text = ""
+            Grid2.Cell(3, 0).Text = "Patterns"
         Else
             Grid2.Cell(0, 0).Text = "Measures"
             Grid2.Cell(1, 0).Text = "Markers"
             Grid2.Cell(2, 0).Text = "Chords"
-            Grid2.Cell(3, 0).Text = ""
+            Grid2.Cell(3, 0).Text = "Patterns"
         End If
         '
         Grid2.Column(0).Alignment = AlignmentEnum.LeftCenter
@@ -1705,24 +1735,24 @@ Public Class DrumEdit
         ComBoVar.Location = p
         '
         ComBoVar.BringToFront()
-        ComBoVar.Visible = True
+        ComBoVar.Visible = False
 
         Grid2.ScrollBars = FlexCell.ScrollBarsEnum.Horizontal
         Grid2.BoldFixedCell = False
 
         ' évènements
         AddHandler ComBoVar.SelectedIndexChanged, AddressOf Combovar_SelectedIndexChanged
-        AddHandler Grid2.MouseUp, AddressOf Grid2_MouseUp
+        'AddHandler Grid2.MouseUp, AddressOf Grid2_MouseUp
 
         Grid2.SelectionMode = FlexCell.SelectionModeEnum.ByColumn
         Grid2.DisplayFocusRect = True
 
-        Grid2.BackColorFixedSel = Color.Beige
         Grid2.BackColorBkg = Color.Beige '
         Grid2.BackColor1 = Color.Beige '
-        Grid2.BackColorSel = Color.Beige
-        Grid2.BackColorActiveCellSel = Color.Beige
 
+        Grid2.BackColorFixedSel = Color.OrangeRed 'Color.Beige
+        Grid2.BackColorSel = Color.OrangeRed
+        Grid2.BackColorActiveCellSel = Color.LightBlue
 
         ' Vérouillage de toutes les cellules
         ' **********************************
@@ -1733,18 +1763,18 @@ Public Class DrumEdit
         '
     End Sub
     Sub Grid2_MouseDown(sender As Object, e As MouseEventArgs)
+        Dim i As Integer = Grid2.MouseRow
+        Dim j As Integer = Grid2.MouseCol
+
+        'If i <> -1 And j <> -1 Then
+        Me.GridOrigine = "Grid2"
         If e.Button = MouseButtons.Right Then
-            Me.GridOrigine = "Grid2"
-            Dim i As Integer = Grid2.MouseRow
-            Dim j As Integer = Grid2.MouseCol
             Dim p As New Point
             p.X = Cursor.Position.X
             p.Y = Cursor.Position.Y
             MenuContext1.Show(p)
         End If
-    End Sub
-    Sub Grid2_MouseUp(Sender As Object, e As MouseEventArgs)
-
+        'End If
     End Sub
 
 
@@ -1760,7 +1790,6 @@ Public Class DrumEdit
     End Sub
     Sub Combovar_SelectedIndexChanged(sender As Object, e As EventArgs)
         If Not Enchargement Then
-
             Dim j As Integer
             Dim coul As New Color
             Grid2.Range(0, 0, Grid2.Rows - 1, Grid2.Cols - 1).Locked = False ' déverouillage de toutes les cellules
@@ -1772,7 +1801,6 @@ Public Class DrumEdit
             Next
             Grid2.Range(0, 0, Grid2.Rows - 1, Grid2.Cols - 1).Locked = True ' vérouillage de toutes les cellules
         End If
-
     End Sub
     ''' <summary>
     ''' Construction_Menu : menu Fichier/Attacher
@@ -1785,7 +1813,7 @@ Public Class DrumEdit
         Fichier.Visible = True
 
         ' Edition
-        Edition.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Couper, Copier, Coller, Séparateur1, Annuler, Séparateur2, Supprimer})
+        Edition.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Copier, Coller, Séparateur1, Annuler, Séparateur2, Supprimer})
         Edition.Size = New System.Drawing.Size(56, 20)
         Edition.Text = "Edition"
         Edition.Visible = True
@@ -1801,13 +1829,13 @@ Public Class DrumEdit
         Quitter.Size = New System.Drawing.Size(180, 22)
 
         ' Couper
-        If Me.Langue = "fr" Then
-            Couper.Text = "Couper"
-        Else
-            Couper.Text = "Cut"
-        End If
-        Couper.ShortcutKeys = Shortcut.CtrlX
-        Couper.Size = New System.Drawing.Size(180, 22)
+        'If Me.Langue = "fr" Then
+        'Couper.Text = "Couper"
+        'Else
+        'Couper.Text = "Cut"
+        'End If
+        'Couper.ShortcutKeys = Shortcut.CtrlX
+        'Couper.Size = New System.Drawing.Size(180, 22)
         '
         ' Copier
         If Me.Langue = "fr" Then
@@ -1872,7 +1900,6 @@ Public Class DrumEdit
         AddHandler Quitter.Click, AddressOf Quitter_Click
     End Sub
 
-
     ''' <summary>
     ''' Construction_MenuContext : uitilisé sur la time line
     ''' </summary>
@@ -1880,12 +1907,12 @@ Public Class DrumEdit
         Dim i As Integer
 
         ' Menu Couper
-        If Langue = "fr" Then
-            itemCouper.Text = "Couper"
-        Else
-            itemCouper.Text = "Cut"
-        End If
-        MenuContext1.Items.Add(itemCouper)
+        'If Langue = "fr" Then
+        'itemCouper.Text = "Couper"
+        'Else
+        'itemCouper.Text = "Cut"
+        'End If
+        'MenuContext1.Items.Add(itemCouper)
         '
         ' Menu Copier
         If Langue = "fr" Then
@@ -1912,7 +1939,7 @@ Public Class DrumEdit
 
 
         ' Menu Préset
-        itemPresets.Text = "Présets"
+        itemPresets.Text = "Patterns"
         MenuContext1.Items.Add(itemPresets)
         'AddHandler itemPresets.Click, AddressOf itemPresets_Click
         '
@@ -1947,7 +1974,7 @@ Public Class DrumEdit
                     LPrests(i).Text = "H"
                     LPrests(i).Tag = "H"
             End Select
-            AddHandler LPrests(i).Click, AddressOf LPrests_Click
+            AddHandler LPrests(i).Click, AddressOf Lprests_Click
         Next
         AddHandler itemCouper.Click, AddressOf itemCouper_Click
         AddHandler itemCopier.Click, AddressOf itemCopier_Click
@@ -2002,18 +2029,18 @@ Public Class DrumEdit
     End Sub
 
     Private Sub Couper_Click(sender As Object, e As EventArgs)
-        If Grid1.Selection.FirstCol > 3 And Grid1.Selection.FirstRow > 0 Then
-            DéVérouillerGrid1()   ' les cellules ont été vérrouillées dans drums.grid1_Keydown 
-            Grid1.AutoRedraw = False
-            Sauv_ClipAnnuler()
-            Grid1.Selection.CutData()
-            DessinDiv()
-            ii = Det_NumPréset2()
-            Maj_Préset(ii)
-            Grid1.AutoRedraw = True
-            Grid1.Refresh()
-            VérouillerGrid1()     ' les cellules seront déverrouillées à la fin de Drums.Grid1_KeyUp
-        End If
+        'If Grid1.Selection.FirstCol > 3 And Grid1.Selection.FirstRow > 0 Then
+        ' DéVérouillerGrid1()   ' les cellules ont été vérrouillées dans drums.grid1_Keydown 
+        ' Grid1.AutoRedraw = False
+        'Sauv_ClipAnnuler()
+        'Grid1.Selection.CutData()
+        'DessinDiv()
+        'ii = Det_NumPréset2()
+        'Maj_Préset(ii)
+        'Grid1.AutoRedraw = True
+        'Grid1.Refresh()
+        'VérouillerGrid1()     ' les cellules seront déverrouillées à la fin de Drums.Grid1_KeyUp
+        'End If
     End Sub
 
     Private Sub Copier_Click(sender As Object, e As EventArgs)
@@ -2071,6 +2098,42 @@ Public Class DrumEdit
     Private Sub Construction_Barrout()
         Dim i, j As Integer
         Dim f1 As New System.Drawing.Font("Tahoma", 8, FontStyle.Regular)
+
+        Panneau1.Panel2.BackColor = Panneau1.Panel1.BackColor
+
+        ' Titre de grid1
+        ' **************
+        Panneau1.Panel2.Controls.Add(TitreGrid1)
+
+        TitreGrid1.Location = New Point(0, 0)
+        TitreGrid1.AutoSize = False
+        TitreGrid1.Size = New Size(885, 30)
+        TitreGrid1.TextAlign = ContentAlignment.MiddleCenter
+        TitreGrid1.Text = "Création de patterns"
+        TitreGrid1.BackColor = DrmC_BleuGris
+        TitreGrid1.ForeColor = Color.White
+        TitreGrid1.Font = New Font("Papyrus", 12, FontStyle.Regular)
+        TitreGrid1.BorderStyle = BorderStyle.FixedSingle
+        '
+        ' Label AIDE
+        ' **********
+        Panneau1.Panel1.Controls.Add(LabelAide)
+        LabelAide.Location = New Point(204, 4)
+        LabelAide.AutoSize = False
+        LabelAide.Size = New Size(100, 16)
+        LabelAide.TextAlign = ContentAlignment.TopCenter
+
+        LabelAide.Visible = True
+        LabelAide.BackColor = Color.Gold
+        LabelAide.ForeColor = Color.Black
+        LabelAide.Font = New Font("Verdana", 8, FontStyle.Regular)
+        If Me.Langue = "fr" Then
+            LabelAide.Text = "Afficher l'Aide"
+
+        Else
+            LabelAide.Text = "Show Help"
+        End If
+        AddHandler LabelAide.MouseMove, AddressOf LabelAide_MouseMove
         '
         ' Case à cocher de mute
         ' *********************
@@ -2079,7 +2142,7 @@ Public Class DrumEdit
         '
         Dim p As New Point With {
                 .X = 20,
-                .Y = 13
+                .Y = 0
             }
         Dim s As New Size With {
             .Width = 120,
@@ -2091,11 +2154,13 @@ Public Class DrumEdit
         CheckMute.Visible = True
         CheckMute.Enabled = False
         '
-        CheckMute.Font = Module1.fontMutePiste
         CheckMute.ForeColor = Color.DarkRed
         '
+        CheckMute.Font = New Font("Calibri", 10, FontStyle.Regular)
+
         If Me.Langue = "fr" Then
             CheckMute.Text = "PISTE 10"
+
         Else
             CheckMute.Text = "TRACK 10"
         End If
@@ -2115,20 +2180,21 @@ Public Class DrumEdit
         '
         ' liste des dynamiques
         ' ********************
-        p.Y = 43
-        p.X = CheckMute.Location.X
-        s.Width = 50
-        ListTypNote.Size = s
-        ListTypNote.Location = p
-        '
+
         '
         Panneau1.Panel1.Controls.Add(ListDynF2)
         ListDynF2.TabStop = False
+        ListDynF2.Size = New Size(100, ListDynF2.Size.Height)
+        ListDynF2.Location = New Point(24, 26)
+        ListDynF2.Enabled = True
+
+        p.Y = 125
+        p.X = 18
         Panneau1.Panel1.Controls.Add(LabelDyn)
         LabelDyn.TabStop = False
-        ListDynF2.Size = s
-        ListDynF2.Location = p
-        ListDynF2.Enabled = True
+        LabelDyn.Location = New Point(22, 41)
+
+        LabelDyn.Font = New Font("Calibri", 7, FontStyle.Regular)
         '
         If Langue = "fr" Then
             LabelDyn.Text = "Dynamique"
@@ -2138,96 +2204,23 @@ Public Class DrumEdit
 
         LabelDyn.AutoSize = False
         LabelDyn.TextAlign = ContentAlignment.MiddleLeft
-        p.Y = p.Y + 18
-        p.X = CheckMute.Location.X - 3
-        LabelDyn.Location = p
         '
         For i = 127 To 0 Step -1
             ListDynF2.Items.Add(Convert.ToString(i))
         Next
         '
-        If Langue = "fr" Then
-            ToolTip1.SetToolTip(ListDynF2, "Dynamique")
-        Else
-            ToolTip1.SetToolTip(ListDynF2, "Velocity")
-        End If
         ListDynF2.Font = fnt9
         ListDynF2.SelectedIndex = 37
 
-        ' Case à cocher de Note sur Clic
-        ' *****************************
-        Panneau1.Panel1.Controls.Add(NoteClic)
-        NoteClic.TabStop = False
-        '
 
-        p.X = 20
-        p.Y = p.Y + 40
+        AddHandler ListDynF2.MouseMove, AddressOf ListDynF2_MouseMove
 
-        s.Width = 120
-        s.Height = 20
-
-        NoteClic.Location = p
-        NoteClic.Size = s
-        NoteClic.Checked = True
-        NoteClic.Visible = True
-        NoteClic.Enabled = True
-        NoteClic.AutoSize = True
-        '
-        NoteClic.Font = fnt9
-        NoteClic.ForeColor = Color.Black
-        '
-        If Me.Langue = "fr" Then
-            NoteClic.Text = "Ecoute note sur Clic"
-        Else
-            NoteClic.Text = "Listen note on clic"
-        End If
-
-        '
-        ' liste des longueurs de notes
-        ' ****************************
-        p.Y = 50
-        p.X = CheckMute.Location.X + ListTypNote.Location.X + ListTypNote.Size.Width
-        ListTypNote.Location = p
-        '
-        p.Y = 75
-        LabelTypNote.Location = p
-        '
-        s.Width = 40
-        '
-        Panneau1.Panel1.Controls.Add(ListTypNote)
-        ListTypNote.TabStop = False
-        Panneau1.Panel1.Controls.Add(LabelTypNote)
-        If Langue = "fr" Then
-            ListTypNote.Items.Add("RN*2")
-            ListTypNote.Items.Add("RN")
-            ListTypNote.Items.Add("BL")
-            ListTypNote.Items.Add("NR")
-            ListTypNote.Items.Add("CR")
-            ListTypNote.Items.Add("DC")
-            LabelTypNote.Text = "Durée"
-            ToolTip1.SetToolTip(ListTypNote, "RN:ronde BL:blanche NR:noire CR:croche DC:Double croche")
-        Else
-            ListTypNote.Items.Add("WN*2")
-            ListTypNote.Items.Add("WN")
-            ListTypNote.Items.Add("HN")
-            ListTypNote.Items.Add("QN")
-            ListTypNote.Items.Add("EN")
-            ListTypNote.Items.Add("SN")
-            LabelTypNote.Text = "Length"
-            ToolTip1.SetToolTip(ListTypNote, "WH:whole HN:half QN:quarter EN:eighth  SN:sixteen")
-        End If
-        ListTypNote.Font = f1
-        ListTypNote.SelectedIndex = 4
-        '
-        ListTypNote.Visible = False
-        LabelTypNote.Visible = False
-        '
         '
         ' Affichage/Ecriture nom des Présets
         ' **********************************
-        p.Y = 14
-        p.X = 200
-        s.Width = 160
+        p.Y = 26
+        p.X = 203
+        s.Width = 156
         s.Height = 30
         Panneau1.Panel1.Controls.Add(NomPréset)
         NomPréset.TabStop = False
@@ -2240,6 +2233,7 @@ Public Class DrumEdit
 
         ' Bouton des Présets : bouton de A à H
         ' ************************************
+        p.Y = 14
         p.X = 160
         s.Width = 40
         s.Height = 40
@@ -2252,10 +2246,10 @@ Public Class DrumEdit
             LVar.Item(i).ForeColor = Color.Yellow
             p.X = 160 + s.Width * i
             If i <= 3 Then
-                p.Y = 50 '+ j + (LVar.Item(i).Size.Height) * i
+                p.Y = 60 '+ j + (LVar.Item(i).Size.Height) * i
                 p.X = 200 + s.Width * i
             Else
-                p.Y = 50 + s.Height ' + 20 + j + (LVar.Item(i).Size.Height) * i
+                p.Y = 60 + s.Height ' + 20 + j + (LVar.Item(i).Size.Height) * i
                 p.X = 200 + s.Width * (i - 4)
             End If
             LVar.Item(i).Location = p
@@ -2273,18 +2267,25 @@ Public Class DrumEdit
                 ToolTip1.SetToolTip(LVar.Item(i), "Pattern " + Det_LettrePreset(i))
             End If
             AddHandler LVar.Item(i).Click, AddressOf Lvar_Click
+            AddHandler LVar.Item(i).MouseMove, AddressOf Lvar_MouseMove
         Next
 
         ' Boutons
         ' *******
+        '
+        ' Panel Gauche
+        ' ************
+        Panneau1.Panel1.Controls.Add(PanelGauche)
+        PanelGauche.Location = New Point(20, 153)
+        PanelGauche.Size = New Size(106, 146)
+        PanelGauche.BackColor = Color.OldLace
+        PanelGauche.BorderStyle = BorderStyle.FixedSingle
+        PanelGauche.AutoScroll = False
+
         ' bouton Init
-        Panneau1.Panel1.Controls.Add(BoutInit)
+
+        PanelGauche.Controls.Add(BoutInit)
         BoutInit.TabStop = False
-        'p.X = 20
-        p.X = CheckMute.Location.X
-        p.Y = p.Y + 52
-        s.Width = 100
-        s.Height = 40
         '
         BoutInit.FlatStyle = FlatStyle.Flat
         BoutInit.FlatAppearance.BorderColor = Color.Gray
@@ -2295,8 +2296,8 @@ Public Class DrumEdit
         BoutInit.BackColor = Color.Khaki       'Color.FromArgb(228, 62, 52) 'orange
         BoutInit.ForeColor = Color.Black
         BoutInit.Font = f1
-        BoutInit.Location = p
-        BoutInit.Size = s
+        BoutInit.Location = New Point(2, 4)
+        BoutInit.Size = New Size(100, 32)
         BoutInit.Text = "Init mapping"
         '
         If Me.Langue = "fr" Then
@@ -2307,12 +2308,9 @@ Public Class DrumEdit
             BoutInit.Text = "Init mapping"
         End If
         ' Bouton Clear
-        Panneau1.Panel1.Controls.Add(BoutClear)
+        PanelGauche.Controls.Add(BoutClear)
         BoutClear.TabStop = False
-        p.X = 20
-        p.Y = p.Y + 51
-        s.Width = 100
-        s.Height = 40
+
         '
         BoutClear.FlatStyle = FlatStyle.Flat
         BoutClear.FlatAppearance.BorderColor = Color.Gray
@@ -2322,8 +2320,8 @@ Public Class DrumEdit
 
         BoutClear.BackColor = Color.FromArgb(246, 209, 87) ' jaune
         BoutClear.Font = f1
-        BoutClear.Location = p
-        BoutClear.Size = s
+        BoutClear.Location = New Point(2, 39)
+        BoutClear.Size = New Size(100, 32)
         If Me.Langue = "fr" Then
             ToolTip1.SetToolTip(BoutClear, "Effacer le préset en cours")
             BoutClear.Text = "Effacer"
@@ -2335,12 +2333,8 @@ Public Class DrumEdit
 
         '
         ' Bouton Copier 
-        Panneau1.Panel1.Controls.Add(BoutCopier)
+        PanelGauche.Controls.Add(BoutCopier)
         BoutCopier.TabStop = False
-        p.X = 20
-        p.Y = p.Y + 51
-        s.Width = 100
-        s.Height = 40
         '
         BoutCopier.FlatStyle = FlatStyle.Flat
         BoutCopier.FlatAppearance.BorderColor = Color.Gray
@@ -2352,8 +2346,8 @@ Public Class DrumEdit
 
         BoutCopier.BackColor = Color.FromArgb(98, 180, 222) 'Bleu
         BoutCopier.Font = f1
-        BoutCopier.Location = p
-        BoutCopier.Size = s
+        BoutCopier.Location = New Point(2, 73)
+        BoutCopier.Size = New Size(100, 32)
 
         If Me.Langue = "fr" Then
             BoutCopier.Text = "Copier"
@@ -2362,12 +2356,8 @@ Public Class DrumEdit
         End If
 
         ' Bouton Coller
-        Panneau1.Panel1.Controls.Add(BoutColler)
+        PanelGauche.Controls.Add(BoutColler)
         BoutColler.TabStop = False
-        p.X = 20
-        p.Y = p.Y + 51
-        s.Width = 100
-        s.Height = 40
         '
         BoutColler.FlatStyle = FlatStyle.Flat
         BoutColler.FlatAppearance.BorderColor = Color.Gray
@@ -2378,8 +2368,8 @@ Public Class DrumEdit
         BoutColler.BackColor = Color.LightYellow 'Color.FromArgb(59, 51, 124) ' violet
         BoutColler.ForeColor = Color.Black
         BoutColler.Font = f1
-        BoutColler.Location = p
-        BoutColler.Size = s
+        BoutColler.Location = New Point(2, 108)
+        BoutColler.Size = New Size(100, 32)
 
         If Me.Langue = "fr" Then
             BoutColler.Text = "Coller"
@@ -2415,7 +2405,7 @@ Public Class DrumEdit
         p = LVar.Item(4).Location
         p.Y = p.Y + 52
         '
-        s.Height = 200
+        s.Height = 150
         s.Width = 160
         '
         ListPrésets.Location = p
@@ -2423,23 +2413,33 @@ Public Class DrumEdit
         '
         Maj_ListPrésets()
 
-        ListPrésets.Font = fnt3
-        ' Bouton de sauvegarde de présets
+        ListPrésets.Font = New Font("Verdana", 8, FontStyle.Regular)
+        AddHandler ListPrésets.MouseMove, AddressOf ListPrésets_MouseMove
+        ' Bouton de sauvegarde/chargement de présets perso
         Panneau1.Panel1.Controls.Add(SauvPrésets)
         SauvPrésets.TabStop = False
-        p.Y = p.Y + 208
-        s.Width = 160
-        s.Height = 50
         '
-        SauvPrésets.Location = p
-        SauvPrésets.Size = s
+        SauvPrésets.Location = New Point(24, 63)
+        SauvPrésets.Size = New Size(100, 75)
         '
+        SauvPrésets.FlatStyle = FlatStyle.Flat
+        SauvPrésets.FlatAppearance.BorderColor = Color.Gray
+        SauvPrésets.FlatAppearance.BorderSize = 2
+        SauvPrésets.FlatAppearance.MouseDownBackColor = Color.Gold
+        SauvPrésets.FlatAppearance.MouseOverBackColor = Color.GreenYellow
+
+        SauvPrésets.BackColor = Color.AliceBlue 'Color.FromArgb(59, 51, 124) ' violet
+        SauvPrésets.ForeColor = Color.Black
+        SauvPrésets.Font = f1
         If Me.Langue = "fr" Then
             SauvPrésets.Text = "Gestion des Presets Perso"
         Else
             SauvPrésets.Text = "Perso Presets Management"
         End If
-
+        '
+        ' Création de l'Aide
+        ' ******************
+        AIDE_CREATION()
 
         '
         'AddHandler NoteClic.CheckedChanged, AddressOf NoteClic_CheckedChanged
@@ -3147,6 +3147,20 @@ Public Class DrumEdit
             End
         End Try
     End Sub
+    Sub ListDynF2_SelectedIndexChanged()
+        Dim i, j As Integer
+        Dim a = Trim(ListDynF2.Text)
+        '
+        If Not Enchargement Then
+            For i = Grid1.Selection.FirstRow To Grid1.Selection.LastRow
+                For j = Grid1.Selection.FirstCol To Grid1.Selection.LastCol
+                    If Trim(Grid1.Cell(i, j).Text) <> "" Then
+                        Grid1.Cell(i, j).Text = Trim(a)
+                    End If
+                Next
+            Next
+        End If
+    End Sub
     Private Sub ComBoVar_KeyDown(Sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs)
         e.SuppressKeyPress = True
     End Sub
@@ -3163,4 +3177,178 @@ Public Class DrumEdit
         e.SuppressKeyPress = True
     End Sub
 
+    '
+    Sub AIDE_CREATION()
+        'If LangueIHM = "fr" Then
+        'ChkAide.Text = "Afficher L'aide"
+        'Else
+        'ChkAide.Text = "Show Help"
+        'End If
+        '
+        Panneau1.Panel1.Controls.Add(PanelAide)
+        PanelAide.Controls.Add(H1)
+        PanelAide.Controls.Add(H2)
+        PanelAide.Controls.Add(H3)
+        '
+        PanelAide.Size = New Size(340, 195)
+        PanelAide.Location = New Point(20, 310)
+        PanelAide.AutoScroll = True
+        PanelAide.Dock = DockStyle.None
+        PanelAide.BackColor = Color.OldLace
+        PanelAide.BorderStyle = BorderStyle.FixedSingle
+        PanelAide.Visible = True
+        PanelAide.BringToFront()
+        '
+        H1.Location = New Size(0, 0)
+        H1.Font = New Font("Microsoft Sans Serif", 8, FontStyle.Bold)
+        H1.AutoSize = False
+        H1.Size = New Size(310, 19)
+        H1.BorderStyle = BorderStyle.None
+        H1.BackColor = Color.OldLace
+        H1.ForeColor = Color.Maroon
+        H1.Visible = True
+        H1.Text = "Aide"
+        '                                                                                               
+        H2.Location = New Point(0, H1.Size.Height)
+        H2.AutoSize = False
+        H2.Size = New Size(310, 500)
+        H2.BorderStyle = BorderStyle.None
+        H2.BackColor = Color.OldLace
+        H2.ForeColor = Color.Maroon
+        H2.Visible = True
+        H2.Text = AIDE_TEXTE("fr")
+        '
+
+    End Sub
+    ' ***********************************************************
+    ' ***********************************************************
+    ' *       Programmation des commentaires sur MouseMove      *
+    ' ***********************************************************
+    ' ***********************************************************
+
+    Sub Grid1_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If Langue = "fr" Then
+                H1.Text = "Outil de création de patterns"
+                H2.Text = "But : créer des pattern de batterie sur une mesure." + Chr(13) + Chr(13) + "1 - Créer une note : CTRL+clic sur la ligne d'un instrument. Le chiffre qui apparaît est la vélocité de la note crée." + Chr(13) +
+                    "2 - Modifier la vélocité d'une note :  touche 'P' pour plus et touche 'M' pour moins" + Chr(13) +
+                    "3 - Modification du mapping de l'editeur : " + Chr(13) +
+                    "     - Déplacer un instrument sur une nouvelle ligne : Faire Alt+clic sur la ligne de destination dans la colonne 'Nom', puis choisir un instrument 
+dans la liste qui s'affiche." + Chr(13) +
+                    "     - Modifier le nom d'un instrument : faire CTRL + clic sur le nom dans la colonne 'Nom', puis écrire un nouveau nom." + Chr(13) +
+                    "     - Modifier la note d'un instrument : faire CTRL + clic sur la note dans la colonne 'Note', puis choisir une nouvelle note dans la liste qui apparaît"
+            Else
+                H1.Text = ""
+                H2.Text = ""
+            End If
+        End If
+    End Sub
+    Sub BoutInit_MouseMove(sender As Object, e As MouseEventArgs) Handles BoutInit.MouseMove, BoutCopier.MouseMove, BoutColler.MouseMove, BoutColler.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If Langue = "fr" Then
+                H1.Text = "Edition patterns."
+                H2.Text = "But : gestion globale des patterns - Initialiser - Effacer - Copier/Coller dans un autre pattern." + Chr(13) + Chr(13) +
+                "1 - Init Mappage : rétablit le mappage inital GS/GM dans l'outil de création de patterns." + Chr(13) +
+                    "2 - Effacer  :  efface toutes les notes du pattern actuellement ouvert." + Chr(13) +
+                    "3 - Copier : copie le contenu du pattern actuellement ouvert dans un presse papier" + Chr(13) +
+                    "4 - Coller : colle le contenu du presse papier dans le pattern actuellement ouvert."
+            Else
+                H1.Text = ""
+                H2.Text = ""
+            End If
+        End If
+    End Sub
+    Sub SauvPrésets_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If Langue = "fr" Then
+                H1.Text = "Gestion des presets perso."
+                H2.Text = "But : Ajouter ou Charger des présets perso à partir d'un formulaire spécifique" + Chr(13) + Chr(13) + "1 - Ajouter un preset : enregistrement du pattern en cours en tant que preset perso." + Chr(13) +
+                    "2 - Charger un préset : place un préset perso sélectionné dans le pattern en cours." + Chr(13) +
+                    "3 - Retirer un préset : retire un préset perso de la liste des presets perso." + Chr(13)
+            Else
+                H1.Text = ""
+                H2.Text = ""
+            End If
+        End If
+    End Sub
+    Sub Lvar_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If Langue = "fr" Then
+                H1.Text = "Liste des patterns : A, B, C, D, E, F, G, H"
+                H2.Text = "But : Sélectionner un pattern pour l'Outil de création" + Chr(13) + Chr(13) +
+                    "L'utilisateur dispose de 8 patterns  dans lesquels il peut : " + Chr(13) +
+                    "     1 - créer ses rythmes avec l'outil de Création de Patterns." + Chr(13) +
+                "     2 - répartir les patterns à sa guise sur la Piste de Batterie (Clic droit sur Piste de Batterie)."
+            Else
+                H1.Text = ""
+                H2.Text = ""
+            End If
+        End If
+    End Sub
+    Sub ListPrésets_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If Langue = "fr" Then
+                H1.Text = "Liste de presets"
+                H2.Text = "But : Sélectionner un préset pour le placer dans un pattern." + Chr(13) + Chr(13) +
+                    "Double clic dans sur un préset pour le placer dans le pattern en cours de l'Outil de création."
+            Else
+                H1.Text = ""
+                H2.Text = ""
+            End If
+        End If
+    End Sub
+
+    Sub Grid2_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If Langue = "fr" Then
+                H1.Text = "Piste de Batterie"
+                H2.Text = "But : Jouer les patterns créés dans l'outil de création de patterns" + Chr(13) + Chr(13) +
+                    "1 - Les patterns sont appliqués à la piste par mesure." + Chr(13) +
+                "2 - Choisir un pattern pour une mesure : sélectionner la mesure, puis faire clic droit sur la mesure et choisir un pattern dan la liste." + Chr(13) +
+                "3 - Edition deds mesures : sélectionner des mesures, faire clic droit puis utiliser copier, couper ou coller dans le menu."
+            Else
+                H1.Text = ""
+                H2.Text = ""
+            End If
+        End If
+    End Sub
+    Sub ListDynF2_MouseMove()
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If Langue = "fr" Then
+                H1.Text = "Dynamique"
+                H2.Text = "But : définir la dynamique d'une note ou de plusieurs notes." + Chr(13) + Chr(13) +
+                        "1- lors de son écriture." + Chr(13) +
+                        "2- pour modification de la dynamique d'une sélection de notes."
+            Else
+                H1.Text = ""
+                H2.Text = ""
+            End If
+        End If
+    End Sub
+    Sub LabelAide_MouseMove()
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If Langue = "fr" Then
+                H1.Text = "Aide"
+                H2.Text = AIDE_TEXTE("fr")
+            Else
+                H1.Text = ""
+                H2.Text = ""
+
+            End If
+        End If
+    End Sub
 End Class

@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.IO
-Imports System.Text
+﻿Imports System.IO
 Public Class Form2
     'Dim file As System.IO.StreamWriter
     'file = My.Computer.FileSystem.OpenTextFileWriter(NomFichier, True)
@@ -11,7 +9,7 @@ Public Class Form2
     Dim NomFichier As String = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\HyperVoicing" + "\ConstructionPréset.txt" ' le fichier est créer dans la classe DrumEdit, procédure  Private Sub SauvPrésets_MouseClick
     Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim tbl() As String
-
+        Dim tooltip1 As New ToolTip
 
         Me.ListBox1.Items.Clear()
         ListPresets.Clear()
@@ -42,11 +40,15 @@ Public Class Form2
             'Label3.Text = "Fichier de Présets :  " + NomFichier
             Label1.Text = "Liste des Presets Perso"
             Label2.Text = "Nom * "
-            TextBox3.Text = "Pour créer un preset, entrer un Nom et cliquer sur Ajouter."
+            TextBox3.Text = "" '"Entrer un Nom et cliquer sur Ajouter."
             Button1.Text = "Ajouter"
             Button3.Text = "Retirer"
-            Button4.Text = "Annuler"
+            Button4.Text = "Fermer"
             Button5.Text = "Charger"
+            '
+            tooltip1.SetToolTip(Button1, "Entrer un nom dans le champ 'Nom*', puis cliquez ur 'Ajouter'")
+            tooltip1.SetToolTip(Button3, "Sélectionner un preset dans la liste, puis cliquer sur 'Retirer'")
+            tooltip1.SetToolTip(Button5, "Sélectionner un preset dans la liste, puis cliquer sur 'Charger'")
         Else
             TextBox2.Text = "Presets file  : " + NomFichier
             'Label3.Text = "Presets file  : " + NomFichier
@@ -55,9 +57,19 @@ Public Class Form2
             TextBox3.Text = "To create a preset, enter a name  and click on  Add."
             Button1.Text = "Add"
             Button3.Text = "Remove"
-            Button4.Text = "Cancel"
+            Button4.Text = "Close"
             Button5.Text = "Load"
+            '
+            tooltip1.SetToolTip(Button1, "Enter a name in the 'Name*' field, then click on 'Add'")
+            tooltip1.SetToolTip(Button3, "Select a preset from the list, then click on 'Remove'")
+            tooltip1.SetToolTip(Button5, "Select a preset from the list, then click on 'Load'")
         End If
+        '
+        ' Configurer les propriétés supplémentaires du ToolTip
+        tooltip1.AutoPopDelay = 5000 ' durée d'affichage
+        tooltip1.InitialDelay = 1000 ' temps avant apparition de l'info bolle
+        tooltip1.ReshowDelay = 500 ' temps entre 2 info bulles
+        tooltip1.ShowAlways = True
     End Sub
     Public Function ReadLine() As String
         Dim a As String
@@ -95,6 +107,7 @@ Public Class Form2
                 Else
                     TextBox3.Text = "New created preset : " + tbl(0)
                 End If
+                Maj_Fichier()
             Else ' pas de notes trouvées dans le préset en cours
                 If Module1.LangueIHM = "fr" Then
                     TextBox3.Text = "Préset non ajouté : pas de note."
@@ -193,5 +206,7 @@ Public Class Form2
         End If
     End Sub
 
+    Private Sub TextBox2_TextChanged(sender As Object, e As EventArgs) Handles TextBox2.TextChanged
 
+    End Sub
 End Class

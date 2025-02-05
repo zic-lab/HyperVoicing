@@ -787,37 +787,37 @@ Public Module Harmonie
         TradNote_AnglMinMaj = Trim(note)
         '
         Select Case Trim(note)
-                Case "c"
-                    a = "C"
-                Case "do#"
-                    a = "Do#"
-                Case "d"
-                    a = "D"
-                Case "d#"
-                    a = "D#"
-                Case "e"
-                    a = "E"
-                Case "f"
-                    a = "F"
-                Case "f#"
-                    a = "F#"
-                Case "g"
-                    a = "G"
-                Case "g#"
-                    a = "G#"
-                Case "a"
-                    a = "A"
-                Case "a#"
-                    a = "A#"
-                Case "b"
-                    a = "B"
-                Case "db"
-                    a = "Db"
-                Case "eb"
-                    a = "Eb"
-                Case "gb"
-                    a = "Gb"
-                Case "ab"
+            Case "c"
+                a = "C"
+            Case "do#"
+                a = "Do#"
+            Case "d"
+                a = "D"
+            Case "d#"
+                a = "D#"
+            Case "e"
+                a = "E"
+            Case "f"
+                a = "F"
+            Case "f#"
+                a = "F#"
+            Case "g"
+                a = "G"
+            Case "g#"
+                a = "G#"
+            Case "a"
+                a = "A"
+            Case "a#"
+                a = "A#"
+            Case "b"
+                a = "B"
+            Case "db"
+                a = "Db"
+            Case "eb"
+                a = "Eb"
+            Case "gb"
+                a = "Gb"
+            Case "ab"
                 a = "Ab"
             Case "bb"
                 a = "Bb"
@@ -1188,19 +1188,14 @@ Public Module Harmonie
             Gamme = Trad_BemDies(Gamme)
             tbl = Split(Trim(Gamme))
             Tonique = UCase(Trim(tbl(0)))
-            ' Recnnaissance de la Tonique dans TabNotes
+            ' Reconnaissance de la Tonique dans TabNotes
             ' *****************************************
-            'Tonique2 = Trim(LCase(Tonique))
-            'Clef = Det_Clef(Tonique)
-            'Maj_TabNotes(Trim(Clef))
-            ''
-            'For i = 0 To UBound(TabNotes)
-            'If Tonique2 = TabNotes(i) Then
-            'Exit For
-            'End If
-            'Next i
             ' chaînes des notes de la gamme
-            a = Trim(Tonique) + " " + Trim(tbl(1))
+            If tbl.Count < 3 Then
+                a = Trim(Tonique) + " " + Trim(tbl(1))
+            Else
+                a = Trim(Tonique) + " " + Trim(tbl(1)) + " " + Trim(tbl(2))
+            End If
             b = oo2.Det_NotesGammes3(a) ' appel à la classe RechercheG_v2, instancié avec oo2
             b = b.Replace("-", " ")
         End If
@@ -1223,6 +1218,59 @@ Public Module Harmonie
                 Return "A#" + " " + Trim(tbl(1))
             Case Else
                 Return gam
+        End Select
+    End Function
+    Public Function Trad_DiesBem(gam As String) As String
+
+        Dim tbl() As String = gam.Split()
+
+        Select Case tbl(0)
+            Case "C#"
+                Return "Db" + " " + Trim(tbl(1))
+            Case "D#"
+                Return "Eb" + " " + Trim(tbl(1))
+            Case "F#"
+                Return "Gb" + " " + Trim(tbl(1))
+            Case "G#"
+                Return "Ab" + " " + Trim(tbl(1))
+            Case "A#"
+                Return "Bb" + " " + Trim(tbl(1))
+            Case Else
+                Return gam
+        End Select
+    End Function
+    Public Function Trad_BemDiesNoteMaj(noteMaj As String) As String
+
+
+        Select Case Trim(noteMaj)
+            Case "Db"
+                Return "C#"
+            Case "Eb"
+                Return "D#"
+            Case "Gb"
+                Return "F#"
+            Case "Ab"
+                Return "G#"
+            Case "Bb"
+                Return "A#"
+            Case Else
+                Return noteMaj
+        End Select
+    End Function
+    Public Function Trad_DiesBemNoteMaj(NOTE As String) As String
+        Select Case Trim(NOTE)
+            Case "C#"
+                Return "Db"
+            Case "D#"
+                Return "Eb"
+            Case "F#"
+                Return "Gb"
+            Case "G#"
+                Return "Ab"
+            Case "A#"
+                Return "Bb"
+            Case Else
+                Return NOTE
         End Select
     End Function
     Public Function Trad_BemDiesNote(note As String) As String
@@ -1291,7 +1339,33 @@ Public Module Harmonie
                 Return NOTE
         End Select
     End Function
-
+    Public Function Trad_DiesBemTonique(tonique As String, acc As String) As String
+        Dim aa As Char = Convert.ToChar("b")
+        Dim chiff As String
+        If tonique.Contains(aa) Or tonique = "F" Then
+            Dim tbl() As String = acc.Split()
+            If tbl.Count = 1 Then
+                chiff = ""
+            Else
+                chiff = Trim(tbl(1))
+            End If
+            Select Case tbl(0)
+                Case "C#"
+                    Return "Db" + " " + Trim(chiff)
+                Case "D#"
+                    Return "Eb" + " " + Trim(chiff)
+                Case "F#"
+                    Return "Gb" + " " + Trim(chiff)
+                Case "G#"
+                    Return "Ab" + " " + Trim(chiff)
+                Case "A#"
+                    Return "Bb" + " " + Trim(chiff)
+                Case Else
+                    Return acc
+            End Select
+        End If
+        Return acc
+    End Function
     Public Function Det_NotesGammes3(Gamme As String, Clef1 As String) As String
         Dim i As Integer
         Dim Tonique As String

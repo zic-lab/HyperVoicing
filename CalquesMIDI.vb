@@ -40,6 +40,11 @@
         '
         If EnChargementCalquesMIDI Then
             Me.StartPosition = FormStartPosition.CenterScreen
+            If Module1.LangueIHM = "fr" Then
+                Me.Text = "Calques MIDI"
+            Else
+                Me.Text = "MIDI Layers"
+            End If
             ' 
             ' Dessin du formulaire
             ' ********************
@@ -116,7 +121,7 @@
                         NomCalque.Item(i).BackColor = CoulCalqTon
                         NomCalque.Item(i).ForeColor = Color.White
 
-                        p.X = 100 '265 '280 '5
+                        p.X = 100 '265 '280 '5                                                                                    
                         p.Y = 10
                         s.Height = 34
                         s.Width = 365 '190
@@ -126,11 +131,11 @@
                         Commentaire.Item(i).ForeColor = Color.White
                         '
                         If Module1.LangueIHM = "fr" Then
-                            NomCalque.Item(i).Text = "Ton"
-                            Commentaire.Item(i).Text = "Colorisation des notes de la Tonalité courante dans l'éditeur PianoRoll."
+                            NomCalque.Item(i).Text = "Mode" '"Ton"
+                            Commentaire.Item(i).Text = "Colorisation des notes du Mode courant dans l'éditeur PianoRoll."
                         Else
-                            NomCalque.Item(i).Text = "Key"
-                            Commentaire.Item(i).Text = "Colorization of the notes of the current Key in the PianoRoll editor."
+                            NomCalque.Item(i).Text = "Mode"
+                            Commentaire.Item(i).Text = "Colorization of the notes of the current Mode in the PianoRoll editor."
                         End If
                         '
                     Case 1 ' gamme
@@ -160,6 +165,7 @@
                             NomCalque.Item(i).Text = "Chord"
                             Commentaire.Item(i).Text = "Colorization of the notes of the current Chord in the PianoRoll editor."
                         End If
+                        '
 
 
                     Case 3 ' Métrique
@@ -167,6 +173,7 @@
                         NomCalque.Item(i).ForeColor = Color.Black
                         Commentaire.Item(i).BackColor = CDiv_12_8
                         Commentaire.Item(i).ForeColor = Color.Black
+
                         '
                         Dim s1 As New Size
                         s1.Height = 34
@@ -207,7 +214,7 @@
                         '
                         AddHandler Metrique.SelectedIndexChanged, AddressOf Metrique_SelectedIndexChanged
                     Case 4 ' pédale
-                            NomCalque.Item(i).BackColor = CoulCalqPed
+                        NomCalque.Item(i).BackColor = CoulCalqPed
                         NomCalque.Item(i).ForeColor = Color.Black
                         p.X = 175
                         p.Y = 10
@@ -351,6 +358,10 @@
                         AddHandler TessListe.SelectedIndexChanged, AddressOf TessListe_SelectedIndexChanged
                         TessListe.Visible = False
                 End Select
+                ' pour clic sur nom calque = clic sur check
+                ' *****************************************
+                NomCalque.Item(i).Tag = i
+                AddHandler NomCalque.Item(i).MouseClick, AddressOf Nomcalque_Mouseclick
             Next
             EnChargementCalquesMIDI = False
             PassNouvCalque = False
@@ -440,7 +451,13 @@
             PassChoixCalques(i) = False
         Next
     End Sub
+    Sub Nomcalque_Mouseclick(sender As Object, e As EventArgs)
+        Dim com As Label = sender
+        Dim i As Integer = com.Tag
+        '
+        Choix.Item(i).Checked = Not Choix.Item(i).Checked
 
+    End Sub
     Private Sub SplitContainer1_Panel2_Paint(sender As Object, e As PaintEventArgs) Handles SplitContainer1.Panel2.Paint
 
     End Sub

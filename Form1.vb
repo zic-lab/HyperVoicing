@@ -18,6 +18,10 @@ Imports HyperVoicing.Form1.TamponEdition
 Imports HyperVoicing.Module1
 Imports HyperVoicing.PianoRoll
 Imports System.Threading
+Imports HyperVoicing.MidifileX
+Imports System.Windows.Forms.VisualStyles '
+'Imports System.Windows.Forms
+'Imports System.Windows
 
 ' Imports MidifileX
 ' variables communes au module form1
@@ -452,9 +456,6 @@ Public Class Form1
     '
     Public ValCompress As Integer = -1   ' Variable Compression dans le mixeur
 
-
-
-
     ' Utilisation d'une liste d'objet  PianoRoll
     ' ******************************************
     Public listPIANOROLL As New List(Of PianoRoll)
@@ -491,7 +492,6 @@ Public Class Form1
     Public RadioModulat As New List(Of RadioButton)
 
     Dim ligneModulat As Integer
-    '
 
     ' SUBSTITUTION
     ' ************
@@ -505,6 +505,7 @@ Public Class Form1
     Dim Ligne_Drag As Integer = -1
     Dim Flag_EcrDragDrop As Boolean = False
     Dim MouseIsDown As Boolean = False
+    Dim Action_DragDrop As Boolean = False
     Public Enum TGridDest
         Rien = 0
         Grid2 = 1
@@ -527,6 +528,8 @@ Public Class Form1
     Dim MComboTyAcc As New System.Windows.Forms.ComboBox ' combo pour liste 3/4 accords
     Dim MComboModes As New System.Windows.Forms.ComboBox ' combo pour liste des modes
     Dim MLabModes As New Label
+    Dim MLabTypNotes As New Label
+    Dim MTypical As New Label
     Dim MComboMHarm As New System.Windows.Forms.ComboBox ' combo pour liste des modes
     Dim MLabHarm As New Label
     Dim MComboMMel As New System.Windows.Forms.ComboBox ' combo pour liste des modes
@@ -534,9 +537,14 @@ Public Class Form1
     Dim MComboMSynth As New System.Windows.Forms.ComboBox ' combo pour liste des modes
     Dim MLabSynth As New Label
     Dim MLabSéparation As New Label
+    Dim MResult As New Label
+    Dim MLabResult As New Label
     Dim MLabTon As New Label
+    Dim MLabGamme As New Label
+    Dim MLabAccord As New Label
     Dim MLabt As New Label
     Dim MLabNomG As New Label
+    Dim MLabNomA As New Label
     Dim MSauvCouleur As Color
     Dim Mjouernote As Boolean = False
     Dim LChiff As New List(Of String)
@@ -545,26 +553,80 @@ Public Class Form1
     Dim MLresult5 As New List(Of String)
     Dim MGrid1 As New FlexCell.Grid
     Dim MBufClip As String
+    Public Enum MTyMode
+        Maj
+        MinH
+        MinM
+        Autres
+    End Enum
+    Dim MTypeMode As New MTyMode
     Dim MDicModes As New Dictionary(Of String, String) From
 {
     {"Maj", "0 2 4 5 7 9 11"},
     {"MinH", "0 2 3 5 7 8 11"},
+    {"Locrien B13", "0 1 3 5 6 9 10"},
+    {"Ionien 5#", "0 2 4 5 8 9 11"},
+    {"Dorien 11#", "0 2 3 6 7 9 10"},
+    {"Mixolydien b9b13", "0 1 4 5 7 8 10"},
+    {"Lydien 9#", "0 3 4 6 7 9 11"},
+    {"Altéré bb7", "0 1 3 4 6 8 9"},
     {"MinM", "0 2 3 5 7 9 11"},
+    {"Dorien b9", "0 1 3 5 7 9 10"},
+    {"Lydien 5#", "0 2 4 6 8 9 11"},
+    {"Lydien b7", "0 2 4 6 7 9 10"},
+    {"Mixolydien b13", "0 2 4 5 7 8 10"},
+    {"Locrien B9", "0 2 3 5 6 8 10"},
+    {"Altéré", "0 1 3 4 6 8 10"},
     {"MajH", "0 2 3 5 7 8 11"},
+    {"Ionien", "0 2 4 5 7 9 11"},
     {"Dorien", "0 2 3 5 7 9 10"},
     {"Phrygien", "0 1 3 5 7 8 10"},
     {"Lydien", "0 2 4 6 7 9 11"},
     {"MixoLydien", "0 2 4 5 7 9 10"},
     {"Eolien", "0 2 3 5 7 8 10"},
-    {"Locrien", "0 1 3 6 7 9 11"},
+    {"Locrien", "0 1 3 5 6 8 10"},
     {"Hongrois1", "0 2 3 6 7 8 11"},
     {"Hongrois2", "0 3 4 6 7 9 10"},
     {"Balkanique", "0 1 2 5 7 8 11"},
     {"Tzigane", "0 1 4 6 7 8 11"},
     {"Bertha", "0 1 3 4 6 7 9 10"}
 }
+    Class OldCoul
+        Public oldBackCoul As Color
+        Public oldForeCoul As Color
+        Public oldcol As Integer
+        Public oldrow As Integer
+        Sub New()
+            oldcol = -1
+            oldrow = -1
+        End Sub
+    End Class
+    Dim SauvCoul As New OldCoul
+    '
+    ' Affichage pour Aide
+    ' *******************
+    'Dim ChkAide As New CheckBox
+    Dim PanelAide As New Panel
+    Dim H1 As New Label
+    Dim H2 As New Label
+    Private WithEvents H3 As New TextBox
 
+    ' Variable globale pour calcul de la courbre expression COURBEX (utilisée dans CTRL_exp_Symph)
+    ' ********************************************************************************************
+    Dim TValPréded As String = "0"
 
+    ' Variable globale pour initialisation de l'ascenceur vertical du Piano
+    ' *********************************************************************
+    Dim scrollPianoInit As Boolean = False
+
+    ' Variable pour l'AIDE de Tabcontrol4
+    ' ************************************
+    Private IsOverTabControl4 As Boolean = False
+    '
+    ' Rafraichissement des pianoroll après glisser/déposer au moment de l'ouverture de l'onglet
+    ' *****************************************************************************************
+    Private PR_Refresh As New List(Of Boolean) From {False, False, False, False, False, False, False, False}
+    Public PR_Refresh1 As New List(Of Boolean) From {False, False, False, False, False, False, False, False}
 
     ' **********************************************************************************************************************************
     ' Flag_EcrDragDrop utilisé par les  procédure d'écriture d'un accord par Menu ou par glisser/déposer : 
@@ -634,7 +696,7 @@ Public Class Form1
             Dénominateur = Val(tbl(1))
             'Sig = Trim(Str(Numérateur) + "/" + Trim(Str(Dénominateur)))
             '
-            Métrique.Text = Trim(Sig)
+            'Métrique.Text = Trim(Sig)
             '
             ' ********************************
             ' GRID1 : Initialisaton de Grid1 *
@@ -729,10 +791,10 @@ Public Class Form1
             '
             ' mise à jour du Do par défaut dans la 1ere mesure de grid1 
             ' *********************************************************
-
-            Grid1.Cell(1, 3).Text = "C Maj" 'TableEventH(1, 1, 1).Tonalité
-                Grid1.Cell(1, 4).Text = "C" 'TableEventH(1, 1, 1).Accord
-                Grid1.Cell(1, 5).Text = "C Maj" 'TableEventH(1, 1, 1).Gamme
+            Grid1.Cell(1, 2).Text = "C Maj" ' Armure
+            Grid1.Cell(1, 3).Text = "C Maj" ' Mode
+            Grid1.Cell(1, 4).Text = "C" ' Accord
+            Grid1.Cell(1, 5).Text = "C Maj" ' Gamme
 
             '
             Grid1.Cell(1, 7).Text = Vol.Value.ToString ' vélocité
@@ -741,6 +803,47 @@ Public Class Form1
             Grid1.Range(1, 1, 1, ColRacine).ForeColor = Color.White
             Grid1.Range(1, 1, 1, ColRacine).BackColor = Color.Red ' 1ere ligne en rouge
             '
+            Grid1.AllowUserResizing = ResizeEnum.Columns ' on peut modifier les largeurs de colonnes et de lignes dans la grille de composition
+            '
+            Grid1.Range(1, 5, Grid1.Rows - 1, 5).SelectCells()
+            '
+
+            ' Grid1.Cell(i, j).Border(Edge) = LineStyleEnum
+            ' i :          Numéro de la ligne (de 1 à Grid1.Rows).
+            ' j :          Numéro de la colonne (de 1 à Grid1.Cols).
+            ' Edge:       Le bord de la cellule à définir (gauche, droite, haut ou bas) à l'aide de l'énumération EdgeEnum.
+            ' LineStyleEnum: Style de la bordure (épaisseur, Couleur et type de ligne) qui peut inclure 
+            ' NormalLine: Bordure Standard(fine).
+            ' ThickLine : Bordure épaisse.
+            ' DashedLine : ligne pointillée.
+            ' DoubleLine : ligne Double.
+            ' None : Pas de bordure.
+            '
+            ' EdgeEnum vous permet de spécifier le côté de la bordure à configurer :
+            ' FlexCell.EdgeEnum.Left : Bordure gauche.
+            ' FlexCell.EdgeEnum.Right : Bordure droite.
+            ' FlexCell.EdgeEnum.Top : Bordure supérieure.
+            ' FlexCell.EdgeEnum.Bottom : Bordure inférieure.
+
+            ' Appliquer la bordure gauche de la première colonne
+            For row As Integer = 0 To Grid1.Rows - 1
+                Grid1.Cell(row, 4).Border(FlexCell.EdgeEnum.Left) = BorderStyle.FixedSingle 'FixedSingle
+                Grid1.Cell(row, 4).Border(FlexCell.EdgeEnum.Left) = LineStyleEnum.Thick
+                Grid1.Cell(row, 4).Border(FlexCell.EdgeEnum.Right) = LineStyleEnum.Thick
+                ' Grid1.Cell(row, 4).Border(FlexCell.EdgeEnum.Left) = EdgeStyle.Etched
+            Next
+
+            ' Appliquer la bordure droite de la deuxième colonne
+            For row As Integer = 0 To Grid1.Rows - 1
+                Grid1.Cell(row, 5).Border(FlexCell.EdgeEnum.Right) = BorderStyle.FixedSingle
+                Grid1.Cell(row, 5).Border(FlexCell.EdgeEnum.Right) = LineStyleEnum.Thick
+                ' Grid1.Cell(row, 5).Border(FlexCell.EdgeEnum.Right) = EdgeStyle.Bump
+            Next
+
+
+
+
+
             Dim s1 As New Size With {.Width = Grid1Largeur, .Height = 475}
             Grid1.Size = s1
 
@@ -927,7 +1030,7 @@ Public Class Form1
             ' 
             'GroupBox9.Dock = DockStyle.Fill ' cadre contenant TagsGamme
             TagsGamme.Dock = DockStyle.Fill ' Label des tags des gammes
-            TagsGamme.TextAlign = ContentAlignment.MiddleCenter
+            TagsGamme.TextAlign = Drawing.ContentAlignment.MiddleCenter
             TagsGamme.Text = ""
             '
             'LoopNumber.Value = 1
@@ -1005,7 +1108,7 @@ Public Class Form1
             ' mise à jour du Do par défaut dans la 1ere mesure de grid2 
             ' *********************************************************
             Grid2.Cell(1, 1).Text = Trim(TableEventH(1, 1, 1).Accord)
-            TableNotesAccordsZ(1, 1, 1) = "c2 e2 g2"
+            TableNotesAccordsZ(1, 1, 1) = "e2 g2 c3"
             '
             Grid2.Cell(1, 1).Locked = True ' première cellule est bloquée
             '
@@ -1075,9 +1178,7 @@ Public Class Form1
             ' **********************************************
             Mode_Expert = False
 
-            ' Position de la barre horizontale du piano - - Position du scrolling du Piano
-            ' *****************************************************************************
-            Panel11.HorizontalScroll.Value = 0
+
             '
 
             Grid1.Cell(1, 1).SetFocus()
@@ -1123,12 +1224,13 @@ Public Class Form1
             ' Onglet Paramètres : réglages particulier
             ' ****************************************
             ' racine pour le jeu des accords par CTRL+clic
-            For i = 0 To Tracine.Count - 1
+            '
+            For i = Tracine.Count - 1 To 0 Step -1
                 ComboBox10.Items.Add(Tracine(i))
             Next
             ' Paramètre écoute accord par ctrl+clic : dans onglet Paramètres
             ' **************************************************************
-            ComboBox10.SelectedIndex = Tracine.IndexOf("c2")
+            ComboBox10.SelectedIndex = ComboBox10.Items.IndexOf("c2")   'Tracine.IndexOf("c2")
             CanalThru.Value = 1
             '
             ' Position Initiales
@@ -1163,9 +1265,9 @@ Public Class Form1
             ComboBox6.Size = s
             '
             p.Y = 6
-            p.X = 183
+            p.X = 181
             ComboBox3.Location = p
-            p.X = 365
+            p.X = 362
             ComboBox4.Location = p
             p.X = 2
             ComboBox6.Location = p
@@ -1179,9 +1281,9 @@ Public Class Form1
             Label37.Size = s
 
             p.Y = 32
-            p.X = 183
+            p.X = 178
             Label74.Location = p
-            p.X = 365
+            p.X = 360
             Label75.Location = p
             p.X = 2
             Label37.Location = p
@@ -1201,7 +1303,7 @@ Public Class Form1
             Label28.Location = New Point(1, 128)
             Label28.Size = New Size(90, 10)
             Label28.Text = "Anatole"
-            Label28.TextAlign = ContentAlignment.MiddleLeft
+            Label28.TextAlign = Drawing.ContentAlignment.MiddleLeft
             '
         Catch ex As Exception
             MessageHV.PContenuMess = "Détection d'un erreur dans procédure : " + "CAD_Construction" + Constants.vbCrLf + "Message  : " + ex.Message
@@ -1211,7 +1313,7 @@ Public Class Form1
         End Try
     End Sub
     Sub Init_Fichier()
-        'CheminFichierOuvrir = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "CheminFichierOuvrir", Nothing)
+        'CheminFichierOuvrir = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "CheminFichierOuvrir", Nothing)
         NomFichier = ""
         IndicateurEnreg = False
         Me.Text = "Sans Titre"
@@ -1426,7 +1528,7 @@ Public Class Form1
             Pres_pdf = False
         End Try
     End Function
-    Sub Fr_Culture()
+    Sub Fr_culture()
         '
         Try
             Dim i As Integer
@@ -1446,10 +1548,10 @@ Public Class Form1
             TabPage2.Text = "Progressions"
             TabPage21.Text = "Modes"
             TabPage16.Text = "Substitutions"
-            TabPage7.Text = "Ponts"
+            TabPage7.Text = "Modul."
             TabPage20.Text = "Expression"
             TabPage17.Text = "Vue Notes"
-            TabPage3.Text = "Stack"
+            ' 
 
 
             ChangementLangue = True
@@ -1459,8 +1561,8 @@ Public Class Form1
             '
             Grid1.Cell(0, 0).Text = ""
             Grid1.Cell(0, 1).Text = "Positions"
-            Grid1.Cell(0, 2).Text = "Marqueurs"
-            Grid1.Cell(0, 3).Text = "Tonalités"
+            Grid1.Cell(0, 2).Text = "Signat." ' Armures et Marqueurs
+            Grid1.Cell(0, 3).Text = "Modes"
             Grid1.Cell(0, 4).Text = "Accords"
             Grid1.Cell(0, 5).Text = "Gammes"
             Grid1.Cell(0, 6).Text = "°"
@@ -1474,30 +1576,38 @@ Public Class Form1
             Label83.Text = "Grille de composition"
 
             '
-            ' Grid2.Cell(0, 0).Text = "Navigateur"
-            ' ***********************************
-            ' tableau de bord
-            ' ***************
-            Label5.Text = "Métrique"
-            Label48.Text = "Choix Tonalité"
+            ' Données d'Armure,Relative mineure, Métrique
+            ' *******************************************
+            Label5.Font = New Font(Label5.Font.FontFamily, Label5.Font.Size, FontStyle.Italic Or FontStyle.Underline)
+            Label5.Text = "Root"
+            Label48.Text = "Signature" '"Choix Tonalité"
+            Label97.Text = "Relative mineure"
+            Label98.Text = "Métrique"
             '
             Dim p As Point
-            p.X = 60
+            p.X = 20
             p.Y = 32
             Label48.Location = p
-            p.X = 224
-            p.Y = 32
-            Label5.Location = p
+            p.X = 101
+            Label97.Location = p
+            p.X = 193
+            Label98.Location = p
+
+            'p.X = 224
+            'p.Y = 32
+            'Label5.Location = p
             '
             ' Menus
             FichierToolStripMenuItem.Text = "Fichier"
             NouveauToolStripMenuItem.Text = "Nouveau"
+            Standard.Text = "Vide"
             NouveauAvecSignatireToolStripMenuItem.Text = "Nouveau avec Métrique"
             OuvrirToolStripMenuItem.Text = "Ouvrir"
             EnregistrerToolStripMenuItem.Text = "Enregistrer"
             EnregistrerSousToolStripMenuItem.Text = "Enregistrer sous"
             'MenuExportsMIDI.Text = "Exporter Projet en MidiFile"
             'ToolStripMenuItem9.Text = "Exporter Marqueurs en MidiFile avec ..."
+            CalquesMIDIToolStripMenuItem.Text = "Calques MIDI"
 
             ProjetToolStripMenuItem.Text = "Projet"
             AccordsEnTantQueMarqueurToolStripMenuItem.Text = "Accords en tant que marqueurs"
@@ -1507,6 +1617,8 @@ Public Class Form1
             GammesEnTantQueMarqueursToolStripMenuItem.Text = "Gammes"
             'ExporterCalqueMIDIToolStripMenuItem.Text = "Export Calques MIDI"
             'ExporterCompoToolStripMenuItem.Text = "Export MIDI Accords"
+
+            ToolStripMenuItem12.Text = "Imprimer"
             QuitterToolStripMenuItem.Text = "Quitter"
             '
             EditionToolStripMenuItem.Text = "Edition"
@@ -1576,7 +1688,9 @@ Public Class Form1
             ComboBox2.Items.Add(" G Minor")
             ComboBox2.Items.Add(" C Minor")
             ComboBox2.Items.Add(" F Minor")
-
+            '
+            ComboBox2.ForeColor = Color.Blue
+            '
             If EnChargement Then
                 ComboBox2.SelectedIndex = 7
             Else
@@ -1595,15 +1709,6 @@ Public Class Form1
                 ComboBox23.SelectedIndex = 0
             End If
             '
-            i = ComboBox9.SelectedIndex
-            ComboBox9.Items.Clear()
-            ComboBox9.Items.Add(" Accords de 3 notes")
-            ComboBox9.Items.Add(" Accords de 4 notes (7)")
-            '
-            ComboBox9.SelectedIndex = i
-            If EnChargement = True Then
-                ComboBox9.SelectedIndex = 0
-            End If
             '
             i = ComboBox6.SelectedIndex
             ComboBox6.Items.Clear()
@@ -1660,19 +1765,22 @@ Public Class Form1
 
             ' Onglets Réglages de droite
             ' **************************
-            TabPage4.Text = "MIDI"
-            TabPage6.Text = "Paramètres"
+            TabPage4.Text = "Instruments"
             Label3.Text = "Ecoute des Accords (Ctrl+Clic)"
 
             '
-            Dim p1 As New Point
-            p1 = Label84.Location
-            p1.X = 118
-            Label84.Location = p1
-            Dim p2 As New Point
-            p2 = Label85.Location
-            p2.X = 118
-            Label85.Location = p2
+
+            BasseMoins12.Text = "Basse -12"
+
+            Label106.Text = "No Voix"
+            Label107.Text = "No Voix"
+            Label108.Text = "No Mesure"
+            Label109.Text = "No Mesure"
+
+
+            Label110.Text = "Génération d'une Basse"
+            Label111.Text = "Harmonie à Quatre Notes"
+            Label112.Text = "Legato / Staccato"
 
             Label84.Text = "A partir de"
             Label85.Text = "A partir de"
@@ -1681,7 +1789,7 @@ Public Class Form1
             Label44.Text = "Dyn. Canal"
             Label36.Text = "Canal Thru"
             '
-            GroupBox5.Text = "PORTS MIDI"
+            GroupBox5.Text = "MIDI OUT"
             Label60.Text = "Accords"
             Label23.Text = "Métronome"
             '
@@ -1700,22 +1808,21 @@ Public Class Form1
             CheckBox2.Text = "Afficher Gammes en lecture"
             '
             ' Sélection de gammes
-            ' ******************
+            ' *******************
             Button7.Text = "Tout"
 
             ' ToolTips
             ' ********
             ToolTip1.SetToolTip(InitClavier, "Effacer gamme sur clavier")
-            ToolTip1.SetToolTip(Button11, "Nouveau")
-            ToolTip1.SetToolTip(Button12, "Ouvrir")
-            ToolTip1.SetToolTip(Button13, "Enregistrer")
-            ToolTip1.SetToolTip(Button14, "Annuler")
-            ToolTip1.SetToolTip(Button15, "Couper")
-            ToolTip1.SetToolTip(Button16, "Copier")
-            ToolTip1.SetToolTip(Button22, "Coller")
+            'ToolTip1.SetToolTip(Button11, "Nouveau")
+            'ToolTip1.SetToolTip(Button12, "Ouvrir")
+            'ToolTip1.SetToolTip(Button13, "Enregistrer")
+            'ToolTip1.SetToolTip(Button14, "Annuler")
+            'ToolTip1.SetToolTip(Button15, "Couper")
+            'ToolTip1.SetToolTip(Button16, "Copier")
+            'ToolTip1.SetToolTip(Button22, "Coller")
             ToolTip1.SetToolTip(Button29, "Init Midi")
             ToolTip1.SetToolTip(Button20, "Infos détaillées")
-            ToolTip1.SetToolTip(Button23, "Etendre/Réduire")
             ToolTip1.SetToolTip(Button24, "Export MIDI Accords")
             ToolTip1.SetToolTip(Button26, "Imprimer")
             ToolTip1.SetToolTip(Button27, "Export MIDI Marqueurs")
@@ -1735,6 +1842,10 @@ Public Class Form1
             ToolTip1.SetToolTip(TagsGamme, "Utilisation de la Liste de Gammes" + Chr(13) + "- sélectionner des accords dans la grille de composition : les gammes jouables apparaissent dans la liste" + Chr(13) _
                                 + "- cliquer sur  une gamme dans la liste puis touche 'Entrée' : la gamme s'affiche dans la grille de composition")
             '
+            ToolTip1.SetToolTip(Button9, "Vue standard")
+            ToolTip1.SetToolTip(Button3, "Vue étendue")
+            ToolTip1.SetToolTip(Button5, "Vue harmonie")
+
             ChangementLangue = False
             '
             ' Noms des modes
@@ -1761,14 +1872,14 @@ Public Class Form1
             ButtTonalités.Text = "Tonalités"
             ButtAccords.Text = "Accords"
             ButtGammes.Text = "Gammes"
-            ButtModes.Text = "Modes Grecs"
+            'ButtModes.Text = "Modes Grecs"
 
             CheckBoxTout.Text = "Tout"
             Button30.Text = "Effacer"
             '
             ' Ecoute : Jeu CTRL + clic
-            ' ***********************
-            GroupBox7.Text = "Ecoute accord avec notes"
+            ' ************************
+            GroupBox7.Text = "Ecoute accord + gamme"
             GammePlusAccord.Text = "Gamme + Accord"
             Label19.Text = "Dyn. Accords"
             Label18.Text = "Dyn. Gammes"
@@ -1776,7 +1887,7 @@ Public Class Form1
             Label14.Text = "Tempo"
             Label88.Text = "Canal"
             Label89.Text = "Racine"
-            GroupBox2.Text = "Réglage écoute"
+            GroupBox2.Text = "Canal d'écoute"
 
             ' SYnthé GM/GS
             ' List Program Change GS
@@ -1933,7 +2044,24 @@ Public Class Form1
             '
             ' Notes libres pour HyperVoicing
             ' ******************************
-            NomduSon.Text = "Texte libre pour utilisation d'HyperVoicing"
+            NomduSon.Text = "Texte libre pour utilisation d'HyperVoicing" ' (annulé)
+
+            ' Controleur d'expression pour les Accords
+            ' ****************************************
+            ActExp.Text = "Activation (Controleur d'Expression n° 11)"
+            'Label99.Text = "Ctrl + clic pour desssiner l'Expression"
+            '
+            ' Variations sur Piste accord                    
+            ' ***************************
+            GroupBox11.Text = ""
+
+            GroupBox8.Text = "INSTRUMENTS GS/GM"
+            '
+            ' Nom du 1er Onglet = Piste Accords
+            ' *********************************
+            TabPage8.Text = "1-Piste Accords"
+            TabPage11.Text = "10-Piste Batterie"
+
 
         Catch ex As Exception
             MessageHV.PContenuMess = "Détection d'une erreur dans procédure : " + "Fr_Culture" + Constants.vbCrLf + "Message  : " + ex.Message
@@ -1964,7 +2092,7 @@ Public Class Form1
             TabPage2.Text = "Progressions"
             TabPage21.Text = "Modes"
             TabPage16.Text = "Substitutions"
-            TabPage7.Text = "Briges"
+            TabPage7.Text = "Modul."
             TabPage20.Text = "Expression"
             TabPage17.Text = "Notes View"
             TabPage3.Text = "Stack"
@@ -1976,8 +2104,8 @@ Public Class Form1
             '
             Grid1.Cell(0, 0).Text = ""
             Grid1.Cell(0, 1).Text = "Positions"
-            Grid1.Cell(0, 2).Text = "Markers"
-            Grid1.Cell(0, 3).Text = "Tonalities"
+            Grid1.Cell(0, 2).Text = "Signatures"
+            Grid1.Cell(0, 3).Text = "Modes" ' "Tonalities"
             Grid1.Cell(0, 4).Text = "Chords"
             Grid1.Cell(0, 5).Text = "Scales"
             Grid1.Cell(0, 6).Text = "°"
@@ -1990,34 +2118,39 @@ Public Class Form1
             '
             Label83.Text = "Composition grid"
             '
-            ' Tableau de bord
-            ' ***************
-            Label5.Text = "Time"
-            Label48.Text = "Tone Choice"
+            ' Données d'Armure,Relative mineure, Métrique
+            ' *******************************************
+            Label5.Font = New Font(Label5.Font.FontFamily, Label5.Font.Size, FontStyle.Italic Or FontStyle.Underline)
+            Label5.Text = "Root"
+            Label48.Text = "Signature" '"Choix Tonalité"
+            Label97.Text = "Relative minor"
+            Label98.Text = "Meter"
+            '
             Dim p As Point
-            p.X = 60
+            p.X = 27
             p.Y = 32
             Label48.Location = p
-            'Label48.Location = p
-            p.X = 233
-            p.Y = 32
-            Label5.Location = p
+            p.X = 101
+            Label97.Location = p
+            p.X = 195
+            Label98.Location = p
             '
             ' Menus
             ' *****
             FichierToolStripMenuItem.Text = "File"
             NouveauToolStripMenuItem.Text = "New"
-            NouveauAvecSignatireToolStripMenuItem.Text = "New with Time Signature"
+            Standard.Text = "Empty"
+            NouveauAvecSignatireToolStripMenuItem.Text = "New With Time Signature"
             OuvrirToolStripMenuItem.Text = "Open"
             EnregistrerToolStripMenuItem.Text = "Save"
-            EnregistrerSousToolStripMenuItem.Text = "Save as"
-            MenuExportsMIDI.Text = "Export Project as MidiFile"
-            ToolStripMenuItem9.Text = "Export Markers as MidiFile with ..."
+            EnregistrerSousToolStripMenuItem.Text = "Save As"
+            MenuExportsMIDI.Text = "Export Project As MidiFile"
+            ToolStripMenuItem9.Text = "Export Markers As MidiFile With ..."
 
             ProjetToolStripMenuItem.Text = "Project"
-            AccordsEnTantQueMarqueurToolStripMenuItem.Text = "Chords as markers"
-            GammesEnTantQueMarqueursToolStripMenuItem1.Text = "Scales as markers"
-
+            AccordsEnTantQueMarqueurToolStripMenuItem.Text = "Chords As markers"
+            GammesEnTantQueMarqueursToolStripMenuItem1.Text = "Scales As markers"
+            CalquesMIDIToolStripMenuItem.Text = "MIDI Layers"
 
             AccordsCommeMarqueursToolStripMenuItem.Text = "Chords"
             GammesEnTantQueMarqueursToolStripMenuItem.Text = "Scales"
@@ -2031,6 +2164,8 @@ Public Class Form1
             CopierToolStripMenuItem.Text = "Copy"
             CollerToolStripMenuItem.Text = "Paste"
             EffacerToolStripMenuItem.Text = "Delete"
+
+            ToolStripMenuItem12.Text = "Print"
             '
             AideToolStripMenuItem.Text = "Help"
             AuSujetDeToolStripMenuItem.Text = "About"
@@ -2109,15 +2244,6 @@ Public Class Form1
                 ComboBox23.SelectedIndex = 0
             End If
             '
-            i = ComboBox9.SelectedIndex
-            ComboBox9.Items.Clear()
-            ComboBox9.Items.Add(" 3 notes Chords")
-            ComboBox9.Items.Add(" 4 notes Chords (7)")
-            '
-            ComboBox9.SelectedIndex = i
-            If EnChargement = True Then
-                ComboBox9.SelectedIndex = 0
-            End If
             '
             i = ComboBox6.SelectedIndex
             ComboBox6.Items.Clear()
@@ -2171,21 +2297,23 @@ Public Class Form1
             '
             ' Onglets Réglages de droite
             ' **************************
-            TabPage4.Text = "MIDI"
+            TabPage4.Text = "Instruments"
             TabPage6.Text = "Parameters"
-            Label3.Text = "Listening to Chords (Ctrl+Clic)"
+            Label3.Text = "Listening To Chords (Ctrl+Clic)"
 
 
+
+
+            BasseMoins12.Text = "Bass -12"
             '
-            Dim p1 As New Point
-            p1 = Label84.Location
-            p1.X = 136
-            Label84.Location = p1
-            Dim p2 As New Point
-            p2 = Label85.Location
-            p2.X = 136
-            Label85.Location = p2
+            Label106.Text = "Voice No"
+            Label107.Text = "Voice No"
+            Label108.Text = "Measure No"
+            Label109.Text = "Measure No"
 
+            Label110.Text = "Bass Generation"
+            Label111.Text = "Four Notes Harmony"
+            Label112.Text = "Legato / Staccato"
 
             Label84.Text = "From"
             Label85.Text = "From"
@@ -2196,7 +2324,7 @@ Public Class Form1
 
             Label2.Text = "(Scales)"
             '
-            GroupBox5.Text = "MIDI PORTS"
+            GroupBox5.Text = "MIDI OUT"
             Label60.Text = "Chords"
             Label23.Text = "Metronome"
             '
@@ -2218,17 +2346,15 @@ Public Class Form1
 
             ' ToolTips
             ' ********
-            ToolTip1.SetToolTip(InitClavier, "Delete scale on keyboard")
-            ToolTip1.SetToolTip(Button11, "New")
-            ToolTip1.SetToolTip(Button12, "Open")
-            ToolTip1.SetToolTip(Button13, "Save")
-            ToolTip1.SetToolTip(Button14, "Undo")
-            ToolTip1.SetToolTip(Button15, "Cut")
-            ToolTip1.SetToolTip(Button16, "Copy")
-            ToolTip1.SetToolTip(Button22, "Paste")
+            ToolTip1.SetToolTip(InitClavier, "Delete scale On keyboard")
+            'ToolTip1.SetToolTip(Button11, "New")
+            'ToolTip1.SetToolTip(Button12, "Open")
+            'ToolTip1.SetToolTip(Button13, "Save")
+            'ToolTip1.SetToolTip(Button14, "Undo")
+            'ToolTip1.SetToolTip(Button15, "Cut")
+            'ToolTip1.SetToolTip(Button16, "Copy")
+            'ToolTip1.SetToolTip(Button22, "Paste")
             ToolTip1.SetToolTip(Button20, "Detailed infos")
-
-            ToolTip1.SetToolTip(Button23, "Extend/Reduce")
             '
             ToolTip1.SetToolTip(Button24, "Chords MIDI Export")
             ToolTip1.SetToolTip(Button26, "Print")
@@ -2240,12 +2366,16 @@ Public Class Form1
             ToolTip1.SetToolTip(ComboBox1, "Tone")
             ToolTip1.SetToolTip(ComboBox2, "Relative minor")
             ToolTip1.SetToolTip(ComboBox11, "Voice added one octave lower")
-            ToolTip1.SetToolTip(ComboBox12, "Voice added one octave upper (on 3-notes chords only)")
+            ToolTip1.SetToolTip(ComboBox12, "Voice added one octave upper (On 3-notes chords only)")
             '
             ToolTip1.SetToolTip(ComboBox23, "Chords Type")
             '
             ToolTip1.SetToolTip(ComboBox8, "Notes length compression")
-            ToolTip1.SetToolTip(NomduSon, "Write here the name of the chords sound")
+            ToolTip1.SetToolTip(NomduSon, "Write here the name Of the chords sound")
+            '
+            ToolTip1.SetToolTip(Button9, "Standard View")
+            ToolTip1.SetToolTip(Button3, "Extended view")
+            ToolTip1.SetToolTip(Button5, "Harmony view")
 
             '
             ChangementLangue = False
@@ -2276,14 +2406,14 @@ Public Class Form1
             ButtTonalités.Text = "Tones"
             ButtAccords.Text = "Chords"
             ButtGammes.Text = "Scales"
-            ButtModes.Text = "Greek Modes"
+            'ButtModes.Text = "Greek Modes"
 
             CheckBoxTout.Text = "All"
             Button30.Text = "Erase"
 
             ' Jeu CTRL + clic
             ' ***************
-            GroupBox7.Text = "Listening chord with notes"
+            GroupBox7.Text = "Listening chord + scale"
             GammePlusAccord.Text = "Scale + Chord"
             Label14.Text = "Tempo"
             Label88.Text = "Channel"
@@ -2389,7 +2519,7 @@ Public Class Form1
             ListGS.Items.Add("86 Lead voice")
             ListGS.Items.Add("87 Lead 7 fifths")
             ListGS.Items.Add("88 Lead 8 bass + lead")
-            ListGS.Items.Add("89 Pad new Age")
+            ListGS.Items.Add("89 Pad New Age")
             ListGS.Items.Add("90 Pad warm")
             ListGS.Items.Add("91 Pad 3 polysynth")
             ListGS.Items.Add("92 Pad 4 choir")
@@ -2419,11 +2549,10 @@ Public Class Form1
             ' *******************
             InitClavier.Text = "Cancel keyboard"
             ' 
-            TabPage17.Text = "Notes View"
             ' Télécommande
             ' ************
             Transport.Remote.Text = "Remote"
-            ToolTip1.SetToolTip(Transport.Remote, "Send CTRL 54 on Play and CTRL 55 on Stop")
+            ToolTip1.SetToolTip(Transport.Remote, "Send CTRL 54 On Play And CTRL 55 On Stop")
 
             ' Menu flottant Couper,Copier,Coller
             ' **********************************
@@ -2436,14 +2565,30 @@ Public Class Form1
             'GroupBox11.Text = "Bass - 12                                4Notes"
             ' Chemin du fichier ouvert
             ' ************************
-            Label86.Text = "Path of the open file"
+            Label86.Text = "Path Of the open file"
             Label87.Text = "Infos"
             ' Liste de Gammes
             ' ***************
             TagsGamme.Text = "Scales List"
             ' Notes libres pour HyperVoicing
             ' ******************************
-            NomduSon.Text = "Free text for HyperVoicing user"
+            NomduSon.Text = "Free text For HyperVoicing user"
+
+            ' Controleur d'expression pour les Accords
+            ' ****************************************
+            ActExp.Text = "Activation (Expression controller n° 11)"
+            'Label99.Text = "Ctrl + clic to draw expression"
+            '
+            ' Variations sur Piste accord
+            ' ***************************
+            '
+            GroupBox11.Text = ""
+            GroupBox8.Text = "GS/GM INSTRUMENTS"
+            '
+            ' Nom du 1er Onglet = Piste Accords
+            ' *********************************
+            TabPage8.Text = "1-Chords Track"
+            TabPage11.Text = "10-Drums Track"
 
         Catch ex As Exception
             MessageHV.PContenuMess = "Détection d'un erreur dans procédure : " + "En_culture" + Constants.vbCrLf + "Message  : " + ex.Message
@@ -2545,45 +2690,47 @@ Public Class Form1
         Try
             ' Tous les paramètres mis à jour par UpandDown sont enregistrés ici une seule fois, à la sortie de l'application
             ' **************************************************************************************************************
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "NombredeBoucles", Trim(Str(Transport.LoopNumber.Value)))            ' Nombre de boucles
-            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "NombreMesuresFin", Trim(Str(EndMeasureNumber.Value)))     ' Nombre de fin de mesures de fin
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "VécolitéPlayback", Trim(Str(PlaybackVelocity.Value)))     ' Vélocité du playback
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "VécolitéNotes", Trim(Str(NotesVelocity.Value)))           ' Vélocité des notes du pieno jouées à la souris
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "VécolitéAccords", Trim(Str(ChordsVelocity.Value)))        ' Vélocité des accords cliqués sur grid1, grid2, grid3 et Tabtons 
-            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Délimiteur_Gauche", Trim(Str(Début.Value)))               ' Délimiteur gauche
-            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Délimiteur_Droit", Trim(Str(Terme.Value)))                ' Délimiteur droit
-            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Canal_MIDI", Trim(Str(NCanal1.Value)))
-            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Canal_THRU", Trim(Str(CanalThru.Value)))
+            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "NombredeBoucles", Trim(Str(Transport.LoopNumber.Value)))            ' Nombre de boucles
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "NombredeBoucles", "1")            ' Nombre de boucles : touour à 1 au début pour éviter les calculmusique trop long 
+
+            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "NombreMesuresFin", Trim(Str(EndMeasureNumber.Value)))     ' Nombre de fin de mesures de fin
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "VécolitéPlayback", Trim(Str(PlaybackVelocity.Value)))     ' Vélocité du playback
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "VécolitéNotes", Trim(Str(NotesVelocity.Value)))           ' Vélocité des notes du pieno jouées à la souris
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "VécolitéAccords", Trim(Str(ChordsVelocity.Value)))        ' Vélocité des accords cliqués sur grid1, grid2, grid3 et Tabtons 
+            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Délimiteur_Gauche", Trim(Str(Début.Value)))               ' Délimiteur gauche
+            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Délimiteur_Droit", Trim(Str(Terme.Value)))                ' Délimiteur droit
+            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Canal_MIDI", Trim(Str(NCanal1.Value)))
+            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Canal_THRU", Trim(Str(CanalThru.Value)))
             '
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "CheminFichierOuvrir", Trim(CheminFichierOuvrir))
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "CheminEnregistrer", Trim(CheminFichierEnreg))
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportCalquesMIDI", Trim(CheminFichierCalques))
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportFichierMIDI", Trim(CheminFichierMIDI))
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportMarqueursMIDI", Trim(CheminMarqueursMIDI))
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportfichierDoc", Trim(CheminFichierExportDoc))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "CheminFichierOuvrir", Trim(CheminFichierOuvrir))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "CheminEnregistrer", Trim(CheminFichierEnreg))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportCalquesMIDI", Trim(CheminFichierCalques))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportFichierMIDI", Trim(CheminFichierMIDI))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportMarqueursMIDI", Trim(CheminMarqueursMIDI))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportfichierDoc", Trim(CheminFichierExportDoc))
             '
             ' Resize de l'application
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "WidthForm", Trim(Str(Me.Size.Width)))                       ' Largeur de l'application
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "HeightForm", Trim(Str(Me.Size.Height)))                     ' Hauteur de lapplication
-            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "WidthSplitter", Trim(Str(SplitContainer2.SplitterDistance))) 'Splitter du help
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "WidthForm", Trim(Str(Me.Size.Width)))                       ' Largeur de l'application
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "HeightForm", Trim(Str(Me.Size.Height)))                     ' Hauteur de lapplication
+            'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "WidthSplitter", Trim(Str(SplitContainer2.SplitterDistance))) 'Splitter du help
             '
             ' Langue en cours
-            ' My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Langue", "Langue", Trim(Langue))
+            ' My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Langue", "Langue", Trim(Langue))
             ' Mode étendue
             ' ************
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ModeEtendu", Trim(Str(FlagMode)))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ModeEtendu", Trim(Str(FlagMode)))
             '
             ' Ecoute des EventH (CTRL+Clic)
             ' *****************************
             If GammePlusAccord.Checked Then
-                My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "GammePlusAccord", "1")
+                My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "GammePlusAccord", "1")
             Else
-                My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "GammePlusAccord", "0")
+                My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "GammePlusAccord", "0")
             End If
             '
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "TempoEcoute", Str(ComboBox7.SelectedIndex))
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "PlayC", Trim(Str(PlayC.Value)))
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "PlayN", Trim(Str(PlayN.Value)))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "TempoEcoute", Str(ComboBox7.SelectedIndex))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "PlayC", Trim(Str(PlayC.Value)))
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "PlayN", Trim(Str(PlayN.Value)))
 
 
             Fermer_MIDI()
@@ -2606,6 +2753,7 @@ Public Class Form1
             End
         End Try
     End Sub
+
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim i, j, k As Integer
 
@@ -2616,7 +2764,7 @@ Public Class Form1
             ' Nom document par défaut
             ' ***********************
             EnChargement = True
-            '
+
             ' Déclaration de taille de tableaux membres de la structure "AccordTab" pour la table "TableCoursAcc"
             ' **************************************************************************************************
             '
@@ -2686,6 +2834,10 @@ Public Class Form1
             '
             Init_Fichier()
             '
+            ' Lecture de la base de registre de l'appli
+            ' *****************************************
+            CréationRegistry() ' à placer absolument avant le 'Transport.TRANSPORT_Refresh()'
+            '
             ' Lancement de la barre de transport
             ' **********************************
             Transport.TopLevel = True
@@ -2695,9 +2847,6 @@ Public Class Form1
             Transport.Visible = False
             Transport.TRANSPORT_Refresh()
 
-            ' Lecture de la base de registre de l'appli
-            ' *****************************************
-            CréationRegistry()
             '
             ' Création du piano
             ' *****************
@@ -2714,6 +2863,7 @@ Public Class Form1
             MODULATION_CREATION()
             SUBSTITUTION_CREATION()
             MODES_CREATION()
+            AIDE_CREATION()
 
             '
             CréationTabAccords() ' création objets barre d'outils du tableau d'accord : button17, combobox22 et 23
@@ -2812,7 +2962,7 @@ Public Class Form1
             EnChargement = True
             NomduSon.Text = "" ' nécessaire pour fr_culture et en_culture
             If LangueIHM = "fr" Then
-                Fr_Culture()
+                Fr_culture()
             Else
                 En_Culture()
             End If
@@ -2834,17 +2984,6 @@ Public Class Form1
             ' ********************
             Maj_VueNotes()
 
-
-            ' * Test des interfaces MIDI en cours *
-            ' *************************************
-            TestInterfaceMIDI2()
-            '
-            ' intit du scrolling du piano
-            ' ***************************
-            Panel11.HorizontalScroll.Value = 0 ' Il faut écrire deux fois une valeur - pas d'explication mai ça ne fonctionne que comme ça.
-            Panel11.HorizontalScroll.Value = 700
-
-
             Me.ResumeLayout()
 
             ' Positionnement de la barre de transport
@@ -2863,10 +3002,30 @@ Public Class Form1
             '
             ' Mise à jour du mode C Maj par défaut dans l'onglet Modes
             ' ******************************************************** 
-            MLabTon.Text = "C" 'maj de la note de tonalité
+            MLabTon.Text = "C Major" 'maj de la note de tonalité
             MComboModes.SelectedIndex = 0 ' maj de C Maj (Ionien) dans le combolist des modes
-
             '
+            ' En relation avec Do par défaut dans la 1ere mesure de grid1 
+            ' ***********************************************************
+            Maj_Extension_Mode() ' mise à jour de données de modes dans compogrid(pour vue harmo)
+            '
+            ' Mise à jour du N° de version dans la vue HyperVoicing
+            ' *****************************************************
+            Label95.Text = "Version : " + NumVersion
+            Label96.Text = Dateversion
+            '
+            '
+            PlayMidi.BringToFront()
+            '
+            ' Retrait temporaire de l'onglet Stack dans Tabcontrol2
+            ' *****************************************************
+            TabControl2.TabPages.Remove(TabPage3)
+            ' 
+            ' Creation de l'évènement TextCnange pour le composant H3 du système d'aide
+            ' *************************************************************************
+            'AddHandler H3.TextChanged, AddressOf H3_TextChanged
+
+
         Catch ex As Exception
             MessageHV.PContenuMess = Constants.vbCrLf + "Détection d'une erreur dans procédure : " + "Form1_Load" + "." + Constants.vbCrLf +
                 "Message  : " + ex.Message
@@ -3096,6 +3255,7 @@ Public Class Form1
                 Panel11.Controls.Add(LabelPiano.Item(k))
                 Panel11.Controls.Add(LabelPianoMidiIn.Item(k))
                 LabelPianoMidiIn.Item(k).Font = New System.Drawing.Font(LabelPianoMidiIn.Item(k).Font, FontStyle.Bold)
+
                 Select Case j
                     Case 1, 3, 6, 8, 10 ' touches noires
                         LabelPiano.Item(k).AutoSize = False
@@ -3107,6 +3267,7 @@ Public Class Form1
                         LabelPiano.Item(k).BackColor = Color.Black
                         LabelPiano.Item(k).Visible = True
                         LabelPiano.Item(k).BorderStyle = BorderStyle.None
+                        LabelPiano.Item(k).Font = New Font("Calibri", 9)
                         LabelPiano.Item(k).BringToFront()
                         '
                         ' diodes
@@ -3143,14 +3304,16 @@ Public Class Form1
                 '
                 LabelPiano.Item(k).Name = "Touche:" + Str(k)
                 LabelPiano.Item(k).Tag = k
-                LabelPiano.Item(k).TextAlign = ContentAlignment.BottomCenter
+                LabelPiano.Item(k).TextAlign = Drawing.ContentAlignment.BottomCenter
                 LabelPiano.Item(k).BorderStyle = BorderStyle.FixedSingle
-                LabelPiano.Item(k).Font = New Font("Calibri", 9)
+                LabelPiano.Item(k).Font = New Font("Arial Narrow", 10, FontStyle.Bold)
                 LabelPiano.Item(k).ForeColor = Color.Blue
-                LabelPiano.Item(k).TextAlign = ContentAlignment.BottomLeft
+                LabelPiano.Item(k).TextAlign = Drawing.ContentAlignment.BottomLeft
                 '
                 AddHandler LabelPiano.Item(k).MouseDown, AddressOf PianoClick_MouseDown
                 AddHandler LabelPiano.Item(k).MouseUp, AddressOf PianoClick_MouseUp
+                AddHandler LabelPiano.Item(k).MouseMove, AddressOf PianoClick_MouseMove
+                'AddHandler LabelPiano.Item(k).MouseLeave, AddressOf ComboBox1_MouseLeave ' ok, sortir du piano lance ComboBox1_MouseLeave
             Next j
         Next i
         '
@@ -3174,7 +3337,7 @@ Public Class Form1
             BoutZone.Item(i).Font = New Font("Calibri", 8)
             BoutZone.Item(i).Text = Trim(Str(i))
             BoutZone.Item(i).ForeColor = Color.DarkRed
-            BoutZone.Item(i).TextAlign = ContentAlignment.BottomCenter
+            BoutZone.Item(i).TextAlign = Drawing.ContentAlignment.BottomCenter
             BoutZone.Item(i).BringToFront()
             BoutZone.Item(i).Visible = False
             BoutZone.Item(i).Enabled = True
@@ -3222,7 +3385,7 @@ Public Class Form1
             Next j
         Next i
         '
-        'Label7.Text = "" ' label d'affichage nom de la gamme en dessous des réglages
+
     End Sub
     Sub JouerNote(n As Byte)
         Try
@@ -3333,12 +3496,6 @@ Public Class Form1
         ComboBox23.Location = New Point(5, 5) 'New Point(173, 5) ' New Point(173, 40)
         ComboBox23.Size = New Size(160, 20) ' 
         '
-        ComboBox9.Location = ComboBox23.Location '
-        Dim s As New Size With {
-            .Height = ComboBox23.Height,
-            .Width = ComboBox23.Width - 15
-        }
-        ComboBox9.Size = s
         '
         ComboBox6.Location = ComboBox23.Location 'New Point(2, 2)
         ComboBox6.Size = ComboBox23.Size 'New Size(160, 20) ' 
@@ -3380,6 +3537,7 @@ Public Class Form1
         '
         AjoutRéglage1 = -5
         AjoutRéglage2 = -20
+        '
         Do '
             If i < 5 Then
                 TabCadDegrés.Add(New Label)
@@ -3387,7 +3545,7 @@ Public Class Form1
                 Me.Panel4.Controls.Add(TabCadDegrés.Item(i))
                 TabCadDegrés.Item(i).Size = New System.Drawing.Size(Longueur, Hauteur / 4)
                 TabCadDegrés.Item(i).BorderStyle = BorderStyle.FixedSingle
-                TabCadDegrés.Item(i).TextAlign = ContentAlignment.MiddleCenter
+                TabCadDegrés.Item(i).TextAlign = Drawing.ContentAlignment.MiddleCenter
                 TabCadDegrés.Item(i).Tag = Str(i)
                 TabCadDegrés.Item(i).Visible = False
                 TabCadDegrés.Item(i).Font = New System.Drawing.Font("Arial", 12, FontStyle.Bold)
@@ -3405,7 +3563,7 @@ Public Class Form1
                 Me.Panel4.Controls.Add(TabCad.Item(j))
                 TabCad.Item(j).Size = New System.Drawing.Size(Longueur, Hauteur / 2)
                 TabCad.Item(j).BorderStyle = BorderStyle.FixedSingle
-                TabCad.Item(j).TextAlign = ContentAlignment.MiddleCenter
+                TabCad.Item(j).TextAlign = Drawing.ContentAlignment.MiddleCenter
                 TabCad.Item(j).Tag = Str(j)
                 TabCad.Item(j).Visible = True
                 TabCad.Item(j).Font = New System.Drawing.Font("Arial", 12, FontStyle.Bold)
@@ -3501,7 +3659,7 @@ Public Class Form1
             TabTons.Item(i).Text = "C"
             TabTons.Item(i).Tag = Str(i)
             TabTons.Item(i).Visible = True
-            TabTons.Item(i).TextAlign = ContentAlignment.MiddleCenter
+            TabTons.Item(i).TextAlign = Drawing.ContentAlignment.MiddleCenter
 
             '
             If i <= 6 Then
@@ -3594,7 +3752,7 @@ Public Class Form1
             TabTonsDegrés.Item(i).Font = New System.Drawing.Font("Calibri", 11, FontStyle.Regular)
             TabTonsDegrés.Item(i).Location = New Point(PosX + DepL, PosY)
             TabTonsDegrés.Item(i).BorderStyle = BorderStyle.FixedSingle
-            TabTonsDegrés.Item(i).TextAlign = ContentAlignment.MiddleCenter
+            TabTonsDegrés.Item(i).TextAlign = Drawing.ContentAlignment.MiddleCenter
             TabTonsDegrés.Item(i).Text = "I"
             TabTonsDegrés.Item(i).Tag = Str(i)
             TabTonsDegrés.Item(i).Visible = True
@@ -3636,88 +3794,7 @@ Public Class Form1
         Dim fnt As New System.Drawing.Font("Arial Narrow", 8, FontStyle.Regular)
         Dim fnt1 As New System.Drawing.Font("Arial Narrow", 10, FontStyle.Regular)
 
-        ' Création du panel contenant le piano
-        ' ************************************
-        TabPage21.Controls.Add(MPanel1)
-        p.X = 350
-        p.Y = 1
-        '
-        s.Width = 144
-        s.Height = 94
-        '
-        MPanel1.Location = p
-        MPanel1.Size = s
-        '
-        MPanel1.BorderStyle = BorderStyle.FixedSingle
-        MPanel1.BackColor = Color.Black
-        '
-        MPanel1.Visible = False
-        ' Création du piano de conception d'un Mode --> le piano n'est plus utilisé tout est à visible =false
-        ' *****************************************
-        ' Touches blanches
-        ' ----------------
-        s.Width = 20 '12
-        s.Height = 90 '20
-        '
-        p.X = 1
-        p.Y = 1 '20
-        For i = 0 To 6
-            MListPiano.Add(New Label)
-            MPanel1.Controls.Add(MListPiano.Item(i))
-            MListPiano.Item(i).Size = s
-            MListPiano.Item(i).Location = p
-            MListPiano.Item(i).BorderStyle = BorderStyle.FixedSingle
-            MListPiano.Item(i).BackColor = Color.White
-            MListPiano.Item(i).Text = ""
-            MListPiano.Item(i).Tag = i
-            p.X = p.X + 20
-            AddHandler MListPiano.Item(i).MouseDown, AddressOf MListPiano_MouseDown
-            AddHandler MListPiano.Item(i).MouseUp, AddressOf MListPiano_MouseUp
-            'AddHandler MListPiano.Item(i).DoubleClick, AddressOf MListPiano_DoubleClick
-        Next
-        ' Touches noires
-        ' --------------
-        '
-        's.Width = 24 '12
-        s.Height = 45 '20
-        '
-        p.X = 9
-        p.Y = 1
-        For i = 7 To 8
-            MListPiano.Add(New Label)
-            MPanel1.Controls.Add(MListPiano.Item(i))
-            MListPiano.Item(i).Size = s
-            MListPiano.Item(i).Location = p
-            MListPiano.Item(i).BorderStyle = BorderStyle.FixedSingle
-            MListPiano.Item(i).BackColor = Color.Black
-            MListPiano.Item(i).Text = ""
-            MListPiano.Item(i).Tag = i
-            p.X = p.X + 23 '15
-            MListPiano.Item(i).BringToFront()
-            AddHandler MListPiano.Item(i).MouseDown, AddressOf MListPiano_MouseDown
-            AddHandler MListPiano.Item(i).MouseUp, AddressOf MListPiano_MouseUp
-            'AddHandler MListPiano.Item(i).DoubleClick, AddressOf MListPiano_DoubleClick
-        Next
-        '
-        p.X = 72
-        p.Y = 1
-        For i = 9 To 11
-            MListPiano.Add(New Label)
-            MPanel1.Controls.Add(MListPiano.Item(i))
-            MListPiano.Item(i).Size = s
-            MListPiano.Item(i).Location = p
-            MListPiano.Item(i).BorderStyle = BorderStyle.FixedSingle
-            MListPiano.Item(i).BackColor = Color.Black
-            MListPiano.Item(i).Text = ""
-            MListPiano.Item(i).Tag = i
-            p.X = p.X + 21 '15
-            MListPiano.Item(i).BringToFront()
-            AddHandler MListPiano.Item(i).MouseDown, AddressOf MListPiano_MouseDown
-            AddHandler MListPiano.Item(i).MouseUp, AddressOf MListPiano_MouseUp
-            'AddHandler MListPiano.Item(i).DoubleClick, AddressOf MListPiano_DoubleClick
-        Next
-
-        ' Combobox poour Liste des types accords : 3 ou 4 notes
+        ' Combobox pour Liste des types accords : 3 ou 4 notes
         ' *****************************************************  --> plus utilisé visible = false
         TabPage21.Controls.Add(MComboTyAcc)
         MComboTyAcc.Location = New Point(5, 20) 'New Point(173, 5) ' New Point(173, 40)
@@ -3738,45 +3815,43 @@ Public Class Form1
         ' Combobox pour Liste des modes Grecs
         ' ************************************
         TabPage21.Controls.Add(MComboModes)
-        MComboModes.Location = New Point(5, 9) 'New Point(173, 5) ' New Point(173, 40)
+        MComboModes.Location = New Point(100, 15) 'New Point(173, 5) ' New Point(173, 40)
         MComboModes.Size = New Size(110, 24)
         '
         TabPage21.Controls.Add(MLabModes)
-        MLabModes.Location = New Point(5, 29) 'New Point(173, 5) ' New Point(173, 40)
+        MLabModes.Location = New Point(100, 0) 'New Point(173, 5) ' New Point(173, 40)
         MLabModes.AutoSize = True
         MLabModes.Font = fnt
         If LangueIHM = "fr" Then
-            MLabModes.Text = "Grecs"
+            MLabModes.Text = "Mode Grec"
         Else
-            MLabModes.Text = "Greeks"
+            MLabModes.Text = "Greek Mode"
         End If
         '
         MComboModes.BackColor = Color.DarkSlateGray
         MComboModes.ForeColor = Color.PaleGoldenrod
         '
-        'If LangueIHM = "fr" Then
         MComboModes.Items.Add("Maj")
-            MComboModes.Items.Add("Dorien")
-            MComboModes.Items.Add("Phrygien")
-            MComboModes.Items.Add("Lydien")
-            MComboModes.Items.Add("MixoLydien")
-            MComboModes.Items.Add("Eolien")
-            MComboModes.Items.Add("Locrien")
+        MComboModes.Items.Add("Dorien")
+        MComboModes.Items.Add("Phrygien")
+        MComboModes.Items.Add("Lydien")
+        MComboModes.Items.Add("MixoLydien")
+        MComboModes.Items.Add("Eolien")
+        MComboModes.Items.Add("Locrien")
 
-        'End If
         '
         MComboModes.SelectedIndex = 1 ' on met SelectedIndex= 1 ici volontairement pour la mise à jour du tableau fonctionne en fin de Form_Load avec SelectedIndex=0
         AddHandler MComboModes.SelectedIndexChanged, AddressOf MComboModes_SelectedIndexChanged
         '
         ' 
-        ' Combobox pour Liste des modes Mineures Harmonique
-        ' *************************************************
+        ' Combobox pour Liste des modes Mineures Harmoniques
+        ' **************************************************
         TabPage21.Controls.Add(MComboMHarm)
-        MComboMHarm.Location = New Point(120, 9) 'New Point(173, 5) ' New Point(173, 40)
+        MComboMHarm.Location = New Point(113, 14) 'New Point(173, 5) ' New Point(173, 40)
         MComboMHarm.Size = New Size(110, 20)
         '
         TabPage21.Controls.Add(MLabHarm)
-        MLabHarm.Location = New Point(120, 29) 'New Point(173, 5) ' New Point(173, 40)
+        MLabHarm.Location = New Point(112, 0) 'New Point(173, 5) ' New Point(173, 40)
         MLabHarm.AutoSize = True
         MLabHarm.Font = fnt
         If LangueIHM = "fr" Then
@@ -3784,22 +3859,31 @@ Public Class Form1
         Else
             MLabHarm.Text = "Harmonic Minnor"
         End If
+        '
+        MLabHarm.Visible = False
         MComboMHarm.BackColor = Color.DarkSlateGray
         MComboMHarm.ForeColor = Color.PaleGoldenrod
         '
         MComboMHarm.Items.Add("MinH")
+        MComboMHarm.Items.Add("Locrien B13")
+        MComboMHarm.Items.Add("Ionien 5#")
+        MComboMHarm.Items.Add("Dorien 11#")
+        MComboMHarm.Items.Add("Mixolydien b9b13")
+        MComboMHarm.Items.Add("Lydien 9#")
+        MComboMHarm.Items.Add("Altéré bb7")
         '
         MComboMHarm.SelectedIndex = 0
+        MComboMHarm.Visible = False
         AddHandler MComboMHarm.SelectedIndexChanged, AddressOf MComboMHarm_SelectedIndexChanged
         '
         ' Combobox poour Liste des modes Mineures Mélodiques
         ' **************************************************
         TabPage21.Controls.Add(MComboMMel)
-        MComboMMel.Location = New Point(237, 9) 'New Point(173, 5) ' New Point(173, 40)
+        MComboMMel.Location = New Point(226, 14) 'New Point(173, 5) ' New Point(173, 40)
         MComboMMel.Size = New Size(110, 20)
         '
         TabPage21.Controls.Add(MLabMel)
-        MLabMel.Location = New Point(237, 29) 'New Point(173, 5) ' New Point(173, 40)
+        MLabMel.Location = New Point(227, 0) 'New Point(173, 5) ' New Point(173, 40)
 
         MLabMel.AutoSize = True
         MLabMel.Font = fnt
@@ -3809,25 +3893,30 @@ Public Class Form1
             MLabMel.Text = "Melodic Minor"
         End If
         '
-        MLabMel.Visible = True
+        MLabMel.Visible = False
         MComboMMel.BackColor = Color.DarkSlateGray
         MComboMMel.ForeColor = Color.PaleGoldenrod
         '
         MComboMMel.Items.Add("MinM")
+        MComboMMel.Items.Add("Dorien b9")
+        MComboMMel.Items.Add("Lydien 5#")
+        MComboMMel.Items.Add("Lydien b7")
+        MComboMMel.Items.Add("Mixolydien b13")
+        MComboMMel.Items.Add("Locrien B9") ' B signifie becar
+        MComboMMel.Items.Add("Altéré")
         '
         MComboMMel.SelectedIndex = 0
+        MComboMMel.Visible = False
         AddHandler MComboMMel.SelectedIndexChanged, AddressOf MComboMMel_SelectedIndexChanged
         '
-        '
-        '
-        ' Combobox poour Liste des modes Mineures Synthétiques
-        ' ****************************************************
+        ' Combobox pour Liste des modes Synthétiques
+        ' ******************************************
         TabPage21.Controls.Add(MComboMSynth)
-        MComboMSynth.Location = New Point(354, 9) 'New Point(173, 5) ' New Point(173, 40)
+        MComboMSynth.Location = New Point(339, 14) ' New Point(173, 5) ' New Point(173, 40)
         MComboMSynth.Size = New Size(110, 20)
         '
         TabPage21.Controls.Add(MLabSynth)
-        MLabSynth.Location = New Point(354, 29) 'New Point(173, 5) ' New Point(173, 40)
+        MLabSynth.Location = New Point(340, 0)      ' New Point(173, 5) ' New Point(173, 40)
         MLabSynth.AutoSize = True
         MLabSynth.Visible = True
         MLabSynth.Font = fnt
@@ -3836,45 +3925,105 @@ Public Class Form1
         Else
             MLabSynth.Text = "Others countries"
         End If
+        '
+        MLabSynth.Visible = False
         MComboMSynth.BackColor = Color.DarkSlateGray
         MComboMSynth.ForeColor = Color.PaleGoldenrod
         'If LangueIHM = "fr" Then
         MComboMSynth.Items.Add("Hongrois1")
-            MComboMSynth.Items.Add("Hongrois2")
-            MComboMSynth.Items.Add("Balkanique")
-            MComboMSynth.Items.Add("Tzigane")
-            MComboMSynth.Items.Add("Bertha")
+        MComboMSynth.Items.Add("Hongrois2")
+        MComboMSynth.Items.Add("Balkanique")
+        MComboMSynth.Items.Add("Tzigane")
+        MComboMSynth.Items.Add("Bertha")
         'End If
         '
         MComboMSynth.SelectedIndex = 0
+        MComboMSynth.Visible = False
         AddHandler MComboMSynth.SelectedIndexChanged, AddressOf MComboMSynth_SelectedIndexChanged
         '
-        ' Label affichage de la tonalité
-        ' ******************************
+
+        ' Label affichage de l'Armure
+        ' ****************************
         TabPage21.Controls.Add(MLabTon)
-        MLabTon.Location = New Point(480, 0)
+        MLabTon.Location = New Point(0, 15)
         MLabTon.AutoSize = False
-        MLabTon.Size = New Size(45, 35)
+        MLabTon.Size = New Size(95, 19)
         MLabTon.BorderStyle = BorderStyle.FixedSingle
-        MLabTon.BackColor = Color.DarkSlateGray
-        MLabTon.ForeColor = Color.PaleGoldenrod
-        MLabTon.TextAlign = ContentAlignment.MiddleCenter
+        MLabTon.BackColor = Color.Goldenrod
+        MLabTon.ForeColor = Color.Black
+        MLabTon.TextAlign = Drawing.ContentAlignment.MiddleCenter
         MLabTon.Visible = True
-        'Dim tbl() As String = Trim(ComboBox1.Text).Split
+        Dim tbl() As String = Trim(ComboBox1.Text).Split
         'MLabTon.Text = tbl(0)
-        MLabTon.Text = "C"
+        MLabTon.Text = "C Major"
         '
         TabPage21.Controls.Add(MLabt)
-        MLabt.Location = New Point(489, 33)
+        MLabt.Location = New Point(0, 0)
         MLabt.AutoSize = True
         MLabt.Font = fnt
 
         If LangueIHM = "fr" Then
-            MLabt.Text = "Ton"
+            MLabt.Text = "Signature"
         Else
-            MLabt.Text = "Tone"
+            MLabt.Text = "Signature"
         End If
+        ' Label resultats du choix de mode
+        ' ********************************
+        TabPage21.Controls.Add(MLabResult)
+        TabPage21.Controls.Add(MResult)
+        MResult.Location = New Point(355, 15)
+        MResult.AutoSize = False
+        MResult.Size = New Size(80, 20) ' 75
+        MResult.BorderStyle = BorderStyle.FixedSingle
+        MResult.TextAlign = Drawing.ContentAlignment.MiddleCenter
+        MResult.BackColor = Color.DarkOrange
+        MResult.ForeColor = Color.Black
+        MResult.Text = "C Maj"
+        MResult.Visible = True
 
+        MLabResult.Location = New Point(355, 0)
+        MLabResult.Size = New Size(80, 20) '
+        MLabResult.AutoSize = True
+        MLabResult.TextAlign = Drawing.ContentAlignment.MiddleCenter
+        MLabResult.Visible = True
+        MLabResult.Font = fnt
+        If LangueIHM = "fr" Then
+            MLabResult.Text = "Choix Mode"
+        Else
+            MLabResult.Text = "Mode Choice"
+        End If
+        ' Note typique
+        TabPage21.Controls.Add(MTypical)
+        MTypical.Location = New Point(445, 0)
+        MTypical.Size = New Size(80, 20) '
+        MTypical.AutoSize = True
+        MTypical.TextAlign = Drawing.ContentAlignment.MiddleLeft
+        MTypical.Visible = True
+        MTypical.Font = fnt
+        If LangueIHM = "fr" Then
+            MTypical.Text = "Note typique"
+        Else
+            MTypical.Text = "Typical note"
+        End If
+        '
+        TabPage21.Controls.Add(MLabTypNotes)
+        MLabTypNotes.Location = New Point(445, 15)
+        MLabTypNotes.Size = New Size(80, 20) '
+        MLabTypNotes.AutoSize = False
+        MLabTypNotes.TextAlign = Drawing.ContentAlignment.MiddleCenter
+        MLabTypNotes.BackColor = Color.DarkOrange
+        MLabTypNotes.ForeColor = Color.Black
+        MLabTypNotes.Visible = True
+
+        If LangueIHM = "fr" Then
+            MLabTypNotes.Text = ""
+        Else
+            MLabTypNotes.Text = ""
+        End If
+        MLabTypNotes.Font = New Font("Calibri", 12, FontStyle.Regular)
+
+
+        '
         ' Gammes des accords
         ' ******************
         p.X = 0
@@ -3908,7 +4057,7 @@ Public Class Form1
             MEtiq1.Item(i).BackColor = Color.Khaki
             MEtiq1.Item(i).BorderStyle = BorderStyle.FixedSingle
             MEtiq1.Item(i).BringToFront()
-            MEtiq1.Item(i).TextAlign = ContentAlignment.MiddleCenter
+            MEtiq1.Item(i).TextAlign = Drawing.ContentAlignment.MiddleCenter
             MEtiq1.Item(i).Visible = False
 
             p.X = ((i + 1) * (s.Width)) + 5
@@ -3932,49 +4081,79 @@ Public Class Form1
                     MEtiq1.Item(i).Text = "VIII"
             End Select
         Next
-        ' Trait de séparation avec label
-        ' ******************************
-        p.X = 1
-        p.Y = 48
-        '
-        s.Height = 3
-        s.Width = 800
 
-        TabPage21.Controls.Add(MLabSéparation)
-
-        MLabSéparation.Location = p
-        MLabSéparation.Size = s
-        MLabSéparation.BackColor = Color.Goldenrod
-        MLabSéparation.BorderStyle = BorderStyle.FixedSingle
-        MLabSéparation.BringToFront()
-        MLabSéparation.Visible = True
+        ' Label affichage Accord
+        ' **********************
         '
-        ' Label Nom de gammes
+        TabPage21.Controls.Add(MLabAccord)
+        MLabAccord.Location = New Point(0, 34)
+        MLabAccord.AutoSize = True
+        MLabAccord.Font = fnt
+
+        If LangueIHM = "fr" Then
+            MLabAccord.Text = "Accord sélectionné"
+        Else
+            MLabAccord.Text = "Selected Chord"
+        End If
+        '
+        ' Label Nom d'accords
         ' *******************
+        TabPage21.Controls.Add(MLabNomA)
+        MLabNomA.AutoSize = False
+        MLabNomA.Location = New Point(0, 50) ' New Point(76, 50)
+        MLabNomA.Size = New Size(226, 22)
+        MLabNomA.Font = New Font("Calibri", 11, FontStyle.Regular)
+        MLabNomA.BackColor = Color.LightBlue
+        MLabNomA.BorderStyle = BorderStyle.FixedSingle
+        MLabNomA.TextAlign = Drawing.ContentAlignment.MiddleLeft
+
+        ' Label affichage Gamme
+        ' **********************
+        TabPage21.Controls.Add(MLabGamme)
+        MLabGamme.Location = New Point(223, 34)
+        MLabGamme.AutoSize = True
+
+        MLabGamme.Font = fnt
+
+        If LangueIHM = "fr" Then
+            MLabGamme.Text = "Gamme"
+        Else
+            MLabGamme.Text = "Scale"
+        End If
+        '
+        ' Label affichage nom gamme
+        ' *************************
+        Dim fntM As New System.Drawing.Font("Verdana", 7, FontStyle.Regular)
         TabPage21.Controls.Add(MLabNomG)
         MLabNomG.AutoSize = False
-        MLabNomG.Location = New Point(0, 50)
-        MLabNomG.Size = New Size(525, 22)
-        MLabNomG.BackColor = Color.Linen
+        MLabNomG.Location = New Point(225, 50) ' New Point(375, 50)
+        MLabNomG.Size = New Size(300, 22)
+        MLabNomG.Font = New Font("Calibri", 11, FontStyle.Regular) 'fntM
+        MLabNomG.BackColor = Color.LightGreen
         MLabNomG.BorderStyle = BorderStyle.FixedSingle
-        MLabNomG.TextAlign = ContentAlignment.MiddleLeft
+        MLabNomG.TextAlign = Drawing.ContentAlignment.MiddleLeft
+        'MLabNomG.Padding = New Padding(10, 10, 10, 10) ' Gauche, Haut, Droite, Bas
+        '
 
+        '    
         ' Tableau des accords des modes
         ' *****************************
         TabPage21.Controls.Add(MGrid1)
-
         MGrid1.Location = New Point(0, 70)
         MGrid1.Size = New Size(545, 200)
         MGrid1.ScrollBars = ScrollBarsEnum.Vertical
         MGrid1.FixedCols = 0
+        MGrid1.FixedRows = 1
+        MGrid1.CellBorderColor = Color.Blue
+        MGrid1.BackColorFixed = Color.LightGray
         MGrid1.Rows = 40
         MGrid1.Cols = 9
         MGrid1.SelectionMode = SelectionModeEnum.ByCell
         MGrid1.DefaultRowHeight = 25
         MGrid1.Column(0).Width = 1
         MGrid1.DefaultFont = fnt1
-        MGrid1.BackColor1 = ColorTranslator.FromHtml("#fff999")
-        MGrid1.BackColor2 = ColorTranslator.FromHtml("#a3d39c")
+        'MGrid1.BackColor1 = ColorTranslator.FromHtml("#fff999")
+        'MGrid1.BackColor2 = ColorTranslator.FromHtml("#a3d39c")
         For i = 1 To MGrid1.Cols - 1
             Select Case i
                 Case 1
@@ -3995,17 +4174,66 @@ Public Class Form1
                     MGrid1.Cell(0, i).Text = "VIII"
             End Select
             MGrid1.Column(i).Width = 65
+            MGrid1.Cell(0, i).ForeColor = Color.Black
         Next
-        MGrid1.Column(MGrid1.Cols - 1).Width = 67
-        AddHandler MGrid1.MouseDown, AddressOf MGrid1_MouseDown
-        AddHandler MGrid1.MouseUp, AddressOf MGrid1_MouseUp2
-    End Sub
+        '
 
+        MGrid1.Column(MGrid1.Cols - 1).Width = 67
+        AddHandler MGrid1.MouseUp, AddressOf MGrid1_MouseUp
+        AddHandler MGrid1.MouseDown, AddressOf MGrid1_MouseDown
+
+    End Sub
+    Sub AIDE_CREATION()
+        If LangueIHM = "fr" Then
+            CheckAide.Text = "Activer l'aide"
+        Else
+            CheckAide.Text = "Activate help"
+        End If
+        '
+        SplitContainer2.Panel2.Controls.Add(PanelAide)
+        PanelAide.Controls.Add(H1)
+        PanelAide.Controls.Add(H2)
+        ' PanelAide.Controls.Add(H3)
+        '
+        PanelAide.Size = New Size(220, 280)
+        PanelAide.Location = New Point(13, 150)
+        PanelAide.AutoScroll = True
+        PanelAide.Dock = DockStyle.None
+        PanelAide.BackColor = Color.OldLace
+        PanelAide.BringToFront()
+        '
+        H1.Location = New Point(0, 0)
+        H1.Font = New Font("Microsoft Sans Serif", 8, FontStyle.Bold)
+        H1.AutoSize = False
+        H1.Size = New Size(220, 19)
+        H1.BorderStyle = BorderStyle.None
+        H1.BackColor = Color.OldLace
+        H1.ForeColor = Color.Maroon ' Black
+        H1.Visible = True
+        H1.Text = "Aide"
+        '
+
+        H2.Location = New Point(0, H1.Size.Height) ' H1.Size.Height                                                                                        
+        H2.AutoSize = False
+        H2.Size = New Size(200, 1000)
+        H2.BorderStyle = BorderStyle.None
+        H2.BackColor = Color.OldLace
+        H2.ForeColor = Color.Maroon 'DarkBlue
+        H2.Text = "But : donner les indications essentielles pour utiliser le logiciel." + Chr(13) + Chr(13) + "Pour afficher l'aide d'un composant, passer la souris au dessus du composant"
+        H2.BringToFront()
+        '
+        PanelAide.Visible = False
+        PanelAide.BringToFront()
+    End Sub
     Sub Maj_TabModeAcc()
         Dim tbl() As String
         Dim xcol, xrow As Integer
         Dim Acc As String
         Dim i, ii, j As Integer
+        Dim tbl1() As String
+
+
+        tbl1 = Trim(ComboBox1.Text).Split() ' détermination de la tonique du mode
 
         init_MGrid1()
         MGrid1.AutoRedraw = False
@@ -4014,8 +4242,8 @@ Public Class Form1
         L.Add(MLresult4)
         L.Add(MLresult5)
 
-        ' MAJ des accordAccords
-        ' *********************
+        ' MAJ des Accords
+        ' ***************
 
         For i = 0 To L.Count - 1
             For j = 0 To L(i).Count - 1
@@ -4034,7 +4262,7 @@ Public Class Form1
                             Case 2
                                 MGrid1.Cell(ii, xcol).ForeColor = Color.Green
                         End Select
-
+                        Acc = Trad_DiesBemTonique(tbl1(0), Acc) ' 
                         MGrid1.Cell(ii, xcol).Text = Acc
                         Exit For
                     Else
@@ -4046,6 +4274,7 @@ Public Class Form1
         MGrid1.AutoRedraw = True
         MGrid1.Refresh()
     End Sub
+
     Sub init_MGrid1()
         Dim i, j As Integer
         For i = 1 To MGrid1.Rows - 1
@@ -4058,6 +4287,8 @@ Public Class Form1
         Dim a As String = Trim(ComboBox1.Text)
         Dim b As String = Trim(MComboModes.Text)
 
+        MResult.Text = b
+
         Dim tbl() As String = a.Split()
         a = LCase(tbl(0))
         ' Détermination des accords possibles
@@ -4067,13 +4298,17 @@ Public Class Form1
         ' Mise à jour du tableau des accords possibles
         ' ********************************************
         Maj_TabModeAcc()
+        MTypeMode = MTyMode.Maj ' pour glisser/déposer
     End Sub
     Sub MComboMHarm_SelectedIndexChanged(sender As Object, e As EventArgs)
         Dim a As String = Trim(ComboBox2.Text)
         Dim b As String = Trim(MComboMHarm.Text)
 
+        MResult.Text = b
+
         Dim tbl() As String = a.Split()
         a = LCase(tbl(0))
+        '
         ' Détermination des accords possibles
         ' ***********************************
         Calc_AccMode(a, b)
@@ -4081,13 +4316,30 @@ Public Class Form1
         ' Mise à jour du tableau des accords possibles
         ' ********************************************
         Maj_TabModeAcc()
+        MTypeMode = MTyMode.MinH ' pour glisser/déposer
     End Sub
     Sub MComboMMel_SelectedIndexChanged(sender As Object, e As EventArgs)
+        Dim a As String = Trim(ComboBox2.Text)
+        Dim b As String = Trim(MComboMMel.Text)
 
+        MResult.Text = b
+
+        Dim tbl() As String = a.Split()
+        a = LCase(tbl(0))
+        ' Détermination des accords possibles
+        ' ***********************************                                                           
+        Calc_AccMode(a, b)
+        '
+        ' Mise à jour du tableau des accords possibles
+        ' ********************************************
+        Maj_TabModeAcc()
+        MTypeMode = MTyMode.MinM ' pour glisser/déposer
     End Sub
     Sub MComboMSynth_SelectedIndexChanged(sender As Object, e As EventArgs)
         Dim a As String = Trim(ComboBox1.Text)
         Dim b As String = Trim(MComboMSynth.Text)
+
+        MResult.Text = b
 
         Dim tbl() As String = a.Split()
         a = LCase(tbl(0))
@@ -4097,8 +4349,11 @@ Public Class Form1
         ' Mise à jour du tableau des accords
         ' **********************************
         Maj_TabModeAcc()
+        MTypeMode = MTyMode.Autres ' pour glisser/déposer
 
     End Sub
+
+
     Sub MListPiano_MouseDown(sender As Object, e As MouseEventArgs)
         Dim com As Object = sender
         Dim i As Integer = Val(com.tag)
@@ -4150,7 +4405,7 @@ Public Class Form1
         Dim tbl() As String = a.Split()
         Dim ok As Boolean = False
         Dim Degré As Integer = -1
-        '
+
         Tonique = Trad_NoteEnD2(Tonique)
         Chargmt_Chiff()
         MLresult3.Clear()
@@ -4159,18 +4414,23 @@ Public Class Form1
         '
         ' Liste des notes de la gamme
         ' ***************************
-        ' remarque : MLabNomG contient à la fois le nom de la gamme et les notes de la gamme
+        ' remarque : MLabNomG contient à la fois le nom de la gamme et les notes de la gamme + Nom Accord et les notes de l'accord
+        ' Gamme
+        ' *****
         If LangueIHM = "fr" Then
-            MLabNomG.Text = "Gamme " + UCase(Tonique) + " " + gamme + " :   "
+            MLabNomG.Text = UCase(Tonique) + " " + gamme + " :   "
         Else
-            MLabNomG.Text = "Scale " + UCase(Tonique) + " " + gamme + " :   "
+            MLabNomG.Text = UCase(Tonique) + " " + gamme + " :   "
         End If
 
-        j = LTnotes.IndexOf(Tonique)
+        j = LTnotes.IndexOf(LCase(Tonique))
         For i = 0 To tbl.Count - 1
             Lgam.Add(LTnotes(j + Val(tbl(i))))
-            MLabNomG.Text = MLabNomG.Text + LTnotes(j + Val(tbl(i))) + "  -  "
+            MLabNomG.Text = MLabNomG.Text + LTnotes(j + Val(tbl(i))) + " - "
         Next
+        MLabNomG.Text = Trim(Microsoft.VisualBasic.Left(MLabNomG.Text, MLabNomG.Text.Length - 2))
+        MResult.Text = UCase(Tonique) + " " + gamme
+        ' 
         ' Détermination de accords possibles du mode
         ' ******************************************
         For Each aa As String In Lgam
@@ -4208,7 +4468,83 @@ Public Class Form1
                 End If
             Next
         Next
+        '
+        ' Cacul Note/Accords Typique
+        ' **************************
+        '
+        MLabNomA.Text = "" ' effacer les notes de l'accord dans le mode précédent
+        '
+        For Each aa As String In LTnotes
+            If Trim(aa) = Trim(Tonique) Then
+                i = LTnotes.IndexOf(aa)
+                Exit For
+            End If
+        Next
+        Select Case gamme
+            Case "Ionien", "Maj",
+                MLabTypNotes.Text = ""
+                Raz_LignefixeMgrid1()
+            Case "Dorien"
+                MLabTypNotes.Text = LTnotes(i + 9) ' sixte mineure
+                MGrid1.BackColorFixed = Color.LightGray
+                ' accords caractéritiques
+                Raz_LignefixeMgrid1()
+                MGrid1.Cell(0, 2).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 4).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 6).BackColor = Color.DarkOrange
+            Case "Phrygien"
+                MLabTypNotes.Text = LTnotes(i + 1) ' seconde mineure
+                MGrid1.BackColorFixed = Color.LightGray
+                ' accords caractéritiques
+                Raz_LignefixeMgrid1()
+                MGrid1.Cell(0, 2).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 5).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 7).BackColor = Color.DarkOrange
+            Case "Lydien"
+                MLabTypNotes.Text = LTnotes(i + 6) ' quarte augmentée
+                MGrid1.BackColorFixed = Color.LightGray
+                ' accords caractéritiques
+                Raz_LignefixeMgrid1()
+                MGrid1.Cell(0, 2).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 4).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 7).BackColor = Color.DarkOrange
+            Case "MixoLydien"
+                MLabTypNotes.Text = LTnotes(i + 10) ' septième mineure
+                MGrid1.BackColorFixed = Color.LightGray
+                ' accords caractéritiques
+                Raz_LignefixeMgrid1()
+                MGrid1.Cell(0, 3).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 5).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 7).BackColor = Color.DarkOrange
+            Case "Eolien"
+                MLabTypNotes.Text = LTnotes(i + 8) ' sixte mineure
+                MGrid1.BackColorFixed = Color.LightGray
+                ' accords caractéritiques
+                Raz_LignefixeMgrid1()
+                MGrid1.Cell(0, 2).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 4).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 6).BackColor = Color.DarkOrange
+            Case "Locrien"
+                MLabTypNotes.Text = LTnotes(i + 6) + "  +  (" + LTnotes(i + 1) + ")"  ' seonde mineure et quinte diminuée mineure
+                MGrid1.BackColorFixed = Color.LightGray
+                ' accords caractéritiques
+                Raz_LignefixeMgrid1()
+                MGrid1.Cell(0, 1).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 3).BackColor = Color.DarkOrange
+                MGrid1.Cell(0, 5).BackColor = Color.DarkOrange
+        End Select
+        '
+
+
     End Sub
+    Sub Raz_LignefixeMgrid1()
+        Dim j As Integer
+        For j = 0 To MGrid1.Cols - 1
+            MGrid1.Cell(0, j).BackColor = Color.LightGray
+            MGrid1.Cell(0, j).ForeColor = Color.Black
+        Next
+    End Sub
+
     Function det_interv(a As String) As String
         Dim tbl() As String = a.Split
         Dim interv As String = ""
@@ -4226,6 +4562,7 @@ Public Class Form1
         Return tbl(tbl.Count - 1)
     End Function
     Sub Chargmt_Chiff()
+
         LChiff.Clear()
         ' Accords de 3 notes
         LChiff.Add("0 4 7   3")               ' C               1
@@ -4264,99 +4601,132 @@ Public Class Form1
     Sub MGrid1_MouseDown(sender As Object, e As MouseEventArgs)
         Dim i As Integer = MGrid1.MouseRow
         Dim j As Integer = MGrid1.MouseCol
+        '
+        MGrid1.Refresh()
 
-        ' Jouer l'accord
-        ' **************
-        If My.Computer.Keyboard.CtrlKeyDown And Trim(MGrid1.Cell(i, j).Text) <> "" Then
-            JouerAccordLabel(Trim(MGrid1.Cell(i, j).Text))
-        End If
+        If i <> -1 AndAlso j <> -1 Then
 
-        ' Opération de glisser/déposer
-        ' ****************************
+            Label29.Text = i.ToString + "  " + j.ToString
 
-        If Not My.Computer.Keyboard.CtrlKeyDown Then
-            Valeur_Drag = ""
-
-            If Trim((MGrid1.Cell(i, j).Text)) <> "" And i > 0 Then
-                MGrid1.DoDragDrop(Trim(MGrid1.Cell(i, j).Text), DragDropEffects.Copy Or DragDropEffects.Move)
+            MGrid1.AutoRedraw = False
+            ' Jouer l'accord
+            ' **************
+            If My.Computer.Keyboard.CtrlKeyDown And Trim(MGrid1.Cell(i, j).Text) <> "" Then
+                JouerAccordLabel(Trim(MGrid1.Cell(i, j).Text))
             End If
+            ' Opération de glisser/déposer
+            ' ****************************
 
-            If Trim(Valeur_Drag) <> "" Then
-                ' Mise à jour paramètres d'écriture
-                ' *********************************
-                Dim tbl() As String = MLabNomG.Text.Split()
-                Dim Mode = tbl(1) + " " + tbl(2)
-                '
-                Flag_EcrDragDrop = True
-                'Valeur_Drag = Trim(MGrid1.Cell(i, j).Text) ' MGrid1.ActiveCell.Text ' accord à écrire
-                OrigineAccord = Modes.Modaux
-                AccordMarqué = Trim(MGrid1.Cell(i, j).Text)
-                Entrée_Accord = Trim(MGrid1.Cell(i, j).Text)    ' Entrée_Accord
-                Entrée_Mode = Mode                       ' Entrée_Mode
-                Entrée_Gamme = Mode                       ' Entrée_Gamme
-                tbl = Trim(ComboBox1.Text).Split
-                Entrée_Tonalité = tbl(0) + " " + "Maj"    ' Entrée_Tonalité
-                Entrée_Degré = j - 1 'MGrid1.ActiveCell.Col  ' Entrée_Degré
-                '
-                ' Ecriture de l'accord
-                ' *******************
-                Maj_DragDrop()
-                '
-                Flag_EcrDragDrop = False
+            If Not My.Computer.Keyboard.CtrlKeyDown Then
                 Valeur_Drag = ""
-                Colonne_Drag = -1
-                Ligne_Drag = -1
+
+                If Trim((MGrid1.Cell(i, j).Text)) <> "" And i > 0 Then
+                    MGrid1.DoDragDrop(Trim(MGrid1.Cell(i, j).Text), DragDropEffects.Copy Or DragDropEffects.Move)
+                End If
+
+                If Trim(Valeur_Drag) <> "" Then
+                    ' Mise à jour paramètres d'écriture
+                    ' *********************************
+                    Dim tbl() As String = MLabNomG.Text.Split()
+                    Dim Mode = tbl(1) + " " + tbl(2)
+                    '
+                    Flag_EcrDragDrop = True
+                    'Valeur_Drag = Trim(MGrid1.Cell(i, j).Text) ' MGrid1.ActiveCell.Text ' accord à écrire
+                    OrigineAccord = Modes.Modaux
+                    AccordMarqué = Trim(MGrid1.Cell(i, j).Text)
+                    Entrée_Accord = Trim(MGrid1.Cell(i, j).Text)    ' Entrée_Accord
+                    Entrée_Mode = Mode                       ' Entrée_Mode
+                    Entrée_Gamme = Mode                       ' Entrée_Gamme
+                    tbl = Trim(ComboBox1.Text).Split
+                    Entrée_Tonalité = tbl(0) + " " + "Maj"    ' Entrée_Tonalité
+                    Entrée_Degré = j - 1 'MGrid1.ActiveCell.Col  ' Entrée_Degré
+                    '
+                    ' Ecriture de l'accord
+                    ' ********************
+                    'Thread.Sleep(100)
+                    Maj_DragDrop()
+                    'TimerDragDrop.Interval = 100
+                    'Action_DragDrop = True
+                    'TimerDragDrop.Start()
+
+                End If
+            End If
+
+            '
+            ' Mise à jour des notes de l'accord sur lequel on a cliqué
+            ' ********************************************************
+            ' Ecrire les notes de l'accord dans la text box
+            ' *********************************************
+            If i <> 0 Then
+                Dim AA As String = Trim(MGrid1.Cell(i, j).Text) '
+                Dim cc As String = ""
+                If Trim(AA) <> "" Then
+                    Dim tbl1() As String = AA.Split 'Trim(ComboBox1.Text).Split()
+                    Dim bb As String
+
+                    If Len(tbl1(0)) > 1 Then
+                        bb = Mid(AA, 2, 1)
+                        If Trim(bb) = "b" Then
+                            cc = Det_NotesAccord3(AA, "b")
+                        Else
+                            cc = Det_NotesAccord3(AA, "#")
+                        End If
+                    Else
+                        cc = Det_NotesAccord3(AA, "#")
+                    End If
+                End If
+                cc = cc.Replace("-", " - ")
+
+                If LangueIHM = "fr" Then
+                    MLabNomA.Text = Trim(MGrid1.Cell(i, j).Text) + " : " + Trim(cc)
+                Else
+                    MLabNomA.Text = Trim(MGrid1.Cell(i, j).Text) + " : " + Trim(cc)
+                End If
+                '
+                ' Surbrillance de la cellule sélectionnée
+                ' ***************************************
+                With SauvCoul
+                    '
+                    Restit_CoulModes(i, j)
+                    ' sauvegarde couleurs nouvelle cellule
+                    .oldForeCoul = MGrid1.Cell(i, j).ForeColor
+                    .oldBackCoul = MGrid1.Cell(i, j).BackColor
+                    .oldrow = i
+                    .oldcol = j
+                    ' Nouvelles couleurs de sélection pour la cellule courante
+                    MGrid1.Cell(i, j).ForeColor = Color.Yellow
+                    MGrid1.Cell(i, j).BackColor = Color.Olive
+                    Dim currentFont2 As Font = MGrid1.Cell(i, j).Font
+                    Dim newFont2 As New Font(currentFont2, FontStyle.Bold)
+                    MGrid1.Cell(i, j).Font = newFont2
+                End With
 
             End If
         End If
-
-        '
-
-
+        MGrid1.AutoRedraw = True
+        MGrid1.Refresh()
     End Sub
-    Sub MGrid1_MouseUp2(sender As Object, e As MouseEventArgs)
-        'MGrid1.SelectionMode = SelectionModeEnum.ByCell
-        'MGrid1.DisplayFocusRect = True
-        'Dim tbl() As String = MLabNomG.Text.Split()
-        'Dim Mode = tbl(1) + " " + tbl(2)
-        ''
-        '' Simulation d'un glisser/déposer (pour l'écriturGe de l'accord)
-        '' **********************************************G***************
-        'If My.Computer.Keyboard.ShiftKeyDown Then
-        'GridDest = TGridDest.Grid2
-        'Colonne_Drag = Grid2.ActiveCell.Col
-        'Ligne_Drag = Grid2.ActiveCell.Row
-        'GridDest = TGridDest.Grid2
-        'End If
-        ''
-        'If My.Computer.Keyboard.AltKeyDown Then
-        'GridDest = TGridDest.Grid3
-        'Colonne_Drag = Grid3.ActiveCell.Col
-        'Ligne_Drag = Grid3.ActiveCell.Row
-        'GridDest = TGridDest.Grid3
-        'End If
-        ''
-        '' Mise à jour paramètres d'écriture
-        '' *********************************
-        'Flag_EcrDragDrop = True
-        'Valeur_Drag = MGrid1.ActiveCell.Text ' accord à écrire
-        'OrigineAccord = Modes.Modaux
-        'AccordMarqué = MGrid1.ActiveCell.Text
-        'Entrée_Accord = MGrid1.ActiveCell.Text    ' Entrée_Accord
-        'Entrée_Mode = Mode                        ' Entrée_Mode
-        'Entrée_Gamme = Mode                       ' Entrée_Gamme
-        'tbl = Trim(ComboBox1.Text).Split
-        'Entrée_Tonalité = tbl(0) + " " + "Maj"    ' Entrée_Tonalité
-        'Entrée_Degré = MGrid1.ActiveCell.Col - 1  ' Entrée_Degré
-        '
-        ' Ecriture de l'accord
-        ' *******************
-        'Maj_DragDrop()
-        '
-        'Flag_EcrDragDrop = False
-        'Valeur_Drag = ""
-        'Colonne_Drag = -1
-        'Ligne_Drag = -1
+
+    Sub Restit_CoulModes(i As Integer, j As Integer)
+        With SauvCoul
+            If .oldcol <> -1 And .oldrow <> -1 And i <> -1 And j <> -1 Then
+                ' restitution couleurs ancienne cellule
+                MGrid1.Cell(.oldrow, .oldcol).ForeColor = .oldForeCoul
+                MGrid1.Cell(.oldrow, .oldcol).BackColor = .oldBackCoul
+                Dim currentFont1 As Font = MGrid1.Cell(i, j).Font
+                Dim newFont1 As New Font(currentFont1, FontStyle.Regular)
+                MGrid1.Cell(.oldrow, .oldcol).Font = newFont1
+            End If
+        End With
+    End Sub
+    Sub MGrid1_MouseUp(sender As Object, e As MouseEventArgs)
+        Dim i As Integer = MGrid1.ActiveCell.Row
+        Dim j As Integer = MGrid1.ActiveCell.Col
+
+
+        ' Mise en évidence cellules sélectionnée
+        ' **************************************
+
 
         If AccordAEtéJoué = True Then
             CouperJouerAccord()
@@ -4364,6 +4734,24 @@ Public Class Form1
         End If
         '
         RAZ_AffNoteAcc()
+        '
+        ' Surbrillance de la cellule sélectionnée
+        ' ***************************************
+        With SauvCoul
+            '
+            Restit_CoulModes(i, j)
+            ' sauvegarde couleurs nouvelle cellule
+            .oldForeCoul = MGrid1.Cell(i, j).ForeColor
+            .oldBackCoul = MGrid1.Cell(i, j).BackColor
+            .oldrow = i
+            .oldcol = j
+            ' Nouvelles couleurs de sélection pour la cellule courante
+            MGrid1.Cell(i, j).ForeColor = Color.Yellow
+            MGrid1.Cell(i, j).BackColor = Color.Olive
+            Dim currentFont2 As Font = MGrid1.Cell(i, j).Font
+            Dim newFont2 As New Font(currentFont2, FontStyle.Bold)
+            MGrid1.Cell(i, j).Font = newFont2
+        End With
     End Sub
     Sub ECR_MODES(Mgridest As TGridDest)
         Dim tbl() As String = MLabNomG.Text.Split()
@@ -4427,7 +4815,7 @@ Public Class Form1
             'LabSubsti.Item(i).BackColor = Color.Goldenrod
             LabSubsti.Item(i).ForeColor = Color.Black
             LabSubsti.Item(i).Font = New Font("Arial Narrow", 18, FontStyle.Bold)
-            LabSubsti.Item(i).TextAlign = ContentAlignment.MiddleCenter
+            LabSubsti.Item(i).TextAlign = Drawing.ContentAlignment.MiddleCenter
             LabSubsti.Item(i).Text = "---"
             LabSubsti.Item(i).BringToFront()
             LabSubsti.Item(i).Tag = i
@@ -4548,33 +4936,10 @@ Public Class Form1
         '
         ' Maj distance du splitter du splitcontainer8
         ' *******************************************
-        SplitContainer8.SplitterDistance = 117
-
-        ' Remarque : Combobox9 est mis à jour dans fr_Culture et En_Culture
-        ' *****************************************************************
+        SplitContainer15.SplitterDistance = 160
         '
-        ' Combobox14 : liste des cadences6
+        ' Construction de la grille GRID5
         ' *******************************
-        If LangueIHM = "fr" Then
-            ComboBox13.Items.Add("Cadence Parfaite - V I")
-            ComboBox13.Items.Add("Cadence plagale - IV I")
-            ComboBox13.Items.Add("Demi_cadence - II V")
-            ComboBox13.Items.Add("Demi_cadence - IV V")
-            ComboBox13.Items.Add("Demi_cadence - I V")
-            ComboBox13.Items.Add("Cadence rompue - V VI")
-        Else
-            ComboBox13.Items.Add("Perfect cadence - V I")
-            ComboBox13.Items.Add("Plagal cadence - IV I")
-            ComboBox13.Items.Add("Half_cadence - II V")
-            ComboBox13.Items.Add("Half_cadence - IV V")
-            ComboBox13.Items.Add("Half_cadence - I V")
-            ComboBox13.Items.Add("Decept. cadence - V VI")
-        End If
-        '
-        ComboBox13.SelectedIndex = 0
-        '
-        ' Construction de la grille
-        ' *************************
         Grid5.AllowDrop = True
         '
         Grid5.Cols = 8
@@ -4613,8 +4978,10 @@ Public Class Form1
             Grid5.Column(j).Width = 68
             Grid5.Column(j).Alignment = AlignmentEnum.CenterCenter
         Next
-        ''
-        For i = 1 To Grid5.Rows - 1
+        '
+        Grid5.Row(0).Height = 18
+        Grid5.Row(1).Height = 18
+        For i = 2 To Grid5.Rows - 1
             Grid5.Row(i).Height = 20 '14 '25
         Next
         'FF
@@ -4622,52 +4989,23 @@ Public Class Form1
         '
         ' Ecriture de "Mode Actuel"
         ' ************************
-        Grid5.Range(0, 0, 1, 0).MergeCells() = True
+        Grid5.Range(0, 1, 0, 7).MergeCells() = True
         Grid5.Cell(0, 0).WrapText = True
         Grid5.Cell(0, 0).BackColor = Grid5.BackColorFixed 'Color.Gainsboro
         Grid5.Cell(0, 0).Font = New Font("Verdana", 8, FontStyle.Italic)
         '
-        Label15.BackColor = Color.Moccasin
-        Label90.BackColor = ColorTranslator.FromHtml("#3cb878")
-        If Module1.LangueIHM = "fr" Then
-            Grid5.Cell(0, 0).Text = "Mode" + " départ"
-            Label91.Text = "Mode départ"
-            Label92.Text = "Accord pivot"
-            Label93.Text = "Facultatif"
-        Else
-            Grid5.Cell(0, 0).Text = "Start" + " Mode"
-            Label91.Text = "Start mode"
-            Label92.Text = "Pivot chord"
-            Label93.Text = "Optional"
-        End If
+        Grid5.Cell(0, 0).Alignment = AlignmentEnum.GeneralCenter
 
+        If Module1.LangueIHM = "fr" Then
+            Grid5.Cell(0, 1).Text = "Choisir une Modulation"
+        Else
+            Grid5.Cell(0, 1).Text = "Choose a Modulation"
+        End If
+        '
         ' Construction de radiobuttons
         ' ****************************
         '
         p.Y = 7
-        'For i = 0 To 2
-        ' RadioModulat.Add(New RadioButton)
-        ' RadioModulat.Item(i).Font = New Font("Verdana", 8, FontStyle.Regular)
-        'SplitContainer5.Panel1.Controls.Add(RadioModulat.Item(i))
-        'RadioModulat.Item(i).Tag = i
-        'RadioModulat.Item(i).AutoSize = True
-        'Select Case i
-        'Case 0
-        'p.X = 162
-        'RadioModulat.Item(i).Text = "C Maj"
-        'RadioModulat.Item(i).Checked = True
-        'Case 1
-        'p.X = 232
-        'RadioModulat.Item(i).Text = "A MinH"
-        'RadioModulat.Item(i).Checked = False
-        'Case 2
-        'p.X = 310
-        'RadioModulat.Item(i).Text = "A MinM"
-        'RadioModulat.Item(i).Checked = False
-        'End Select
-        'RadioModulat.Item(i).Location = p
-        'AddHandler RadioModulat.Item(i).CheckedChanged, AddressOf RadioModulat_CheckedChanged
-        'Next i
         '
         ' Création des 3 labels pour le système de modulation (LabModulat.Item(0) est inutilisé)
         ' ***************************************************
@@ -4675,17 +5013,13 @@ Public Class Form1
         s.Width = 83
         s.Height = 50
         '
-        For i = 0 To 3
+        For i = 0 To 2
             LabModulat.Add(New Label)
-            SplitContainer8.Panel2.Controls.Add(LabModulat.Item(i))
+            SplitContainer15.Panel2.Controls.Add(LabModulat.Item(i))
             LabModulat.Item(i).AutoSize = False
             LabModulat.Item(i).Size = s
-
-            LabModulat.Item(i).BackColor = Color.Moccasin
-
             LabModulat.Item(i).BorderStyle = BorderStyle.FixedSingle
-            LabModulat.Item(i).TextAlign = ContentAlignment.MiddleCenter
-            LabModulat.Item(i).Font = New Font("Verdana", 8, FontStyle.Regular)
+            LabModulat.Item(i).TextAlign = Drawing.ContentAlignment.MiddleCenter
             LabModulat.Item(i).Text = "---" '"Label" + Str(i)
             LabModulat.Item(i).Tag = i
             '
@@ -4693,63 +5027,47 @@ Public Class Form1
             AddHandler LabModulat.Item(i).MouseUp, AddressOf LabModulat_MouseUp
         Next i
         '
-        'LabModulat.Item(0).Visible = False '  LabModulat.Item(0) est inutilié
-        '
         ' POSITIONNEMENTS
         ' ***************
-        Dim f As New System.Drawing.Font("Verdana", 8, FontStyle.Regular)
+        Dim f As New System.Drawing.Font("Arial Narrow", 15, FontStyle.Bold)
 
         ' AccordPivot
         ' ***********
         LabModulat.Item(0).Location = Label4.Location  ' Accord Nouvelle tona
+        LabModulat.Item(0).BackColor = Label4.BackColor
         LabModulat.Item(0).Size = Label4.Size
         LabModulat.Item(0).Font = f
-        LabModulat.Item(0).BackColor = ColorTranslator.FromHtml("#3cb878") 'Label4.BackColor
+
         '
-        ' Accord Nouvelle Tona
-        ' ********************
-        LabModulat.Item(1).Location = Label34.Location  ' Accord Nouvelle tona
-        LabModulat.Item(1).Size = Label34.Size
-        LabModulat.Item(1).Font = f
-        LabModulat.Item(1).BackColor = Label34.BackColor
         '
         ' Cadence
         ' *******
-        LabModulat.Item(2).Location = Label7.Location   ' cadence V
-        LabModulat.Item(2).Size = Label7.Size
+        LabModulat.Item(1).Location = Label7.Location   ' cadence V
+        LabModulat.Item(1).BackColor = Label7.BackColor
+        LabModulat.Item(1).Size = Label7.Size
+        LabModulat.Item(1).Font = f
+        '
+        LabModulat.Item(2).Location = Label20.Location  ' cadence I
+        LabModulat.Item(2).BackColor = Label20.BackColor
+        LabModulat.Item(2).Size = Label20.Size
         LabModulat.Item(2).Font = f
-        LabModulat.Item(2).BackColor = ColorTranslator.FromHtml("#00bff3") 'Label7.BackColor
         '
-        LabModulat.Item(3).Location = Label20.Location  ' cadence I
-        LabModulat.Item(3).Size = Label20.Size
-        LabModulat.Item(3).Font = f
-        LabModulat.Item(3).BackColor = ColorTranslator.FromHtml("#f26c4f") 'Label20.BackColor
-        '
-        Label79.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        '
-        If LangueIHM = "fr" Then
-            Label21.Text = "Accord pivot"
-            Label38.Text = "2e Accord"
-        Else
-            Label21.Text = "Pivot chord"
-            Label38.Text = "2nd Chord"
-        End If
-        '
-        Label29.Visible = False
         ' Mise jour des couleurs
         ' **********************
-        EffacerGrid5()
+        Refresh_Grid5()
 
     End Sub
 
+
+
     Sub Aff_Degrés()
-        Grid5.Cell(0, 1).Text = "I"
-        Grid5.Cell(0, 2).Text = "II"
-        Grid5.Cell(0, 3).Text = "III"
-        Grid5.Cell(0, 4).Text = "IV"
-        Grid5.Cell(0, 5).Text = "V"
-        Grid5.Cell(0, 6).Text = "VI"
-        Grid5.Cell(0, 7).Text = "VII"
+        Grid5.Cell(1, 1).Text = "I"
+        Grid5.Cell(1, 2).Text = "II"
+        Grid5.Cell(1, 3).Text = "III"
+        Grid5.Cell(1, 4).Text = "IV"
+        Grid5.Cell(1, 5).Text = "V"
+        Grid5.Cell(1, 6).Text = "VI"
+        Grid5.Cell(1, 7).Text = "VII"
     End Sub
     Private Sub LabModulat_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs)
         Dim com As Label = sender
@@ -4769,15 +5087,15 @@ Public Class Form1
         ' Mise en place du glisser/déposer
         ' ********************************
         If Not My.Computer.Keyboard.CtrlKeyDown And Trim(LabModulat.Item(ind).Text) <> "---" Then
-            tbl = Label15.Text.Split
-            Select Case tbl(1)
-                Case "Maj"
-                    OrigineAccord = Modes.Majeur
-                Case "MinH"
-                    OrigineAccord = Modes.MineurH
-                Case "MinM"
-                    OrigineAccord = Modes.MineurM
-            End Select
+            'tbl = Label15.Text.Split
+            'Select Case tbl(1)
+            'Case "Maj"
+            'OrigineAccord = Modes.Majeur
+            'Case "MinH"
+            'OrigineAccord = Modes.MineurH
+            'Case "MinM"
+            'OrigineAccord = Modes.MineurM
+            'End Select
             ' Maf des Entrées pour le glisser déposer/déposer
             ' ***********************************************
             If Trim(Lab_2) <> "---" And e.Button() = MouseButtons.Left And Not (My.Computer.Keyboard.CtrlKeyDown) _
@@ -4812,9 +5130,7 @@ Public Class Form1
         '
         RAZ_AffNoteAcc()
     End Sub
-    Private Sub RadioModulat_CheckedChanged(sender As Object, e As EventArgs)
-        Maj_Modulation()
-    End Sub
+
     'Private Function Det_TonInitial() As Integer
     ' Dim ind As Integer = 0
     '
@@ -4859,13 +5175,16 @@ Public Class Form1
 
 
     End Sub
-    ' Mise à jour tonalité de départ pour la Modulation  par click sur grille de composition
-    ' **************************************************************************************
-    Private Sub Maj_ModulationRadioB2(ligne As Integer)
-        Dim Tonique As String
-        Dim typ As Integer = ComboBox9.SelectedIndex + 3
-        If Trim(Grid1.Cell(ligne, 3).Text) <> "" Then
+
+    ''' <summary>
+    ''' Mise à jour tonalité de départ pour la Modulation  par click sur grille de composition
+    ''' </summary>
+    ''' <param name="ligne">ligne de grid1 sur laquelle on clique</param>
+    Private Sub Maj_Modulation(ligne As Integer)
+        'Dim typ As Integer = ComboBox9.SelectedIndex + 3
+        If Trim(Grid1.Cell(ligne, 3).Text) <> "" And Accords3notes(Trim(Grid1.Cell(ligne, 4).Text)) Then
             Dim tonalité As String = Trim(Grid1.Cell(ligne, 3).Text) 'identification de la tonalité de départ
+            Dim mode As String = Trim(Grid1.Cell(ligne, 3).Text) 'identification de la tonalité de départ
             Dim accord As String = Trim(Grid1.Cell(ligne, 4).Text) 'identification de l'accord commun de départ
             Dim tbl() As String = tonalité.Split()
             Dim Maj, Min As String
@@ -4880,36 +5199,35 @@ Public Class Form1
                 Maj = listMin(listMin.IndexOf(Min))
             End If
             '
-            ' Maj de la tonalité de départ
-            ' ****************************
-            Label15.Text = tonalité
-            Label90.Text = accord
-            '
             ' identification de l'accord
             ' **************************
-            Dim acc = Trim(Grid1.Cell(ligne, 4).Text)
+            Dim acc As String = Trim(Grid1.Cell(ligne, 4).Text)
+            LabModulat.Item(0).Text = acc
             '
-            ' Ecriture de la tonalité de départ (sur ligne 0)
-            ' *******************************************
-            ' 
-            tbl = Label15.Text.Split
-            Tonique = Retab_Mode(Trim(tbl(0)), Trim(tbl(1)))
-            a = Mode3(Trim(Tonique), Trim(tbl(1)), typ, False)
-            tbl = a.Split("-")
-            For j = 1 To tbl.Count
-                Grid5.Cell(1, j).Text = tbl(j - 1)
-            Next
+            ' Ecriture du dégré de l'accord pivot dans la tonalité d'origine
+            ' **************************************************************
+            Dim degré As String = Trim(Grid1.Cell(ligne, 6).Text)
 
+            Label79.Text = degré + " / "
             ' 
             ' Mise à jour des tonalités voisines de la tonalité principale
             ' ************************************************************
-            EffacerTonVoisins()
+            EffacerTonsModulation()
             Maj_TonsVoisins(acc)
             RecheraccordGrid5(acc)
-            '
-
         End If
     End Sub
+    Function Accords3notes(accord As String) As Boolean
+        Dim b As Boolean = False
+        Dim tbl() As String
+        tbl = accord.Split()
+        If tbl.Count = 1 Then
+            b = True ' accord majeur
+        ElseIf tbl(1) = "m" Or tbl(1) = "mb5" Then
+            b = True
+        End If
+        Return b
+    End Function
     Sub RAZ_Modulation()
         Dim i, j As Integer
 
@@ -4919,39 +5237,7 @@ Public Class Form1
             Next
         Next
     End Sub
-    Private Sub Maj_Modulation()
-        Dim tbl() As String
-        Dim typ As Integer = ComboBox9.SelectedIndex ' type accords 3 ou 4 notes
-
-        tbl = Label15.Text.Split
-
-        Grid5.AutoRedraw = False
-
-        EffacerGrid5()
-        '
-        ' Maj de la tonalité principale (sur ligne 0)
-        ' *******************************************
-        Select Case tbl(1)
-            Case "Maj" ' Maj
-                For i = 0 To 6
-                    Grid5.Cell(1, i + 1).Text = TableGlobalAcc(typ, 0, i) 'tbl1(i) ' 
-                Next i
-            Case "MinH" ' MinH
-                For i = 0 To 6
-                    Grid5.Cell(1, i + 1).Text = TableGlobalAcc(typ, 1, i) 'tbl1(i) '
-                Next i
-            Case "MinM" ' MinM
-                For i = 0 To 6
-                    Grid5.Cell(1, i + 1).Text = TableGlobalAcc(typ, 2, i) 'tbl1(i) ' 
-                Next i
-
-        End Select
-        'End If
-
-        Grid5.AutoRedraw = True
-        Grid5.Refresh()
-    End Sub
-    Sub EffacerGrid5()
+    Sub Refresh_Grid5()
         Dim i, j As Integer
 
         ' Effacer la grille Grid5
@@ -4961,18 +5247,8 @@ Public Class Form1
         LabModulat.Item(0).Text = "---" ' non utilisée
         LabModulat.Item(1).Text = "---"
         LabModulat.Item(2).Text = "---"
-        LabModulat.Item(3).Text = "---"
-        Label79.ForeColor = Color.Black
-        Label79.BackColor = ColorTranslator.FromHtml("#c4df9b")
-        Label79.TextAlign = ContentAlignment.TopLeft
-        Label80.Visible = False
-        If LangueIHM = "fr" Then
-            Label79.Text = "1 - Cliquer, dans la grille de composition, là où vous souhaitez créer un pont." + Chr(13) + "2 - Cliquer sur une ligne du tableau de cet onglet pour choisir une tonalité de destination"
-        Else
-            Label79.Text = "1 - Click, in the composition grid, where you wish to create a bridge." + Chr(13) + "2 - Click on a line in the table on this tab to choose a destination tone"
 
-        End If
-        For i = 0 To Grid5.Rows - 1
+        For i = 2 To Grid5.Rows - 1
             For j = 0 To Grid5.Cols - 1
                 ' Effacer toute les lignes sauf la ligne des degrés
                 If i > 0 Then
@@ -4986,178 +5262,120 @@ Public Class Form1
         Next
         '
     End Sub
-    Sub Maj_TonsVoisins(Accord)
+    Sub Maj_TonsVoisins(Acc As String)
         Dim i, ii As Integer
-        Dim tbl() As String = Accord.split()
+        Dim tbl() As String = Acc.Split()
         Dim Note As String = Trad_BemDies_Maj(tbl(0)) ' La note est exprimée en #
-        Dim Typ As Integer = ComboBox9.SelectedIndex + 3 ' traduction de l'index de comobobox9 en Typ d'accord pour Mode2
+        Dim Typ As Integer = 3 ' traduction de l'index de comobobox9 en Typ d'accord pour Mode2
         Dim chiffrage As String ' chiffrage de l'acord
-
+        '
         If tbl.Length = 1 Then
             chiffrage = ""
         Else
             chiffrage = Trim(tbl(1))
         End If
+        '
         ligneModulat = 1 ' cette variable est incrémentée dans Maj_Total
         ligne = 1
+        '
         ' Calcul de l'index i
         ' *******************
-        'If Len(Note) = 2 Then
-        'cc = Note(1)
-        'End If
         Dim clef1 As String = "#" 'Trim(cc.ToString)
         Maj_TabNotes_Majus(clef1)
-
+        '
         For i = 0 To TabNotes.Length - 1
             If Note = TabNotes(i) Then
                 Exit For
             End If
         Next i
+        '
         ' Maj du compte rendu dans onglet Pont
         ' ***********************************
-        TextBox2.Visible = False
-        TextBox2.Text = ""
-        TextBox2.BackColor = Color.White
-
         '
         Select Case chiffrage
             Case ""
                 'Maj
-                Maj_Total(i, "Maj", Typ, clef1)            ' C Maj
-                Maj_Total(i + 5, "Maj", Typ, clef1)        ' F Maj
-                Maj_Total(i + 7, "Maj", Typ, clef1)        ' G Maj
+                Maj_Total(i, "Maj", Typ, clef1, Acc)            ' C Maj
+                Maj_Total(i + 5, "Maj", Typ, clef1, Acc)        ' F Maj
+                Maj_Total(i + 7, "Maj", Typ, clef1, Acc)        ' G Maj
 
                 'MinH
-                Maj_Total(i + 4, "MinH", Typ, clef1)       ' E MinH
-                Maj_Total(i + 5, "MinH", Typ, clef1)       ' F MinH
+                Maj_Total(i + 4, "MinH", Typ, clef1, Acc)       ' E MinH
+                Maj_Total(i + 5, "MinH", Typ, clef1, Acc)       ' F MinH
 
                 'MinM
-                Maj_Total(i + 5, "MinM", Typ, clef1)       ' F MinM
-                Maj_Total(i + 7, "MinM", Typ, clef1)       ' G MinM
+                Maj_Total(i + 5, "MinM", Typ, clef1, Acc)       ' F MinM
+                Maj_Total(i + 7, "MinM", Typ, clef1, Acc)       ' G MinM
 
             Case "m"
                 'Maj
-                Maj_Total(i + 3, "Maj", Typ, clef1)        ' Eb Maj
-                Maj_Total(i + 8, "Maj", Typ, clef1)        ' Ab MaJ
-                Maj_Total(i + 10, "Maj", Typ, clef1)       ' Bb Maj
+                Maj_Total(i + 3, "Maj", Typ, clef1, Acc)        ' Eb Maj
+                Maj_Total(i + 8, "Maj", Typ, clef1, Acc)        ' Ab MaJ
+                Maj_Total(i + 10, "Maj", Typ, clef1, Acc)       ' Bb Maj
 
                 'MinH
-                Maj_Total(i, "MinH", Typ, clef1)           ' C MinH
-                Maj_Total(i + 7, "MinH", Typ, clef1)       ' G MinH
+                Maj_Total(i, "MinH", Typ, clef1, Acc)           ' C MinH
+                Maj_Total(i + 7, "MinH", Typ, clef1, Acc)       ' G MinH
 
                 'MinM
-                Maj_Total(i, "MinM", Typ, clef1)           ' C  MinM
-                Maj_Total(i + 10, "MinM", Typ, clef1)      ' Bb MinM
+                Maj_Total(i, "MinM", Typ, clef1, Acc)           ' C  MinM
+                Maj_Total(i + 10, "MinM", Typ, clef1, Acc)      ' Bb MinM
 
             Case "mb5" 'ex Cmb5
                 'Maj
-                Maj_Total(i + 1, "Maj", Typ, clef1)            ' Db Maj
+                Maj_Total(i + 1, "Maj", Typ, clef1, Acc)            ' Db Maj
 
                 'MinH
-                Maj_Total(i + 10, "MinH", Typ, clef1)          ' Bb MinH
-                Maj_Total(i + 1, "MinH", Typ, clef1)           ' Db MinH
+                Maj_Total(i + 10, "MinH", Typ, clef1, Acc)          ' Bb MinH
+                Maj_Total(i + 1, "MinH", Typ, clef1, Acc)           ' Db MinH
 
                 'MinM
-                Maj_Total(i + 1, "MinM", Typ, clef1)           ' Db  MinM
-                Maj_Total(i + 3, "MinM", Typ, clef1)           ' Eb MinM
+                Maj_Total(i + 1, "MinM", Typ, clef1, Acc)           ' Db  MinM
+                Maj_Total(i + 3, "MinM", Typ, clef1, Acc)           ' Eb MinM
 
-            Case "M7" 'ex C M7
-                'Maj
-                Maj_Total(i, "Maj", Typ, clef1)        ' C Maj
-                Maj_Total(i + 7, "Maj", Typ, clef1)    ' G MAJ
-
-                'MinH
-                Maj_Total(i + 4, "MinH", Typ, clef1)   ' E MinH
-
-            Case "7" 'ex C7
-                'Maj
-                Maj_Total(i + 5, "Maj", Typ, clef1)    ' F Maj
-
-                'MinH
-                Maj_Total(i + 5, "MinH", Typ, clef1)   ' F MinH
-
-                'MinM
-                Maj_Total(i + 5, "MinM", Typ, clef1)   ' F MinM
-                Maj_Total(i + 7, "MinM", Typ, clef1)   ' G MinM
-
-            Case "m7" 'ex Cm7 ou Eb6
-                'Maj
-                Maj_Total(i + 10, "Maj", Typ, clef1)       'Bb Maj
-                Maj_Total(i + 8, "Maj", Typ, clef1)        'Ab MaJ
-                Maj_Total(+3, "Maj", Typ, clef1)           'Eb Maj
-                '
-                'MinH
-                Maj_Total(i + 7, "MinH", Typ, clef1)       'G MinH
-                '
-                'MinM
-                Maj_Total(i + 10, "MinM", Typ, clef1)      'Bb MinM
-
-            Case "m7b5" 'ex Cm7b5
-                'Maj
-                Maj_Total(i + 1, "Maj", Typ, clef1)         'Db Maj
-
-                'MinH
-                Maj_Total(i + 10, "MinH", Typ, clef1)       'Bb MinH
-
-                'MinM
-                Maj_Total(i + 1, "MinM", Typ, clef1)        'Db  MinM
-                Maj_Total(i + 3, "MinM", Typ, clef1)        'Eb MinM
-
-            Case "7Dim", "7dim"  'ex C7dim"
-                'MinH
-                'Pas d'autres tonalités contenant accord de 7Dim
-
-            Case "mM7"
-                'MinH
-                Maj_Total(i, "MinH", Typ, clef1)               ' C MinH
-
-                'MinM
-                Maj_Total(i, "MinM", Typ, clef1)               ' C MinM
             Case Else
-                TextBox2.Visible = True
-                If LangueIHM = "fr" Then
-                    TextBox2.Text = "Accord " + Accord + " non renconnu par le calcul.Prise en compte dans une version utlérieure d'HyperVoicing"
-                Else
-                    TextBox2.Text = "Accord " + Accord + " not recognized by the calculation, taken into account in a later version of HyperVoicing."
-                End If
-                TextBox2.ForeColor = ColorTranslator.FromHtml("#fff200")
-                TextBox2.BackColor = ColorTranslator.FromHtml("#9e0b0f")
-                '
                 For ii = 0 To LabModulat.Count - 1 ' effacer les étiquette de résultat (en bas de l'onglet)
                     LabModulat.Item(ii).Text = ""
                 Next
         End Select
 
     End Sub
-    Sub Maj_Total(i As Integer, Mode As String, typ As Integer, clef1 As String)
+    Sub Maj_Total(i As Integer, Mode As String, typ As Integer, clef1 As String, Acc As String)
         Dim j As Integer
         Dim a As String
         Dim Tonique As String
         Dim tbl() As String
         Dim TonCours As String
+        Dim TonDépart As String = Trim(Grid1.Cell(Grid1.ActiveCell.Row, 3).Text)
 
 
-        a = Trim(Label15.Text)
-
-        'Maj_TabNotes() ' cette méthode remplit TabNotes avec des notes majuscules en #
+        ' Calcul du Mode de modulation
+        ' ****************************
         Maj_TabNotes_Majus(clef1)
         Tonique = Trim(TabNotes(i))
         Tonique = Det_ToniqueClef(Trim(Tonique), Trim(Mode))
         TonCours = Trim(Tonique) + " " + Trim(Mode)
-        If a <> TonCours Then
-            ligneModulat = ligneModulat + 1
+        ' Pré calcul
+        Tonique = Retab_Mode(Trim(Tonique), Trim(Mode))
+        a = Mode3(Trim(Tonique), Trim(Mode), typ, False)
+        tbl = a.Split("-")
 
+        ' control
+        ' si Acc est Ier degré de tonalité de modulation --> on ne prend pas
+        ' si Acc est Ve degré de tonalité de modulation --> on ne prend pas
+        If (Trim(TonDépart) <> Trim(TonCours)) And (Trim(Acc) <> Trim(tbl(4))) Then
+            ligneModulat = ligneModulat + 1
             Grid5.Cell(ligneModulat, 0).Text = Trim(TonCours)
             Grid5.Cell(ligneModulat, 0).Font = New Font("Verdana", 8, FontStyle.Regular)
 
-            ' Calcul des accords
-            Tonique = Retab_Mode(Trim(Tonique), Trim(Mode))
-            a = Mode3(Trim(Tonique), Trim(Mode), typ, False)
-            tbl = a.Split("-")
+            ' Calcul des accords du Mode de Modulation
+            ' ****************************************
+
             ' Ecriture des accords
             For j = 0 To tbl.Length - 1
                 Grid5.Cell(ligneModulat, j + 1).Text = tbl(j)
             Next j
+            '
         End If
     End Sub
     Function Det_ToniqueClef(Note As String, Mode As String) As String ' Note est transmis en #, c'est la tonique d'un Mode
@@ -5181,83 +5399,38 @@ Public Class Form1
     Private Sub Grid5_MouseDown(Sender As Object, e As MouseEventArgs) Handles Grid5.MouseDown
         Dim i As Integer = Grid5.MouseRow ' remarque : ActiveCell.Row retourne 1 tandis que MouseRow retourne 0 (ça vient du fait que l'on clique sur une ligne fixe)
         Dim j As Integer = Grid5.MouseCol ' idem
-        Dim a As String = Trim(Grid5.Cell(i, j).Text)   ' lecture de l'accords
+
+        If i <> -1 And j <> -1 Then
+            Dim a As String = Trim(Grid5.Cell(i, j).Text)   ' accord sélectionné
 
 
-        Dim r As Integer = Grid5.Selection.FirstRow
-        Dim rr As Integer = Grid5.Selection.LastRow
-        Dim c As Integer = Grid5.Selection.FirstCol
-        Dim cc As Integer = Grid5.Selection.LastCol
+            Dim r As Integer = Grid5.Selection.FirstRow
+            Dim rr As Integer = Grid5.Selection.LastRow
+            Dim c As Integer = Grid5.Selection.FirstCol
+            Dim cc As Integer = Grid5.Selection.LastCol
 
 
-        ' paramètre permettant de gérer les CTRL V, C, X de la courbes expression des voicing symphoniques
-        ' ************************************************************************************************
-        SousCas_OngletCours_Edition = 0
+            ' paramètre permettant de gérer les CTRL V, C, X de la courbes expression des voicing symphoniques
+            ' ************************************************************************************************
+            SousCas_OngletCours_Edition = 0
 
-        LigneCoursGrid5 = i
-        '
-        ' Jouer accord de grid5
-        ' *********************
-        If a <> "" And e.Button() = MouseButtons.Left And My.Computer.Keyboard.CtrlKeyDown Then
-            JouerAccordLabel(a)
-        End If
-        ''
-        '' Mise à jour du tableau Grid5 et des label de modulation
-        '' *******************************************************
-        'If i = 1 And (j > 0 And j < 8) Then ' ligne de la tonalité courante
-        'Effacerselections()
-        '
-        'If i = 1 Then
-        'LabModulat.Item(0).Text = "---" ' non utilisée
-        'LabModulat.Item(1).Text = "---"
-        'LabModulat.Item(2).Text = "---"
-        'LabModulat.Item(3).Text = "---"
-        ''
-        'Label79.ForeColor = Color.Red
-        'Label80.Visible = False
-        'If LangueIHM = "fr" Then
-        'Label79.Text = "Veuillez choisir une Tonalité de modulation dans le tableau"
-        'Else
-        'Label79.Text = "Please choose a modulation tonality in the grid"
-        'End If
-        'End If
-        '' 
-        'LabModulat.Item(0).Text = Trim(Grid5.Cell(i, j).Text) ' mise à jour Accord Pivot
-        '
-        ''
-        'EffacerTonVoisins()
-        'Maj_TonsVoisins(Trim(Grid5.Cell(1, j).Text))
-        'RecheraccordGrid5(Trim(Grid5.Cell(1, j).Text))
-        ''
-        'If r > 0 Then
-        'Lab_1 = Grid5.Cell(r, c).Text 'accord sélectionné
-        'Lab_2 = Trim(Grid5.Cell(r, 0).Text) ' sauvegarde de la "nouvelle tonalité"
-        'Maj_Cadence(Lab_1, Lab_2)
-        ''
-        'Label79.ForeColor = Color.Black
-        'Label79.Text = Trim(Lab_2)
-        'Label80.Visible = True
-        'End If
-        '
-        'End If
-        '
-        'Lab_1 = Trim(Grid5.Cell(i, j).Text) ' sauvegarde de l'accord cliqué dans Grid5
-        '
-        '
-        If i > 1 Then ' lignes des tonalités du tableau Grid5
-            Lab_1 = Trim(Label90.Text) 'Grid5.Cell(i, j).Text 'accord sélectionné
-            Lab_2 = Trim(Grid5.Cell(i, 0).Text) ' sauvegarde de la "nouvelle tonalité"
-            Maj_Cadence(Lab_1, Lab_2)
+            LigneCoursGrid5 = i
             '
-            LabModulat.Item(0).Text = Lab_1
-            LabModulat.Item(1).Text = Trim(Grid5.Cell(i, j).Text) ' Accord supplémentaire (avant la cadence)
+            ' Jouer accord de grid5
+            ' *********************
+            If a <> "" And e.Button() = MouseButtons.Left And My.Computer.Keyboard.CtrlKeyDown Then
+                JouerAccordLabel(a)
+            End If
             '
-            'Label79.ForeColor = Color.Black
-            'Label79.Text = Trim(Grid5.Cell(i, 0).Text)            ' Mise à jour de la "nouvelle tonalité"
-            'Label80.Visible = True
+            If i > 1 Then ' lignes des tonalités du tableau Grid5
+                'Lab_1 = Grid5.Cell(i, j).Text 'Trim(Label90.Text) 'accord sélectionné
+                Lab_2 = Trim(Grid5.Cell(i, 0).Text) ' sauvegarde de la "nouvelle tonalité"
+                Maj_Cadence(Lab_2)
+                '
+            End If
         End If
     End Sub
-    Private Sub Grid5_MouseUp(Sender As Object, e As MouseEventArgs) Handles Grid5.MouseUp
+    Private Sub Grid5_MouseUp(Sender As Object, e As MouseEventArgs)
 
         '
         If AccordAEtéJoué = True Then
@@ -5338,12 +5511,14 @@ Public Class Form1
         Return a
     End Function
 
-    Sub EffacerTonVoisins()
+    Sub EffacerTonsModulation()
         Dim i, j As Integer
         For i = 2 To Grid5.Rows - 1
-            For j = 1 To Grid5.Cols - 1
+            For j = 0 To Grid5.Cols - 1
                 Grid5.Cell(i, j).Text = ""
-                Grid5.Cell(i, j).BackColor = Color.Moccasin
+                If j > 0 Then
+                    Grid5.Cell(i, j).BackColor = Color.Moccasin
+                End If
             Next
         Next
     End Sub
@@ -5412,42 +5587,49 @@ Public Class Form1
             MessageHV.ShowDialog()
         End Try
     End Sub
-    Sub Maj_Cadence(Accord As String, Ton As String)
+    Sub Maj_Cadence(Ton As String)
 
 
-        If Trim(Accord) <> "---" And Trim(Ton) <> "---" Then
-            Dim i, j As Integer
-            Dim a As String = ""
-            Dim b As String = ""
+        'If Trim(Accord) <> "---" And Trim(Ton) <> "---" Then
+        Dim i, j As Integer
+        Dim a As String = ""
+        Dim b As String = ""
 
-            Dim tbl1() As String
-            Dim tbl2() As String
-            Dim tbl3() As String
-            '
-            ' Détermination des notes du ton dans un tableau
-            ' *********************************************
-            For i = 2 To Grid5.Rows - 1  ' Rechercher la ligne i du mode dans le tableau
-                If Trim(Grid5.Cell(i, 0).Text = Trim(Ton)) Then
-                    Exit For
-                End If
-            Next
-            For j = 1 To 7  ' détermination des notes du ton
-                a = Trim(Grid5.Cell(i, j).Text)
-                b = b + a + "-"
-            Next
-            b = Microsoft.VisualBasic.Left(b, Len(b) - 1)
-            tbl1 = b.Split("-") ' les notes du ton sont placées dans un tableau avec index de 0 à 7
-            '
-            ' Détermination des 2 degrés de la cadence
-            ' ****************************************
-            tbl2 = ComboBox13.Text.Split("-")
-            tbl3 = Trim(tbl2(1)).Split()
-            ' Détermination des 2 accords de la cadence
-            ' ***************************************
-            LabModulat.Item(2).Text = tbl1(Det_IndexDegré(tbl3(0)))
-            LabModulat.Item(3).Text = tbl1(Det_IndexDegré(tbl3(1)))
-            '
-        End If
+        Dim tbl1() As String
+        Dim tbl2() As String
+
+        '
+        ' Détermination des notes du ton dans un tableau
+        ' *********************************************
+        For i = 2 To Grid5.Rows - 1  ' Rechercher la ligne i du mode dans le tableau
+            If Trim(Grid5.Cell(i, 0).Text = Trim(Ton)) Then
+                Exit For
+            End If
+        Next
+        For j = 1 To 7  ' détermination des notes du ton
+            a = Trim(Grid5.Cell(i, j).Text)
+            b = b + a + "-"
+        Next
+        b = Microsoft.VisualBasic.Left(b, Len(b) - 1)
+        tbl1 = b.Split("-") ' les notes du ton sont placées dans un tableau avec index de 0 à 7
+        '
+        ' Rercherche du nouveau degré de l'accord pivot dans la nouvelle tonalité
+        ' ***********************************************************************
+        For i = 0 To tbl1.Count - 1
+            If Trim(LabModulat.Item(0).Text) = Trim(tbl1(i)) Then
+                tbl2 = Label79.Text.Split("/")
+                a = Trim(Det_DegréRomain2(i))
+                Label79.Text = Trim(tbl2(0)) + " / " + a
+            End If
+        Next
+        '
+        ' Ecriture des 2 accords de la cadence V I
+        ' ***************************************
+        'LabModulat.Item(0).Text = Trim(Accord)
+        LabModulat.Item(1).Text = tbl1(4) ' V
+        LabModulat.Item(2).Text = tbl1(0) ' I
+        '
+        'End If
     End Sub
     Sub RecheraccordGrid5(Accord As String)
         Dim i, j As Integer
@@ -5587,7 +5769,7 @@ Public Class Form1
             TabTonsVoisins.Item(i).Text = ""
             TabTonsVoisins.Item(i).Tag = Str(i)
             TabTonsVoisins.Item(i).Visible = True
-            TabTonsVoisins.Item(i).TextAlign = ContentAlignment.MiddleCenter
+            TabTonsVoisins.Item(i).TextAlign = Drawing.ContentAlignment.MiddleCenter
             '
             TabTonsVoisins.Item(i).Font = New System.Drawing.Font("Calibri", 9, FontStyle.Bold)
             ' gestion de couleurs
@@ -5673,7 +5855,7 @@ Public Class Form1
             TabTonsVDegrés.Item(i).Font = New System.Drawing.Font("Calibri", 11, FontStyle.Regular)
             TabTonsVDegrés.Item(i).Location = New Point(PosX + DepL, PosY)
             TabTonsVDegrés.Item(i).BorderStyle = BorderStyle.FixedSingle
-            TabTonsVDegrés.Item(i).TextAlign = ContentAlignment.MiddleCenter
+            TabTonsVDegrés.Item(i).TextAlign = Drawing.ContentAlignment.MiddleCenter
             TabTonsVDegrés.Item(i).Text = "I"
             TabTonsVDegrés.Item(i).Tag = Str(i)
             TabTonsVDegrés.Item(i).Visible = True
@@ -5786,10 +5968,10 @@ Public Class Form1
         AccordMarqué = ""
         '
         '**********************************************
-        '* Menus contextuel des accords : Mise à jour *
+        '* Menus contextuel des accords : Mise à jour * <--- supprimé le 26/09/2024 - la fonction clic droit sur tabton pour afficher accords supplémentaires est remplacée par l'onglet Mode
         '**********************************************
-        Maj_TousAccordsMnContext1(ind) ' maj menu contextuel de choix d'accords sur clic droit - tous les accords possibles dans une cellule donnée
-        Maj_Octave(ind)
+        'Maj_TousAccordsMnContext1(ind) ' maj menu contextuel de choix d'accords sur clic droit - tous les accords possibles dans une cellule donnée
+        'Maj_Octave(ind)
         '
         i = ind '
         '
@@ -5799,19 +5981,6 @@ Public Class Form1
             MarquerAccord(ind) ' --> marquer accord 
         End If
         '
-        ' Clic droit : menu contextuel
-        ' ***************************
-        If e.Button() = MouseButtons.Right Then '  And TabTonsSelect.Item(ind).Checked = True ' My.Computer.Keyboard.ShiftKeyDown And 
-            If i <> -1 Then
-                'MarquerAccord(ind)
-                'TabTons.Item(ind).BackColor
-                If Trim(TabTons.Item(i).Text) <> "___" Then
-                    MarquerAccord(ind)
-                    Accord1.Text = Trim(TabTons.Item(i).Text) ' valeur de l'accord dans menu contextuel
-                    ContextMenuStrip1.Show(CType(sender, Object), e.Location)
-                End If
-            End If
-        End If
         '
         ' Jouer Accord
         ' ************
@@ -5843,7 +6012,7 @@ Public Class Form1
             End Select
             ' Appel du système de drag drop : DoDragDrop
             Valeur_Drag = ""
-            TabTons.Item(ind).DoDragDrop(TabTons.Item(ind).Text, DragDropEffects.Copy Or DragDropEffects.Move)
+            TabTons.Item(ind).DoDragDrop(TabTons.Item(ind).Text, DragDropEffects.Copy) ' TabTons.Item(ind).DoDragDrop(TabTons.Item(ind).Text, DragDropEffects.Copy Or DragDropEffects.Move)
             If Trim(Valeur_Drag) <> "" Then
                 Maj_DragDrop()
             End If
@@ -5902,11 +6071,25 @@ Public Class Form1
             EcritUneFois = True
             LockageColonnes() ' loackage des colonnes de grid1 et grid4
             '
-            Maj_PianoRoll()
+            'Maj_PianoRoll()
+            For i = 0 To nb_PianoRoll - 1
+                listPIANOROLL(i).Refresh = True
+                PR_Refresh(i) = True  ' pour rafraichissement quand ouvre l'onglet / traiter dans form1 dans TabControl4_MouseDown
+                PR_Refresh1(i) = True ' pour rafraichissement quand le form de l'onglet est détaché/ traite dans pianoroll dans f1_Activated
+            Next
             Maj_DrumEdit()
             Refresh_Courbexp()
         End If
         '
+        ' Timer pour MODES
+        Action_DragDrop = False
+        TimerDragDrop.Stop()
+    End Sub
+    Sub Effacer_Courbexp()
+        Courbexp.AutoRedraw = False
+        Courbexp.Range(1, 1, Courbexp.Rows - 1, Courbexp.Cols - 1).ClearFormat()
+        Courbexp.AutoRedraw = True
+        Courbexp.Refresh()
     End Sub
     Sub MarquerAccord(ind As Integer)
         Dim ligne As Integer
@@ -5940,7 +6123,7 @@ Public Class Form1
                     OrigineAccord = Modes.MineurM
             End Select
             '
-            TabTons.Item(ind).Refresh()
+            ' TabTons.Item(ind).Refresh()
         End If
     End Sub
 
@@ -5965,13 +6148,16 @@ Public Class Form1
             ligne = Det_LigneTableGlobale(ind)
             If TableCoursAcc(ligne, degré).Marqué = True Then
                 TabTons.Item(ind).ForeColor = Color.Black
+                TabTons.Item(ind).Refresh()
 
                 Select Case ligne
                     Case 0
                         TabTons.Item(ind).BackColor = Couleur_Accord_Majeur
+                        TabTons.Item(ind).Refresh()
                         '
                     Case Else
                         TabTons.Item(ind).BackColor = Couleur_Accord_Mineur
+                        TabTons.Item(ind).Refresh()
                 End Select
                 '
             End If
@@ -6348,18 +6534,20 @@ Public Class Form1
         Next
         ListeNotesMin_EnD = Join(tbl, délimit)
     End Function
-    Function Trad_AccordEn_D(Accord As String) As String
+    Function Trad_AccordEn_D(Chaine As String) As String
         Dim tblA() As String
 
-        tblA = Split(Accord)
+        tblA = Split(Chaine)
         tblA(0) = Trim(Trad_ListeNotesEnD(LCase(tblA(0)), " "))
         Trad_AccordEn_D = Trim(tblA(0))
-        If UBound(tblA) > 0 Then
-            Trad_AccordEn_D = UCase(tblA(0)) + " " + tblA(1)
-        Else
-            Trad_AccordEn_D = UCase(tblA(0))
-        End If
-
+        Select Case tblA.Length
+            Case 3
+                Trad_AccordEn_D = UCase(tblA(0)) + " " + tblA(1) + " " + tblA(2)
+            Case 2
+                Trad_AccordEn_D = UCase(tblA(0)) + " " + tblA(1)
+            Case Else
+                Trad_AccordEn_D = UCase(tblA(0))
+        End Select
     End Function
     Public Function Trad_GammeEn_D(Gamme As String) As String
         Dim tblG() As String
@@ -7194,7 +7382,6 @@ Public Class Form1
             ComboBox1.SelectedIndex = 7 ' Pour C Maj 
             ComboBox2.SelectedIndex = 7 ' Pour A Min
             ComboBox23.SelectedIndex = 0
-            ComboBox9.SelectedIndex = 0
             ComboBox6.SelectedIndex = 0
             '
             ComboBox4.SelectedIndex = 0
@@ -7240,6 +7427,7 @@ Public Class Form1
                     listPIANOROLL(i).PListTon = d 'Det_ListAcc()
                     listPIANOROLL(i).F1_Refresh()
                     listPIANOROLL(i).Nouv_CalquesMIDI()
+
                 End If
             Next
             '
@@ -7263,7 +7451,7 @@ Public Class Form1
             ' ********************************************
             '
             If LangueIHM = "fr" Then
-                Fr_Culture()
+                Fr_culture()
             Else
                 En_Culture()
             End If
@@ -7273,8 +7461,15 @@ Public Class Form1
 
             ' Vue Notes
             ' *********
-
             Maj_VueNotes()
+
+            ' Onglet Courbe Expression
+            ' ************************
+            Effacer_Courbexp()
+            ' positionnement du curseur de scrolling
+            ' **************************************
+            'scrollPianoInit = False
+            'Me.Activate() ' le code s'exacute dans form1.activated si scrollPianoInit = False
 
         Catch ex As Exception
             Dim titre As String
@@ -7408,7 +7603,7 @@ Public Class Form1
         MessageHV.PTypBouton = "OK"
         Cacher_FormTransparents()
         MessageHV.ShowDialog()
-        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Langue", "LangueIHM", "en")
+        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Langue", "LangueIHM", "en")
         Me.BringToFront()
     End Sub
     Private Sub FrançaisToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FrançaisToolStripMenuItem.Click
@@ -7418,7 +7613,7 @@ Public Class Form1
         MessageHV.PTypBouton = "OK"
         Cacher_FormTransparents()
         MessageHV.ShowDialog()
-        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Langue", "LangueIHM", "fr")
+        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Langue", "LangueIHM", "fr")
         Me.BringToFront()
     End Sub
     Sub Restit_CoursAcc()
@@ -7478,9 +7673,9 @@ Public Class Form1
         '
         ' Langues
         ' *******
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Langue", "LangueIHM", Nothing)
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Langue", "LangueIHM", Nothing)
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Langue", "LangueIHM", "fr")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Langue", "LangueIHM", "fr")
             'Langue = "en"
             Module1.LangueIHM = "fr"
             'LanguesToolStripMenuItem.Image = My.Resources.France 'My.Resources.France16x11
@@ -7499,9 +7694,9 @@ Public Class Form1
         End If
         ' CheminFichierOuvrir
         ' *******************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "CheminFichierOuvrir", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "CheminFichierOuvrir", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "CheminFichierOuvrir", DossierDocuments)
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "CheminFichierOuvrir", DossierDocuments)
             CheminFichierOuvrir = DossierDocuments
         Else
             CheminFichierOuvrir = a
@@ -7510,9 +7705,9 @@ Public Class Form1
 
         ' Chemin CheminEnregistrer
         ' ************************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "CheminEnregistrer", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "CheminEnregistrer", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "CheminEnregistrer", DossierDocuments)
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "CheminEnregistrer", DossierDocuments)
             CheminFichierEnreg = DossierDocuments
         Else
             CheminFichierEnreg = a
@@ -7521,9 +7716,9 @@ Public Class Form1
 
         ' Chemin ExportCalquesMIDI
         ' ************************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportCalquesMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportCalquesMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportCalquesMIDI", DossierDocuments)
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportCalquesMIDI", DossierDocuments)
             CheminFichierCalques = DossierDocuments
         Else
             CheminFichierCalques = a
@@ -7532,9 +7727,9 @@ Public Class Form1
         '
         ' Chemin ExportFichierMIDI (fichier pour  les accords MIDI)
         ' ************************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportFichierMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportFichierMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportFichierMIDI", DossierDocuments)
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportFichierMIDI", DossierDocuments)
             CheminFichierMIDI = DossierDocuments
         Else
             CheminFichierMIDI = a
@@ -7542,9 +7737,9 @@ Public Class Form1
 
         ' Chemin ExportMarqueursMIDI
         ' ***************************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportMarqueursMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportMarqueursMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportMarqueursMIDI", DossierDocuments)
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportMarqueursMIDI", DossierDocuments)
             CheminMarqueursMIDI = DossierDocuments
         Else
             CheminMarqueursMIDI = a
@@ -7552,9 +7747,9 @@ Public Class Form1
         '
         ' Chemin ExportDocument
         ' *********************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportfichierDoc", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportfichierDoc", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Chemins", "ExportfichierDoc", DossierDocuments)
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Chemins", "ExportfichierDoc", DossierDocuments)
             CheminFichierExportDoc = DossierDocuments
 
         Else
@@ -7572,16 +7767,16 @@ Public Class Form1
                     ComboMidiOut.Items.Add(SortieMidi.Item(j).Name)
                 Next
                 '
-                a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixSortieMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+                a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixSortieMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
                 If a = Nothing Then
-                    My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixSortieMIDI", "0")
+                    My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixSortieMIDI", "0")
                     ComboMidiOut.SelectedIndex = 0
                     ChoixSortieMidi = ComboMidiOut.SelectedIndex
                 Else
                     If Val(a) > o.count - 1 Then
                         ComboMidiOut.SelectedIndex = 0
                         ChoixSortieMidi = ComboMidiOut.SelectedIndex
-                        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixSortieMIDI", "0")
+                        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixSortieMIDI", "0")
                     Else
                         ComboMidiOut.SelectedIndex = Val(a)
                         ChoixSortieMidi = ComboMidiOut.SelectedIndex
@@ -7624,16 +7819,16 @@ Public Class Form1
                 'EntréeMidi.NoteOn += New InputDevice.NoteOnHandler(AddressOf Me.NoteOn)
                 'InputDevice.NoteOff += New InputDevice.NoteOffHandler(AddressOf Me.NoteOff)
                 '
-                a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixEntréeMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+                a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixEntréeMIDI", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
                 If a = Nothing Then
-                    My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixEntréeMIDI", "0")
+                    My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixEntréeMIDI", "0")
                     ComboMidiIn.SelectedIndex = 0
                     ChoixEntréeMidi = ComboMidiIn.SelectedIndex
                 Else
                     If Val(a) > oIn.count - 1 Then
                         ComboMidiIn.SelectedIndex = 0
                         ChoixEntréeMidi = ComboMidiIn.SelectedIndex
-                        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixEntréeMIDI", "0")
+                        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixEntréeMIDI", "0")
                     Else
                         ComboMidiIn.SelectedIndex = Val(a)
                         ChoixEntréeMidi = ComboMidiIn.SelectedIndex
@@ -7668,9 +7863,9 @@ Public Class Form1
             '
             ' Thru
             ' ****
-            a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Thru", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+            a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Thru", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
             If a = Nothing Then
-                My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Thru", "0")
+                My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Thru", "0")
                 Thru.Checked = False
             Else
                 Select Case a
@@ -7689,9 +7884,9 @@ Public Class Form1
         ' 
         ' Vélocité des Accords
         ' ********************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "VécolitéAccords", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "VécolitéAccords", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "VécolitéAccords", "72")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "VécolitéAccords", "72")
             ChordsVelocity.Value = 72
         Else
             ChordsVelocity.Value = Val(a)
@@ -7699,9 +7894,9 @@ Public Class Form1
         '
         ' Vélocité des Notes
         ' ********************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "VécolitéNotes", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "VécolitéNotes", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "VécolitéNotes", "80")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "VécolitéNotes", "80")
             NotesVelocity.Value = 80
         Else
             NotesVelocity.Value = Val(a)
@@ -7709,9 +7904,9 @@ Public Class Form1
         ' 
         ' Vélocité du PlayBack
         ' ********************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "VécolitéPlayback", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "VécolitéPlayback", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "VécolitéPlayback", "72")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "VécolitéPlayback", "72")
             PlaybackVelocity.Value = 72
         Else
             PlaybackVelocity.Value = Val(a)
@@ -7719,17 +7914,17 @@ Public Class Form1
 
         ' Nombre de Mesures de Fin
         ' ************************
-        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "NombreMesuresFin", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "NombreMesuresFin", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         'If a = Nothing Then
-        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "NombreMesuresFin", "2")
+        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "NombreMesuresFin", "2")
         'Else
         'End If
 
         ' Nombre de Répétitions
         ' *********************
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "NombredeBoucles", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "NombredeBoucles", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "NombredeBoucles", "1")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "NombredeBoucles", "1")
             Transport.LoopNumber.Value = 1
         Else
             Transport.LoopNumber.Value = Val(a)
@@ -7737,9 +7932,9 @@ Public Class Form1
         '
         ' Basse Octave
         ' ***********
-        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "BasseOctave", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "BasseOctave", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         'If a = Nothing Then
-        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "BasseOctave", "0")
+        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "BasseOctave", "0")
         'Octave_Moins1.Checked = False
         'Else
         'Select Case a
@@ -7753,9 +7948,9 @@ Public Class Form1
         '
         ' Notes Communes
         ' **************
-        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "NotesCommunes", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "NotesCommunes", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         'If a = Nothing Then
-        ' My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "NotesCommunes", "0")
+        ' My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "NotesCommunes", "0")
         ' NotesCommunes.Checked = False
         ' Else
         'Select Case a
@@ -7777,9 +7972,9 @@ Public Class Form1
         '
         ' Canal THRU
         ' **********
-        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Canal_THRU", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Canal_THRU", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         'If a = Nothing Then
-        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Canal_THRU", "1")
+        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Canal_THRU", "1")
         'CanalThru.Value = 1
         'Else
         'CanalThru.Value = Val(a)
@@ -7791,9 +7986,9 @@ Public Class Form1
         ' ******************
         Dim h As Integer
         Dim w As Integer
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "WidthForm", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "WidthForm", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "WidthForm", "1157")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "WidthForm", "1157")
             h = Me.Size.Height
             Me.Size = New Size(1157, h)
         Else
@@ -7801,9 +7996,9 @@ Public Class Form1
             Me.Size = New Size(Val(a), h)
         End If
         '
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "HeightForm", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "HeightForm", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "HeightForm", "740")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "HeightForm", "740")
             w = Me.Size.Width
             Me.Size = New Size(w, 740)
         Else
@@ -7815,9 +8010,9 @@ Public Class Form1
         ' Mode étendu
         ' ***********
         ' 
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ModeEtendu", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ModeEtendu", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ModeEtendu", "0")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ModeEtendu", "0")
             FlagMode = 0
         Else
             Select Case a
@@ -7833,9 +8028,9 @@ Public Class Form1
         ' Ecoute eventH avec CTRL + clic
         ' *******************************
         ' gamme + accord
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "GammePlusAccord", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "GammePlusAccord", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "GammePlusAccord", "1")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "GammePlusAccord", "1")
             GammePlusAccord.Checked = True
         Else
             Select Case a
@@ -7846,24 +8041,24 @@ Public Class Form1
             End Select
         End If
         ' TempoEcoute de CTRL + clic
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "TempoEcoute", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "TempoEcoute", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "TempoEcoute", "1")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "TempoEcoute", "1")
             ComboBox7.SelectedIndex = 1
         Else
             ComboBox7.SelectedIndex = Val(a)
         End If
 
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "PlayC", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "PlayC", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "PlayC", "80")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "PlayC", "80")
             PlayC.Value = 74
         Else
             PlayC.Value = Val(a)
         End If
-        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "PlayN", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "PlayN", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         If a = Nothing Then
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "PlayN", "90")
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "PlayN", "90")
             PlayN.Value = 100
         Else
             PlayN.Value = Val(a)
@@ -7873,17 +8068,17 @@ Public Class Form1
 
         ' Réduction de longueur de notes (Compression (Comp)
         ' **************************************************
-        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ReducLongNote", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ReducLongNote", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         'If a = Nothing Then
-        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ReducLongNote", "0")
+        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ReducLongNote", "0")
         'ComboBox8.SelectedIndex = 0
         'Else
         'ComboBox8.SelectedIndex = Val(a)
         'End If
 
-        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "WidthSplitter", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "WidthSplitter", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         'If a = Nothing Then
-        ' My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "WidthSplitter", "550")
+        ' My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "WidthSplitter", "550")
         ' SplitContainer2.SplitterDistance = 554
         ' Else
         ' h = Me.Size.Height
@@ -7892,23 +8087,23 @@ Public Class Form1
         '
         ' Délimiteurs gauche et droit
         ' ***************************
-        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Délimiteur_Gauche", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Délimiteur_Gauche", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         'If a = Nothing Then
-        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Délimiteur_Gauche", "1")
+        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Délimiteur_Gauche", "1")
         'Début.Value = 3
         'Else
         'Début.Value = Val(a)
         'End If
         '
-        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Délimiteur_Droit", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
+        'a = My.Computer.Registry.GetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Délimiteur_Droit", Nothing) ' Nothing est la valeur à retourner si pas de valeur dans le registre
         'If a = Nothing Then
-        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Délimiteur_Droit", "12")
+        'My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Délimiteur_Droit", "12")
         'Terme.Value = 12
         'Else
         'Terme.Value = Val(a)
         'End If
     End Sub
-    Private Sub OuvrirToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OuvrirToolStripMenuItem.Click, Button12.Click
+    Private Sub OuvrirToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OuvrirToolStripMenuItem.Click
         Dim i As Integer
         Me.Cursor = Cursors.WaitCursor
         'If EcritUneFois = True Then
@@ -7964,6 +8159,7 @@ Public Class Form1
                     FichierOuvrir = OpenFileDialog1.FileName
                 End If
             Else
+                'MessageBox.Show("Message 4 : Etat de nom du fichier FichierEntréSurClic dans ouvrir2  --> " + FichierEntréSurClic)
                 FichierOuvrir = Trim(FichierEntréSurClic)
                 'MessageBox.Show("Chemin du fichier récupéré : " + FichierOuvrir)
             End If
@@ -7975,11 +8171,13 @@ Public Class Form1
             Dim a As String = System.IO.Path.GetExtension(FichierOuvrir) ' extension du fichier choisi - il est utile de tester l'extension même s'il y a un filtre dans la boite de dialogue
 
             If Trim(FichierOuvrir) <> "" And a = ".zic3" Then
-                RichTextBox2.Text = FichierOuvrir
+                Label102.Text = FichierOuvrir
                 NomFichier = Dir(FichierOuvrir)
                 If My.Computer.FileSystem.FileExists(FichierOuvrir) Then
                     Me.Visible = True
                     Transport.Visible = False
+                    '
+                    Label103.Text = FichierOuvrir ' chemin du fichier ouvert afiché dans onglet système
                     '
                     ' Positionnement de la jauge d'ouverture
                     ' **************************************
@@ -8046,7 +8244,8 @@ Public Class Form1
                         Else
                             TBL = Split(Line, ",")
                             If TBL(0) = "VARIATIONS" Or TBL(0) = "STACKING" Or TBL(0) = "PianoRoll" Or TBL(0) = "ListDrumInst" Or TBL(0) = "ListDrumNotes" Or
-                                TBL(0) = "ListTimeLPres" Or TBL(0) = "NomPréset" Or TBL(0) = "MixListVolumes" Or TBL(0) = "MixListMute" Or TBL(0) = "AutorisVolumes" Or TBL(0) = "TRANSPORT" Then '  
+                                TBL(0) = "ListTimeLPres" Or TBL(0) = "NomPréset" Or TBL(0) = "MixListVolumes" Or TBL(0) = "MixListMute" Or
+                                TBL(0) = "AutorisVolumes" Or TBL(0) = "TRANSPORT" Or TBL(0) = "COURBEXP" Then '  
 
                                 ETAT = TBL(0)
                             End If
@@ -8113,6 +8312,9 @@ Public Class Form1
                             Case "PARAM VARIATIONS"
                                 TBL = Split(Line, ";")
                                 Ouvrir_Variations(Line)
+
+                            Case "COURBEXP"
+                                Charger_Courbexp(Line)
 
                             Case "STACKING"
                                 Select Case TBL(1)
@@ -8439,7 +8641,7 @@ Public Class Form1
         Select Case Intitulé
             Case "Métrique"
                 '
-                Métrique.Text = Trim(Valeur)
+                'Métrique.Text = Trim(Valeur)
                 '
                 'EffacerTout()
                 'Maj_TAccents(Trim(Valeur))    '
@@ -8916,59 +9118,7 @@ Public Class Form1
         'Label21.Text = "SplitContainer1"
     End Sub
 
-    Private Sub Button10_Click(sender As Object, e As EventArgs)
-        'flèche vers la gauche
-        LargeursColGrid1()
-        Select Case EtatSplit1
-            Case "Notes"
-                EtatSplit1 = "Gammes"
-                SplitContainer1.SplitterDistance = SplitGammes
-            Case "Gammes"
-                EtatSplit1 = "Accords"
-                SplitContainer1.SplitterDistance = SplitAccords
-            Case "Accords"
-                EtatSplit1 = "Tonalités"
-                SplitContainer1.SplitterDistance = SplitTonalités
-            Case "Tonalités"
-                EtatSplit1 = "Marqueurs"
-                SplitContainer1.SplitterDistance = SplitMarqueurs
-            Case "Marqueurs"
-                EtatSplit1 = "Positions"
-                SplitContainer1.SplitterDistance = SplitPositions
-            Case "Positions"
-                EtatSplit1 = "NLignes"
-                SplitContainer1.SplitterDistance = SplitNligne
-            Case Else
-                EtatSplit1 = "NLignes"
-                SplitContainer1.SplitterDistance = SplitNligne
-        End Select
-    End Sub
 
-    Private Sub Button11_Click(sender As Object, e As EventArgs)
-        'flèche vers la droite
-        LargeursColGrid1()
-        Select Case EtatSplit1
-            Case "NLignes"
-                EtatSplit1 = "Positions"
-                SplitContainer1.SplitterDistance = SplitPositions
-            Case "Positions"
-                EtatSplit1 = "Marqueurs"
-                SplitContainer1.SplitterDistance = SplitMarqueurs
-            Case "Marqueurs"
-                EtatSplit1 = "Tonalités"
-                SplitContainer1.SplitterDistance = SplitTonalités
-            Case "Tonalités"
-                EtatSplit1 = "Accords"
-                SplitContainer1.SplitterDistance = SplitAccords
-            Case "Accords"
-                EtatSplit1 = "Gammes"
-                SplitContainer1.SplitterDistance = SplitGammes
-            Case "Gammes"
-                EtatSplit1 = "Notes"
-                SplitContainer1.SplitterDistance = SplitNotes
-            Case Else
-        End Select
-    End Sub
 
     Private Sub SplitContainer3_SplitterMoved(sender As Object, e As SplitterEventArgs)
         'Label17.Text = Str(SplitContainer3.SplitterDistance)
@@ -9040,17 +9190,6 @@ Public Class Form1
         EffacerTableEventH()
     End Sub
 
-    Private Sub Button14_Click(sender As Object, e As EventArgs)
-        Select Case EtatSplit3
-            Case "SansDétail"
-                'SplitContainer3.SplitterDistance = SplitDétails
-                'EtatSplit3 = "Détails"
-            Case "Détails", "SansGrid3"
-                'SplitContainer3.SplitterDistance = SplitSansDétail
-                'EtatSplit3 = "SansDétail"
-        End Select
-    End Sub
-
     Private Sub DessinApplication2() 'Private Sub DessinApplication2(SplitGrid1 As Integer, SplitGrid2 As Integer, splitgrid4 As Integer)
 
         Grid1.LeftCol = 0 '
@@ -9096,59 +9235,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Button10_Click_1(sender As Object, e As EventArgs)
-        'flèche vers la gauche
-        LargeursColGrid1()
-        Select Case EtatSplit1
-            Case "Notes"
-                EtatSplit1 = "Gammes"
-                SplitContainer1.SplitterDistance = SplitGammes
-            Case "Gammes"
-                EtatSplit1 = "Accords"
-                SplitContainer1.SplitterDistance = SplitAccords
-            Case "Accords"
-                EtatSplit1 = "Tonalités"
-                SplitContainer1.SplitterDistance = SplitTonalités
-            Case "Tonalités"
-                EtatSplit1 = "Marqueurs"
-                SplitContainer1.SplitterDistance = SplitMarqueurs
-            Case "Marqueurs"
-                EtatSplit1 = "Positions"
-                SplitContainer1.SplitterDistance = SplitPositions
-            Case "Positions"
-                EtatSplit1 = "NLignes"
-                SplitContainer1.SplitterDistance = SplitNligne
-            Case Else
-                EtatSplit1 = "NLignes"
-                SplitContainer1.SplitterDistance = SplitNligne
-        End Select
-    End Sub
 
-    Private Sub Button11_Click_1(sender As Object, e As EventArgs)
-        'flèche vers la droite
-        LargeursColGrid1()
-        Select Case EtatSplit1
-            Case "NLignes"
-                EtatSplit1 = "Positions"
-                SplitContainer1.SplitterDistance = SplitPositions
-            Case "Positions"
-                EtatSplit1 = "Marqueurs"
-                SplitContainer1.SplitterDistance = SplitMarqueurs
-            Case "Marqueurs"
-                EtatSplit1 = "Tonalités"
-                SplitContainer1.SplitterDistance = SplitTonalités
-            Case "Tonalités"
-                EtatSplit1 = "Accords"
-                SplitContainer1.SplitterDistance = SplitAccords
-            Case "Accords"
-                EtatSplit1 = "Gammes"
-                SplitContainer1.SplitterDistance = SplitGammes
-            Case "Gammes"
-                EtatSplit1 = "Notes"
-                SplitContainer1.SplitterDistance = SplitNotes
-            Case Else
-        End Select
-    End Sub
     Private Sub Button2_Click_2(sender As Object, e As EventArgs)
         'ZoomMoins()
         AssurerVisibilitéCelluleGrid2(Grid2.ActiveCell.Col)
@@ -9465,7 +9552,7 @@ Public Class Form1
         Dim tbl2() As String
         Dim tbl3() As String
         Dim ListeAcc As String
-        Dim signe As String
+        'Dim signe As String
 
         degré = Det_IndexDegré2(ind)
         ligne = Det_LigneTableGlobale(ind)
@@ -9476,25 +9563,19 @@ Public Class Form1
             Case 0
                 tbl1 = Split(Trim(ComboBox1.Text), " ")
                 tonique = Trim(tbl1(0))
-
-                signe = Det_ClefAngl(Trim(tonique))
-
-
+                'signe = Det_ClefAngl(Trim(tonique))
                 Mode_ = Trim(UCaseBémol(tonique)) + " Maj"
             Case 1
                 tbl1 = Split(Trim(ComboBox2.Text), " ")
                 tonique = Trim(tbl1(0))
-
-                signe = Det_ClefAngl(Trim(tonique))
+                'signe = Det_ClefAngl(Trim(tonique))
 
 
                 Mode_ = Trim(UCaseBémol(tonique)) + " MinH"
             Case Else
                 tbl1 = Split(Trim(ComboBox2.Text), " ")
                 tonique = Trim(tbl1(0))
-
-                signe = Det_ClefAngl(Trim(tonique))
-
+                'signe = Det_ClefAngl(Trim(tonique))
                 Mode_ = Trim(UCaseBémol(tonique)) + " MinM"
         End Select
         '
@@ -9506,7 +9587,7 @@ Public Class Form1
         '
         For i = 0 To UBound(tbl2)
             tbl3 = Split(tbl2(i), " ")
-            tonique = Trim(LCase(tbl3(0)))
+            tonique = Trim((tbl3(0))) ' en majuscule
 
             tbl2(i) = Trim(tonique)
             If UBound(tbl3) > 0 Then
@@ -10755,6 +10836,8 @@ Public Class Form1
                 Det_NotesAccord3 = Trim(Tonique + "-" + NoteInterval3(Tonique, "3", Clef) + "-" + NoteInterval3(Tonique, "5", Clef) + "-" + NoteInterval3(Tonique, "9#", Clef))
             Case "m9"
                 Det_NotesAccord3 = Trim(Tonique + "-" + NoteInterval3(Tonique, "3m", Clef) + "-" + NoteInterval3(Tonique, "5", Clef) + "-" + NoteInterval3(Tonique, "9", Clef))
+            Case "mb9"
+                Det_NotesAccord3 = Trim(Tonique + "-" + NoteInterval3(Tonique, "3m", Clef) + "-" + NoteInterval3(Tonique, "5", Clef) + "-" + NoteInterval3(Tonique, "b9", Clef))
             Case "9"
                 Det_NotesAccord3 = Trim(Tonique + "-" + NoteInterval3(Tonique, "3", Clef) + "-" + NoteInterval3(Tonique, "5", Clef) + "-" + NoteInterval3(Tonique, "9", Clef))
             Case "7M(11#)", "M7(11#)"
@@ -10765,7 +10848,7 @@ Public Class Form1
                 Det_NotesAccord3 = Trim(Tonique + "-" + NoteInterval3(Tonique, "3", Clef) + "-" + NoteInterval3(Tonique, "5", Clef) + "-" + NoteInterval3(Tonique, "11#", Clef))
             Case "11"
                 Det_NotesAccord3 = Trim(Tonique + "-" + NoteInterval3(Tonique, "3", Clef) + "-" + NoteInterval3(Tonique, "5", Clef) + "-" + NoteInterval3(Tonique, "11", Clef))
-            Case "7Sus4"
+            Case "7sus4"
                 Det_NotesAccord3 = Trim(Tonique + "-" + NoteInterval3(Tonique, "4", Clef) + "-" + NoteInterval3(Tonique, "5", Clef) + "-" + NoteInterval3(Tonique, "7", Clef))
             Case "sus4"
                 Det_NotesAccord3 = Trim(Tonique + "-" + NoteInterval3(Tonique, "4", Clef) + "-" + NoteInterval3(Tonique, "5", Clef))
@@ -10923,9 +11006,9 @@ Public Class Form1
 
 
         i = TonaMajEn.IndexOf(Trim(tonaMaj))
-            TonaMin = TonaMinEn(i)
-            tbl = Split(TonaMin, " ")
-            Det_TonaMinCours3 = tbl(0)
+        TonaMin = TonaMinEn(i)
+        tbl = Split(TonaMin, " ")
+        Det_TonaMinCours3 = tbl(0)
 
         '
     End Function
@@ -10992,7 +11075,7 @@ Public Class Form1
         End Select
         Return a
     End Function
-    Public Function Det_DegréDécimal(ligne As Integer, acc As String) ' Ind va de 0 à 6
+    Public Function Det_DegréDécimal(ligne As Integer, acc As String) As Integer ' Ind va de 0 à 6
         Dim j As Integer = 1
         Dim a As String = ""
         Dim b As String
@@ -12224,11 +12307,14 @@ Public Class Form1
     End Sub
 
     Sub FIN()
-        'SortieMidi.Item(ChoixSortieMidi).SilenceAllNotes()
-        'SortieMidi.Item(ChoixSortieMidi).SilenceAllNotes()
-        'If Transport.Remote.Checked Then Send_CTRL54_Remote()
+        'If AutorizeReset = True Then
         ToutesNotesOff()
-        'Init_CTRLMIDI2()
+
+
+        'SortieMidi.Item(ChoixSortieMidi).SendControlChange(0, 123, 0) ' All Sound Off
+        'SortieMidi.Item(ChoixSortieMidi).SilenceAllNotes()
+        Init_CTRLMIDI2()
+        'End If
         Fermer_MIDI()
         Tempo_Aff_EventH.Enabled = False
         Tempo_Aff_EventH.Stop()  ' arrêter la tempo d'arrêt de jeu de l'accord
@@ -12272,6 +12358,7 @@ Public Class Form1
         ' OngletCours = 1   Onglet Tonalité
         ' OngletCours = 7   Onglet Modulation
         ' OngletCours = 16  Onglet Substitution
+        ' OngletCours = 21  Onglet Modes
 
 
         Select Case OngletCours
@@ -12291,13 +12378,26 @@ Public Class Form1
                     Case Modes.MineurM
                         Entrée_Gamme = Trim(Det_TonaMinCours2() + " " + "MinM")
                     Case Modes.Modulation
-
-
                 End Select
 
-                Entrée_Mode = Entrée_Gamme
+                Entrée_Mode = Trim(Entrée_Gamme)
                 Entrée_Tonalité = Trim(Det_TonaCours2() + " " + "Maj")
-            Case Else '7, 21
+            Case 21 ' onglet mode
+                Select Case MTypeMode
+                    Case MTyMode.Maj
+                        Entrée_Gamme = Trim(Det_TonaCours2() + " " + Trim(MComboModes.Text))
+                        Entrée_Mode = Entrée_Gamme
+                    Case MTyMode.MinH
+                        Entrée_Gamme = Trim(Det_TonaMinCours2() + " " + Trim(MComboMHarm.Text))
+                        Entrée_Mode = Entrée_Gamme
+                    Case MTyMode.MinM
+                        Entrée_Gamme = Trim(Det_TonaMinCours2() + " " + Trim(MComboMMel.Text))
+                        Entrée_Mode = Entrée_Gamme
+                    Case MTyMode.Autres
+                        Entrée_Gamme = Trim(Det_TonaCours2() + " " + Trim(MComboMSynth.Text))
+                        Entrée_Mode = Entrée_Gamme
+                End Select
+            Case Else ' 7
 
         End Select
         '
@@ -12343,27 +12443,30 @@ Public Class Form1
                             Grid1.Cell(ligne, 1).Text = Trim(TableEventH(m, t, ct).Position)
                             tbl1 = Split(TableEventH(m, t, ct).Position, ".")
                             Grid1.Cell(ligne, 0).Text = Trim(ligne.ToString) 'Trim(tbl1(0))
-                            ' Marqueur
-                            ' ********
-                            Grid1.Cell(ligne, 2).ForeColor = Color.Black
-                            Grid1.Cell(ligne, 2).BackColor = Color.Red
-                            If ligne > 1 Then
-                                Grid1.Cell(ligne, 2).BackColor = Couleur_Marqueurs
-                            End If
-                            Grid1.Cell(ligne, 2).Text = Trim(TableEventH(m, t, ct).Marqueur)
-                            If Trim(Grid1.Cell(ligne, 2).Text) <> "" Then
-                                Grid1.Cell(ligne, 2).BackColor = Color.Green
+                            ' Armure/Marqueur
+                            ' ***************
+                            If Trim(TableEventH(m, t, ct).Marqueur) <> "" Then
+                                'Grid1.Cell(ligne, 2).BackColor = Couleur_Marqueurs
+                                Grid1.Cell(ligne, 2).Text = TableEventH(m, t, ct).Marqueur
+                                Grid1.Cell(ligne, 2).BackColor = Coul_Marq
                                 Grid1.Cell(ligne, 2).ForeColor = Color.Yellow
                                 '
                                 Grid2.Cell(0, m).Locked = False
-                                Grid2.Cell(0, m).BackColor = Color.Green
+                                Grid2.Cell(0, m).BackColor = Coul_Marq
                                 Grid2.Cell(0, m).ForeColor = Color.Yellow
                                 Grid2.Cell(0, m).Locked = True
-                                'Grid2.Cell(0, m).SetFocus()
+                            Else
+                                Grid1.Cell(ligne, 2).Text = Trim(TableEventH(m, t, ct).Tonalité)
+                                If ligne = 1 Then ' 1ere ligne en rouge
+                                    Grid1.Cell(ligne, 2).ForeColor = Color.White
+                                    Grid1.Cell(ligne, 2).BackColor = Color.Red
+                                    'Grid1.Cell(ligne, 2).Text = TableEventH(m, t, ct).Tonalité
+                                End If
                             End If
-                            ' Mode (correspond à la colonne 'Tonalité' dans Compogrid)
+
+                            ' Mode
                             ' ****
-                            Grid1.Cell(ligne, 3).Text = Trim(TableEventH(m, t, ct).Tonalité)
+                            Grid1.Cell(ligne, 3).Text = Trim(TableEventH(m, t, ct).Mode)
                             '
                             tbl = Split(TableEventH(m, t, ct).Tonalité) ' ?????
 
@@ -12391,19 +12494,6 @@ Public Class Form1
                                 tona = Trim(Grid1.Cell(ligne, ColTonalité).Text)
                                 'tona = Det_RelativeMajeure2(tona)
                                 tbl2 = tona.Split()
-                                ' ************************************************
-                                'If (Trim(Grid1.Cell(ligne, ColGamme).Text) <> Trim(Grid1.Cell(ligne, ColTonalité).Text)) And
-                                '(tbl2(1) <> "MinH" And tbl2(1) <> "MinM") Then
-                                'Grid1.Cell(ligne, ColGamme).BackColor = Color.White
-                                'Grid1.Cell(ligne, ColGamme).ForeColor = Color.Black
-                                '
-                                'Else
-                                'tona = Trim(Grid1.Cell(ligne, ColTonalité).Text)
-                                'tbl2 = tona.Split()
-                                'Grid1.Cell(ligne, ColGamme).BackColor = DicoCouleur.Item(tbl2(0))
-                                'Grid1.Cell(ligne, ColGamme).ForeColor = DicoCouleurLettre.Item(tbl2(0))
-                                'End If
-                                ' ************************************************
                             End If
 
                             '
@@ -12416,7 +12506,7 @@ Public Class Form1
 
                             ' Exension - Données étendues
                             ' ***************************
-                            Maj_DétailsColler(ligne)
+                            Maj_DétailsColler(ligne, m, t, ct)
                             '
                         End If
                     Next ct
@@ -12424,15 +12514,21 @@ Public Class Form1
             Next m
             '
 
-            Grid1.Refresh()
-            Grid2.Refresh()
+
             Grid1.AutoRedraw = True
             Grid2.AutoRedraw = True
+            Grid1.Refresh()
+            Grid2.Refresh()
             '
 
 
         Catch ex As Exception
-            MessageHV.PContenuMess = "Erreur interne : procédure 'Ecriture_Entrée_ds_Compogrid' : " + ex.Message
+
+            MessageHV.PContenuMess = "Erreur interne : procédure 'Ecriture_Entrée_ds_Compogrid' : "  ' + "Ligne :" + ligne +     "m :" + m + "t :" + t +     "ct :" + ct
+
+
+
+
             MessageHV.PTypBouton = "OK"
             Cacher_FormTransparents()
             MessageHV.ShowDialog()
@@ -12479,6 +12575,11 @@ Public Class Form1
             ' position
             Grid1.Cell(ligne, 1).BackColor = DicoCouleur.Item(tona)
             Grid1.Cell(ligne, 1).ForeColor = DicoCouleurLettre.Item(tona)
+            ' Marqueur
+            If Grid1.Cell(ligne, 2).BackColor <> Coul_Marq Then
+                Grid1.Cell(ligne, 2).BackColor = DicoCouleur.Item(tona)
+                Grid1.Cell(ligne, 2).ForeColor = DicoCouleurLettre.Item(tona)
+            End If
             ' Tonalité
             Grid1.Cell(ligne, 3).BackColor = DicoCouleur.Item(tona)
             Grid1.Cell(ligne, 3).ForeColor = DicoCouleurLettre.Item(tona)
@@ -12706,27 +12807,27 @@ Public Class Form1
                         End If
                     Case "II"
                         If Module1.LangueIHM = "fr" Then
-                            Det_NomMode = "Locrien B6"
+                            Det_NomMode = "Locrien B13"
                         Else
-                            Det_NomMode = "Locrian B6"
+                            Det_NomMode = "Locrien B13"
                         End If
                     Case "III"
                         If Module1.LangueIHM = "fr" Then
                             Det_NomMode = "Ionien 5#"
                         Else
-                            Det_NomMode = "Ionian 5#"
+                            Det_NomMode = "Ionien 5#"
                         End If
                     Case "IV"
                         If Module1.LangueIHM = "fr" Then
-                            Det_NomMode = "Dorien 4#"
+                            Det_NomMode = "Dorien 11#"
                         Else
-                            Det_NomMode = "Dorian 4#"
+                            Det_NomMode = "Dorien 11#"
                         End If
                     Case "V"
                         If Module1.LangueIHM = "fr" Then
-                            Det_NomMode = "SuperPhrygien"
+                            Det_NomMode = "Mixolydien b9b13"
                         Else
-                            Det_NomMode = "SuperPhrygian"
+                            Det_NomMode = "Mixolydien b9b13"
                         End If
                     Case "VI"
                         If Module1.LangueIHM = "fr" Then
@@ -12736,9 +12837,9 @@ Public Class Form1
                         End If
                     Case "VII"
                         If Module1.LangueIHM = "fr" Then
-                            Det_NomMode = "Altéré"
+                            Det_NomMode = "Altéré bb7"
                         Else
-                            Det_NomMode = "Altered"
+                            Det_NomMode = "Altéré bb7"
                         End If
                 End Select
             Case "MinM"
@@ -12751,39 +12852,39 @@ Public Class Form1
                         End If
                     Case "II"
                         If Module1.LangueIHM = "fr" Then
-                            Det_NomMode = "Dorien 2b"
+                            Det_NomMode = "Dorien b9"
                         Else
-                            Det_NomMode = "Dorian 2b"
+                            Det_NomMode = "Dorien b9"
                         End If
                     Case "III"
                         If Module1.LangueIHM = "fr" Then
-                            Det_NomMode = "Lydien augmenté"
+                            Det_NomMode = "Lydien 5#"
                         Else
-                            Det_NomMode = "Augmented Lydian"
+                            Det_NomMode = "Lydien 5#"
                         End If
                     Case "IV"
                         If Module1.LangueIHM = "fr" Then
                             Det_NomMode = "Lydien 7b"
                         Else
-                            Det_NomMode = "Lydian 7b"
+                            Det_NomMode = "Lydien 7b"
                         End If
                     Case "V"
                         If Module1.LangueIHM = "fr" Then
-                            Det_NomMode = "Mixolydien 6b"
+                            Det_NomMode = "Mixolydien b13"
                         Else
-                            Det_NomMode = "Mixolydian 6b"
+                            Det_NomMode = "Mixolydien 6b"
                         End If
                     Case "VI"
                         If Module1.LangueIHM = "fr" Then
-                            Det_NomMode = "Aéolien b5"
+                            Det_NomMode = "Locrien B9"
                         Else
-                            Det_NomMode = "Aéolian b5"
+                            Det_NomMode = "Locrien B9"
                         End If
                     Case "VII"
                         If Module1.LangueIHM = "fr" Then
-                            Det_NomMode = "SuperLocrien"
+                            Det_NomMode = "Altéré"
                         Else
-                            Det_NomMode = "SuperLocrian"
+                            Det_NomMode = "Altéré"
                         End If
                 End Select
             Case "MajH"
@@ -13185,10 +13286,6 @@ Public Class Form1
     Private Sub CheckBlues_CheckedChanged_1(sender As Object, e As EventArgs)
         Maj_GammesJouables()
     End Sub
-
-    Private Sub Panel13_Paint(sender As Object, e As PaintEventArgs)
-
-    End Sub
     Private Sub ComboBox23_SelectedIndexChanged(sender As Object, e As EventArgs)
         If EnChargement = False Then ' And ChangementLangue = False
             ChoixTypeAccord()
@@ -13369,7 +13466,7 @@ Public Class Form1
         Enregistrer()
         Me.Cursor = Cursors.Default
     End Sub
-    Sub Enregistrer()
+    Public Sub Enregistrer()
         If IndicateurEnreg = False Then
             If Det_NomFich() Then
                 IndicateurEnreg = True
@@ -13609,7 +13706,7 @@ Public Class Form1
         End If
     End Function
     Sub EnregistrerSous()
-        Dim a As String
+        Dim a, Ligne As String
         '
         Dim i As Integer
         Dim m, t, ct As Integer
@@ -13617,7 +13714,8 @@ Public Class Form1
         Try
             Maj_Présence_Marqueurs() ' pour mettre à jour TableEventH avec les marqueurs qui n'ont pas fait l'objet d'un retour chariot
             If Trim(CheminFichierEnreg) <> "" Then '  est déterminé dans Det_Nomfich
-                RichTextBox2.Text = FichierEnreg
+                Label102.Text = FichierEnreg
+                Label103.Text = FichierEnreg ' chemin du fichier ouvert afiché dans onglet système
                 FileOpen(1, FichierEnreg, OpenMode.Output) ' 
 
                 ' MUSIQUE
@@ -13770,6 +13868,21 @@ Public Class Form1
                 a = "BasseMoins" + ";" + BasseMoins12.Checked.ToString + ";" + ComboBox11.SelectedIndex.ToString + ";" + UpDown1.Value.ToString
                 WriteLine(1, a)
                 a = "4Notes" + ";" + QuatreNotes.Checked.ToString + ";" + ComboBox12.SelectedIndex.ToString + ";" + UpDown2.Value.ToString
+                WriteLine(1, a)
+
+                ' COURBEXP
+                ' ********
+                a = "COURBEXP,"
+                a = a + ActExp.Checked.ToString + ","
+                For j = 1 To Courbexp.Cols - 1
+                    Ligne = ValCtrlexp_Ligne(j)
+                    If Ligne <> "" Then
+                        If Ligne <> (Courbexp.Rows - 1).ToString Then ' la dernière ligne indique la valeur 0, elle reste en blanc
+                            a = a + Ligne + " " + j.ToString + ","
+                        End If
+                    End If
+                Next j
+                a = Trim(Microsoft.VisualBasic.Left(a, a.Length - 1))
                 WriteLine(1, a)
                 '
                 ' STACKING
@@ -13983,32 +14096,23 @@ Public Class Form1
             MsgBox("CouperJouer")
         End Try
     End Sub
-    Sub ToutesNotesOff()
+    Public Sub ToutesNotesOff()
         Dim i As Integer
         Dim canal As Byte
         '
         If Not (SortieMidi.Item(ChoixSortieMidi).IsOpen) Then
             SortieMidi.Item(ChoixSortieMidi).Open()
         End If
-
-        SortieMidi.Item(ChoixSortieMidi).SilenceAllNotes()
         '
         ' Pistes 1 à 16
         ' *************
         For canal = 0 To 15
-            For i = 0 To 127
-                SortieMidi.Item(ChoixSortieMidi).SendNoteOn(canal, i, 0)
+            For i = TessBas To TessHaut
+                SortieMidi.Item(ChoixSortieMidi).SendNoteOff(canal, i, 0)
             Next i
+            'Thread.Sleep(10)
         Next canal
 
-        '
-
-
-        ' Batterie
-        ' ********
-        'For i = 0 To 127
-        'SortieMidi.Item(ChoixSortieMidi).SendNoteOff(9, i, 0)
-        'Next i
 
     End Sub
     Sub CouperAccord()
@@ -14100,7 +14204,7 @@ Public Class Form1
 
         NouveauConfirm = False
         If Module1.LangueIHM = "fr" Then
-            message = "Voulez-vous sauvegarder votre projet actuel ?"
+            message = "Voulez-vous enregistrer votre projet actuel ?"
             titre = "HyperVoicing"
         Else
             message = "Do you want to save your project ?"
@@ -14113,10 +14217,11 @@ Public Class Form1
     Function CréationFichierTexteCalquesMIDI(NomFichierCalques As String) As String
         Dim h, i, k, n As Integer
         Dim m, t, ct As Integer
-        Dim a, b, c, d, notes As String
+        Dim a, b, c, d, e, notes As String
         Dim ligne1 As String = ""
         Dim tbl1() As String = Nothing
         Dim tbl2() As String = Nothing
+        Dim tbl3() As String = Nothing
         '
         Dim FIN As Double
         Dim NPiste As Integer
@@ -14221,7 +14326,13 @@ Public Class Form1
                                         d = TableEventH(m, t, ct).Gamme
                                         fileWriter.WriteLine("Gamme : " + TableEventH(m, t, ct).Gamme)
                                         notes = Det_NotesGammes(TableEventH(m, t, ct).Gamme)
-                                        tbl2 = Split(notes)
+                                        tbl3 = Split(notes)
+                                        e = ""
+                                        For i = 1 To tbl3.Count - 1
+                                            e = e + tbl3(i) + " "
+                                        Next
+                                        e = Trim(e)
+                                        tbl2 = Split(e)
                                 End Select
                                 '
                                 For i = 0 To UBound(tbl2)
@@ -14763,7 +14874,7 @@ Public Class Form1
         '
         Grid1.AutoRedraw = False
         For i = 1 To Grid1.Rows - 1
-            If Trim(Grid1.Cell(i, 2).Text) <> "" And Grid1.Cell(i, 2).BackColor <> Couleur_Marqueurs Then ' présence marqueur
+            If Trim(Grid1.Cell(i, 2).Text) <> "" And Grid1.Cell(i, 2).BackColor = Coul_Marq Then ' présence marqueur
                 If Trim(Grid1.Cell(i, 1).Text) <> "" Then ' présence position ?
                     Présence_Marqueur = True
                     '
@@ -14968,7 +15079,7 @@ Public Class Form1
         Dim Réduction As Integer
         Dim lg As Integer
 
-        Réduction = Transport.Comp.Value ' réduction de la longueur des notes 
+        Réduction = Comp.Value ' réduction de la longueur des notes 
 
         Tmesure = Taille_Mesure() ' taille mesure en doubles croches ex. mesure 4/4 = 16)
         tbl = Split(Métrique.Text, "/")
@@ -14978,18 +15089,9 @@ Public Class Form1
         If ligne + 1 <= Grid1.Rows - 1 Then
             Pi = Grid1.Cell(ligne, 1).Text
             Pj = Grid1.Cell(ligne + 1, 1).Text
-            'If Pj = "" Then ' si dernier accord, alors sa longueur est de 1 mesure
-            If Pj = "" Then Pj = (Transport.Terme.Value + 1).ToString + ".1" + ".1"
-            ''  "15" = DuréeNote (dernière note) -  Remarque importante : on retire une division pour bien séparer le message NoteOff du message NoteON suivante quand il s'agit de la même note
-            'lg = 16
-            'If Réduction > 0 And Réduction <= lg / 2 Then
-            'DuréeNote3 = ((16) - Réduction).ToString
-            'Else
-            '   If Réduction <> 0 And Réduction > lg / 2 Then
-            'DuréeNote3 = (16 / 2).ToString
-            'End If
-            'End If
-            'Else
+
+            If Trim(Pj) = "" Then Pj = (Transport.Terme.Value + 1).ToString + ".1" + ".1"
+
             '
             Tbli = Split(Pi, ".")
             Tblj = Split(Pj, ".")
@@ -15013,11 +15115,12 @@ Public Class Form1
             '
             lg = j - i
             DuréeNote3 = Str((j - i)) ' Str((j - i) - 1) - Remarque importante : on retire une division pour bien séparer le message NoteOff du message NoteON suivante quand il s'agit de la même note
-            If Réduction > 0 And Réduction <= lg / 2 Then
-                DuréeNote3 = Str((j - i) - Réduction)
+            If Réduction > 0 And Réduction > lg / 2 Then ' Réduction est positif --> legato
+                DuréeNote3 = Str((j - i) + Réduction)
             Else
-                If Réduction <> 0 And Réduction > lg / 2 Then
-                    DuréeNote3 = Str(Val(DuréeNote3) / 2)
+                If Réduction <> 0 And Réduction <= lg / 2 Then ' Réduction est négatif et <>0 --> staccato
+                    'DuréeNote3 = Str(Val(DuréeNote3) / 2)
+                    DuréeNote3 = Str((j - i) + Réduction)
                 End If
             End If
             'End If
@@ -15143,27 +15246,6 @@ Public Class Form1
     Sub EnvoiMess() 'As Midi.CallbackMessage.CallbackType()
         VarCallBack = "Passage"
     End Sub
-
-    Private Sub Button23_Click(sender As Object, e As EventArgs)
-        Dim Horloge1 As New Midi.Clock(Tempo.Value)
-
-        'SortieMidi.Item(ChoixSortieMidi).SendNoteOn(nCanal.value-1, n, 80)
-        If Not (SortieMidi.Item(ChoixSortieMidi).IsOpen) Then
-            SortieMidi.Item(ChoixSortieMidi).Open()
-        End If
-
-        Horloge1.Schedule(New CallbackMessage(AddressOf EnvoiMess, 2.5))
-        Horloge1.Schedule(New NoteOnOffMessage(SortieMidi.Item(ChoixSortieMidi), CanalThru.Value - 1, 60, 80, 1, Horloge1, 1))
-        Horloge1.Schedule(New NoteOnOffMessage(SortieMidi.Item(ChoixSortieMidi), CanalThru.Value - 1, 64, 80, 1, Horloge1, 1))
-        '
-        Horloge1.Schedule(New NoteOnOffMessage(SortieMidi.Item(ChoixSortieMidi), CanalThru.Value - 1, 61, 80, 2, Horloge1, 1))
-        Horloge1.Schedule(New NoteOnOffMessage(SortieMidi.Item(ChoixSortieMidi), CanalThru.Value - 1, 61, 80, 2.5, Horloge1, 1))
-        'Horloge1.Schedule(New NoteOffMessage(SortieMidi.Item(ChoixSortieMidi),nCanal.value-1, 60, 80, 1))
-        '
-        Horloge1.Start()
-    End Sub
-
-
     Private Sub Fermer_MIDI()
         Dim i As Integer
         '
@@ -15200,8 +15282,10 @@ Public Class Form1
         ' Arrêter l'écoute
         ' ****************
         If ArrêterTimer = True Then
-            FIN()
-            'StopPlay()
+            Transport.Arrêt.PerformClick()
+            If Transport.Repeter.Checked Then
+                Transport.Play.PerformClick()
+            End If
         End If
 
     End Sub
@@ -15254,6 +15338,9 @@ Public Class Form1
         Maj_TabNotes("#") ' remarque : les notes des gammes sont toujours calculées en # pour coloriser le piano
         tbl = Split(Gamme, " ")
         a = tbl(0)
+        'If tbl.Count = 3 Then
+        'a = Trim(a + " " + Trim(tbl(2)))
+        'End If
         'SigneClef = Trim(Det_Clef(a))
 
         RAZ_CouleursPiano()
@@ -15495,7 +15582,7 @@ Public Class Form1
             ChoixSortieMidi = ComboMidiOut.SelectedIndex
             '
             a = Trim(Str(ChoixSortieMidi))
-            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixSortieMIDI", a)
+            My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixSortieMIDI", a)
         End If
         '
     End Sub
@@ -15566,7 +15653,7 @@ Public Class Form1
             a = "0"
         End If
 
-        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Thru", a)
+        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Thru", a)
         Ouverture_EntréeMidi()
     End Sub
 
@@ -15581,7 +15668,7 @@ Public Class Form1
 
 
         a = Trim(Str(ChoixEntréeMidi))
-        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixEntréeMIDI", a)
+        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixEntréeMIDI", a)
 
         'Ouverture_EntréeMidi() ' ??????
         Try
@@ -15667,7 +15754,7 @@ Public Class Form1
     End Sub
 
 
-    Private Sub CopierToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CopierToolStripMenuItem.Click, Flot_Copier.Click, Button16.Click
+    Private Sub CopierToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles Flot_Copier.Click, CopierToolStripMenuItem.Click
         Select Case OngletCours_Edition
             Case N_PisteAcc  ' Onglet HyperVoicing
                 Copier()
@@ -15727,7 +15814,7 @@ Public Class Form1
         End Select
         ' nbColonnesGrid3ParMesure (nbMesures * nbColonnesGrid3ParMesure) - 1 
     End Sub
-    Private Sub CouperToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CouperToolStripMenuItem.Click, Button15.Click, Flot_Couper.Click
+    Private Sub CouperToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles Flot_Couper.Click, CouperToolStripMenuItem.Click
         Select Case OngletCours_Edition
             Case N_PisteAcc ' onglet HyperVoicing
                 Couper()
@@ -15741,20 +15828,20 @@ Public Class Form1
                 End If
                 Calcul_AutoVoicingZ()
             Case N_PisteDrums  ' onglet DrumEdit
-                If Drums.PGridOrigine = "Grid1" Then
-                    If Drums.Grid1.Selection.FirstCol > 3 And Drums.Grid1.Selection.FirstRow > 0 Then
-                        Drums.DéVérouillerGrid1()    ' les cellules ont été vérrouillées dans drums.grid1_Keydown 
-                        Drums.Grid1.AutoRedraw = False
-                        Drums.Sauv_ClipAnnuler()
-                        Drums.Grid1.Selection.CutData()
-                        Drums.DessinDiv()
-                        ii = Drums.Det_NumPréset2()
-                        Drums.Maj_Préset(ii)
-                        Drums.Grid1.AutoRedraw = True
-                        Drums.Grid1.Refresh()
-                        Drums.VérouillerGrid1()     ' les cellules seront déverrouillées à la fin de Drums.Grid1_KeyUp
-                    End If
-                End If
+                'If Drums.PGridOrigine = "Grid1" Then
+                'If Drums.Grid1.Selection.FirstCol > 3 And Drums.Grid1.Selection.FirstRow > 0 Then
+                ' Drums.DéVérouillerGrid1()    ' les cellules ont été vérrouillées dans drums.grid1_Keydown 
+                'Drums.Grid1.AutoRedraw = False
+                'Drums.Sauv_ClipAnnuler()
+                'Drums.Grid1.Selection.CutData()
+                'Drums.DessinDiv()
+                'ii = Drums.Det_NumPréset2()
+                'Drums.Maj_Préset(ii)
+                'Drums.Grid1.AutoRedraw = True
+                'Drums.Grid1.Refresh()
+                'Drums.VérouillerGrid1()     ' les cellules seront déverrouillées à la fin de Drums.Grid1_KeyUp
+                'End If
+                'End If
                 Calcul_AutoVoicingZ()
 
             Case N_Courbexp
@@ -16506,7 +16593,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub CollerToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CollerToolStripMenuItem.Click, Button22.Click, Flot_Coller.Click
+    Private Sub CollerToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles Flot_Coller.Click, CollerToolStripMenuItem.Click
         Select Case OngletCours_Edition
             Case N_PisteAcc  ' Onglet HyperArp
                 Coller()
@@ -16514,6 +16601,7 @@ Public Class Form1
                 With listPIANOROLL.Item(OngletCours_Edition - 1)
                     If .Orig_PianoR.Orig1 = OrigPianoCourbe.Piano Then ' pianoroll
                         .CollerData2()
+                        .MemoNotesSel()
 
                     Else                                               ' courbes
                         Dim ind As Integer = .Orig_PianoR.N_Courbe
@@ -16547,8 +16635,20 @@ Public Class Form1
                 Courbexp.AutoRedraw = False
                 'Courbexp.Range(1, 3, Courbexp.Rows - 1, Courbexp.Cols - 1).Locked = False
                 '
+                Dim i, j As Integer
+                'Grid1.Range(1, 4, Grid1.Rows - 1, 4).Locked = False
+                For i = 1 To Courbexp.Rows - 1
+                    For j = 4 To Grid1.Cols - 1
+                        Courbexp.Cell(i, j).Locked = False
+                    Next j
+                Next i
                 Courbexp.Selection.PasteData()
                 '
+                For i = 1 To Courbexp.Rows - 1
+                    For j = 4 To Grid1.Cols - 1
+                        Courbexp.Cell(i, j).Locked = True
+                    Next j
+                Next i
                 'Courbexp.Range(1, 3, Courbexp.Rows - 1, Courbexp.Cols - 1).Locked = True
                 Courbexp.AutoRedraw = True
                 Courbexp.Refresh()
@@ -16779,7 +16879,7 @@ Public Class Form1
         'NotesCommunes.Checked = NotesCommunes2.Checked
     End Sub
 
-    Private Sub AnnulerToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AnnulerToolStripMenuItem.Click, Button14.Click, AnnulerToolStripMenuItem1.Click
+    Private Sub AnnulerToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AnnulerToolStripMenuItem1.Click, AnnulerToolStripMenuItem.Click
         Select Case OngletCours_Edition
             Case N_PisteAcc ' Onglet HyperArp
                 Annuler()
@@ -16805,21 +16905,25 @@ Public Class Form1
             ZAnnulation_Restitution()
         End If
     End Sub
-    Private Sub MIDIResetToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles MIDIResetToolStripMenuItem.Click
-        MIDIReset()
-    End Sub
-    Sub MIDIReset()
+    Public Sub MIDI_Panic()
         If Not (SortieMidi.Item(ChoixSortieMidi).IsOpen) Then
             SortieMidi.Item(ChoixSortieMidi).Open()
         End If
         ToutesNotesOff()
-        Init_CTRLMIDI2()
+        'Init_CTRLMIDI2()  --> peut être à remettre, on verra
     End Sub
     Private Sub MenuCalquesMIDI_Click(sender As Object, e As EventArgs)
         ExportCalqueMIDI()
     End Sub
     Sub ExportCalqueMIDI()
         Dim a As String
+
+        ' Mise à jour préalable des Locateurs gauche et droite
+        ' *****************************************************
+        Me.Terme.BackColor = Color.White
+        Transport.Début.Value = 1
+        Transport.Terme.Value = nbMesures
+        TermeFin = Transport.Terme.Value
         '
         Try
             'If Trim(Grid2.Cell(1, Début.Value).Text) = "" Then
@@ -16832,7 +16936,9 @@ Public Class Form1
                 Création_MidiFile(a, 2)
                 ' copie du fichier Calques MIDI dans le fichier choisi
                 ' ****************************************************
-                a = Création_CTemp() + "\" + "FichierCalquesMIDI" + ".mid" '
+                'a = Création_CTemp() + "\" + "FichierCalquesMIDI" + ".mid" '
+
+                a = Création_CTemp() + "\" + "djgbv58147" + ".mid"
                 If My.Computer.FileSystem.FileExists(FichierCalques) Then
                     My.Computer.FileSystem.DeleteFile(FichierCalques)
                 End If
@@ -16877,6 +16983,13 @@ Public Class Form1
     Sub ExportChordsAsMarkers()
         Dim a As String
         '
+        ' Mise à jour préalable des Locateurs gauche et droite
+        ' *****************************************************
+        Me.Terme.BackColor = Color.White
+        Transport.Début.Value = 1
+        Transport.Terme.Value = nbMesures
+        TermeFin = Transport.Terme.Value
+        '
         Try
             If Det_NomMarqueursMIDI() Then ' nom du fichier marqueurs
                 a = Création_CTemp() + "\" + "djgbv58147.mid" ' fichier midi temporaire (dans Documents/Hypervoicing/)
@@ -16895,6 +17008,13 @@ Public Class Form1
     End Sub
     Sub ExportScalesAsMarkers()
         Dim a As String
+        '
+        ' Mise à jour préalable des Locateurs gauche et droite
+        ' *****************************************************
+        Me.Terme.BackColor = Color.White
+        Transport.Début.Value = 1
+        Transport.Terme.Value = nbMesures
+        TermeFin = Transport.Terme.Value
         '
         Try
             If Det_NomMarqueursMIDI() Then ' nom du fichier marqueurs
@@ -17792,14 +17912,14 @@ Public Class Form1
                     TabCad.Item(i).BackColor = Couleur_Accord_Majeur
                     TabCad.Item(i).ForeColor = Color.Black
                     TabCadDegrés.Item(i).BackColor = Color.Gold 'Couleur_Accord_Majeur
-                    TabCadDegrés.Item(i).ForeColor = Color.Black
+                    'TabCadDegrés.Item(i).ForeColor = Color.Black
                 Next i
             Else
                 For i = 0 To 4
                     TabCad.Item(i).BackColor = Couleur_Accord_Mineur
                     TabCad.Item(i).ForeColor = Color.Black
                     TabCadDegrés.Item(i).BackColor = Color.Gold 'Couleur_Accord_Mineur
-                    TabCadDegrés.Item(i).ForeColor = Color.Black
+                    'TabCadDegrés.Item(i).ForeColor = Color.Black
                 Next i
             End If
         End If
@@ -17846,20 +17966,17 @@ Public Class Form1
                 Label28.Text = "Anatole"
                 ComboBox3.SelectAll()
 
-                    '
             Case "Complète"
                 Cad_OrigineAccord = Modes.Cadence_Majeure
                 Cad_ComplèteMaj()
                 Label28.Text = "Complète"
                 ComboBox3.SelectAll()
 
-
             Case "Complete"
                 Cad_OrigineAccord = Modes.Cadence_Majeure
                 Cad_ComplèteMaj()
                 Label28.Text = "Complete"
                 ComboBox3.SelectAll()
-
                     '
             Case "2-5-1"
                 Cad_OrigineAccord = Modes.Cadence_Majeure
@@ -18080,7 +18197,6 @@ Public Class Form1
         TabCadDegrés.Item(1).Visible = True ' degré
         TabCad.Item(1).Visible = True ' nom de l'accord
 
-
         TabCadDegrés.Item(2).Text = "II"
         TabCadDegrés.Item(2).Visible = True ' degré
         TabCad.Item(2).Visible = True ' nom de l'accord
@@ -18102,6 +18218,30 @@ Public Class Form1
 
         'End If
     End Sub
+    Sub Cad_Bach()
+        CAD_Init_Aff()
+        '
+        TabCadDegrés.Item(0).Text = "I"
+        TabCadDegrés.Item(0).Visible = True ' degré
+        TabCad.Item(0).Visible = True ' nom de l'accord
+        '
+        TabCadDegrés.Item(1).Text = "V"
+        TabCadDegrés.Item(1).Visible = True ' degré
+        TabCad.Item(1).Visible = True ' nom de l'accord
+
+        TabCadDegrés.Item(2).Text = "VI"
+        TabCadDegrés.Item(2).Visible = True ' degré
+        TabCad.Item(2).Visible = True ' nom de l'accord
+
+
+        TabCadDegrés.Item(3).Text = "IV"
+        TabCadDegrés.Item(3).Visible = True ' degré
+        TabCad.Item(3).Visible = True ' nom de l'accord
+
+        CAD_Maj_TableGlobalAcc()
+    End Sub
+
+
     Sub Cad_Forme2()
         If EnChargement = False Then
             '
@@ -18170,6 +18310,23 @@ Public Class Form1
             CAD_Maj_TableGlobalAcc()
         End If
     End Sub
+    Sub CoulCadDegréMaj()
+        Dim i As Integer
+        For i = 0 To TabCadDegrés.Count - 1
+            TabCadDegrés.Item(i).ForeColor = Color.Black
+            TabCadDegrés.Item(i).Refresh()
+        Next
+    End Sub
+    Sub CoulCadDegréMin()
+        Dim i As Integer
+        For i = 0 To TabCadDegrés.Count - 1
+            TabCadDegrés.Item(i).ForeColor = Color.Blue
+            TabCadDegrés.Item(i).Refresh()
+        Next
+    End Sub
+
+
+
     Sub Cad_AnatoleMin()
         If EnChargement = False Then
             '
@@ -18204,6 +18361,23 @@ Public Class Form1
             '
             CAD_Maj_TableGlobalAcc()
             '
+
+            TabCadDegrés.Item(0).Text = "I"
+            TabCadDegrés.Item(0).ForeColor = Color.Blue
+            TabCadDegrés.Item(0).Refresh()
+            TabCadDegrés.Item(1).Text = "VI"
+            TabCadDegrés.Item(1).ForeColor = Color.Blue
+            TabCadDegrés.Item(1).Refresh()
+            TabCadDegrés.Item(2).Text = "II"
+            TabCadDegrés.Item(2).ForeColor = Color.Blue
+            TabCadDegrés.Item(2).Refresh()
+            TabCadDegrés.Item(3).Text = "V"
+            TabCadDegrés.Item(3).ForeColor = Color.Blue
+            TabCadDegrés.Item(3).Refresh()
+            TabCadDegrés.Item(4).Text = "I"
+            TabCadDegrés.Item(4).ForeColor = Color.Blue
+            TabCadDegrés.Item(4).Refresh()
+
         End If
     End Sub
 
@@ -18231,6 +18405,16 @@ Public Class Form1
             '
             CAD_Maj_TableGlobalAcc()
             '
+            TabCadDegrés.Item(0).Text = "V"
+            TabCadDegrés.Item(0).ForeColor = Color.Blue
+            TabCadDegrés.Item(0).Refresh()
+            TabCadDegrés.Item(1).Text = "I"
+            TabCadDegrés.Item(1).ForeColor = Color.Blue
+            TabCadDegrés.Item(1).Refresh()
+            TabCadDegrés.Item(2).Text = "V"
+            TabCadDegrés.Item(2).ForeColor = Color.Blue
+            TabCadDegrés.Item(2).Refresh()
+
         End If
     End Sub
     Sub Cad_Pseudo251Min()
@@ -18262,6 +18446,19 @@ Public Class Form1
             '
             CAD_Maj_TableGlobalAcc()
             '
+            TabCadDegrés.Item(0).Text = "I"
+            TabCadDegrés.Item(0).ForeColor = Color.Blue
+            TabCadDegrés.Item(0).Refresh()
+            TabCadDegrés.Item(1).Text = "II"
+            TabCadDegrés.Item(1).ForeColor = Color.Blue
+            TabCadDegrés.Item(1).Refresh()
+            TabCadDegrés.Item(2).Text = "V"
+            TabCadDegrés.Item(2).ForeColor = Color.Blue
+            TabCadDegrés.Item(2).Refresh()
+            TabCadDegrés.Item(3).Text = "I"
+            TabCadDegrés.Item(3).ForeColor = Color.Blue
+            TabCadDegrés.Item(3).Refresh()
+            '
         End If
     End Sub
     Sub Cad_HispaniqueMixte()
@@ -18289,19 +18486,48 @@ Public Class Form1
             TabCadDegrés.Item(3).Text = "III"
             TabCadDegrés.Item(3).Visible = True ' degré
             TabCad.Item(3).Visible = True ' nom de l'accord
-
-
+            '
             TabCadDegrés.Item(4).Text = "VI"
             TabCadDegrés.Item(4).Visible = True ' degré
             TabCad.Item(4).Visible = True ' nom de l'accord
-
-            '
-            'Label28.Size = New Size(535, 33)
             '
             CAD_Maj_TableGlobalAcc()
+            '
+            TabCadDegrés.Item(0).Text = "VI"
+            TabCadDegrés.Item(0).ForeColor = Color.Black
+            TabCadDegrés.Item(0).Refresh()
+            TabCadDegrés.Item(1).Text = "V"
+            TabCadDegrés.Item(1).ForeColor = Color.Black
+            TabCadDegrés.Item(1).Refresh()
+            TabCadDegrés.Item(2).Text = "IV"
+            TabCadDegrés.Item(2).ForeColor = Color.Black
+            TabCadDegrés.Item(2).Refresh()
+            TabCadDegrés.Item(3).Text = "V"
+            TabCadDegrés.Item(3).ForeColor = Color.Blue
+            TabCadDegrés.Item(3).Refresh()
+            TabCadDegrés.Item(4).Text = "I"
+            TabCadDegrés.Item(4).ForeColor = Color.Blue
+            TabCadDegrés.Item(4).Refresh()
+            '
         End If
     End Sub
-
+    Sub Anatol_Min_Degrés()
+        TabCadDegrés.Item(0).Text = "I"
+        TabCadDegrés.Item(0).ForeColor = Color.Blue
+        TabCadDegrés.Item(0).Refresh()
+        TabCadDegrés.Item(1).Text = "VI"
+        TabCadDegrés.Item(1).ForeColor = Color.Blue
+        TabCadDegrés.Item(1).Refresh()
+        TabCadDegrés.Item(2).Text = "II"
+        TabCadDegrés.Item(2).ForeColor = Color.Blue
+        TabCadDegrés.Item(2).Refresh()
+        TabCadDegrés.Item(3).Text = "V"
+        TabCadDegrés.Item(3).ForeColor = Color.Blue
+        TabCadDegrés.Item(3).Refresh()
+        TabCadDegrés.Item(4).Text = "I"
+        TabCadDegrés.Item(4).ForeColor = Color.Blue
+        TabCadDegrés.Item(4).Refresh()
+    End Sub
     Private Sub CAD_Renversement1_Click(sender As Object, e As EventArgs) Handles CAD_Renversement1.Click
         CAD_Renversement1.Checked = True
         '
@@ -18453,9 +18679,6 @@ Public Class Form1
         Init_Graphisme()
 
     End Sub
-    Private Sub SplitContainer12_Panel2_Paint(sender As Object, e As PaintEventArgs) Handles SplitContainer12.Panel2.Paint
-
-    End Sub
 
     Private Sub ComboMidiIn_SelectedIndexChanged_2(sender As Object, e As EventArgs) Handles ComboMidiIn.SelectedIndexChanged
         Dim a As String
@@ -18470,7 +18693,7 @@ Public Class Form1
 
 
         a = Trim(Str(ChoixEntréeMidi))
-        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixEntréeMIDI", a)
+        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixEntréeMIDI", a)
 
         'Ouverture_EntréeMidi() ' ??????
         Try
@@ -18522,16 +18745,17 @@ Public Class Form1
                 a = Trim(Str(ChoixSortieMidi))
                 ' **** Ceci est un TEST ****
                 ' test de l'interface choisie : si problème le catch entre en jeu
-                If Not (SortieMidi.Item(ChoixSortieMidi).IsOpen) Then
-                    '
-                    SortieMidi.Item(ChoixSortieMidi).Open()
-                    SortieMidi.Item(ChoixSortieMidi).Close()
-
-                Else
+                'If Not (SortieMidi.Item(ChoixSortieMidi).IsOpen) Then
+                ''
+                'SortieMidi.Item(ChoixSortieMidi).Open()
+                'SortieMidi.Item(ChoixSortieMidi).Close()
+                'Else
+                'SortieMidi.Item(ChoixSortieMidi).Close()
+                'End If
+                If SortieMidi.Item(ChoixSortieMidi).IsOpen Then
                     SortieMidi.Item(ChoixSortieMidi).Close()
                 End If
-
-                My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "ChoixSortieMIDI", a)
+                My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "ChoixSortieMIDI", a)
             End If
             '
         Catch ex As Exception
@@ -18561,36 +18785,12 @@ Public Class Form1
             a = "0"
         End If
 
-        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CalquesMIDI\HyperVoicing\Préférences", "Thru", a)
+        My.Computer.Registry.SetValue("HKEY_CURRENT_USER\Software\CompoMusic\HyperVoicing\Préférences", "Thru", a)
 
         Ouverture_EntréeMidi()
 
     End Sub
 
-    Private Sub TabControl4_SelectedIndexChanged(sender As Object, e As EventArgs)
-        'Dim tcont As TabControl = sender
-        'Dim a As String
-
-
-        ''OngletCours = Val(tcont.SelectedTab.Tag)
-        'a = tcont.SelectedTab.Text
-
-
-    End Sub
-    'Private Sub Timer_Aff_MidiIn_Tick(sender As Object, e As EventArgs) Handles Timer_Aff_MidiIn.Tick
-    '
-    '   If AfficherNote = True Then
-    '          'LabelPianoMidiIn.Item(N_Note).Refresh()
-    '         'LabelPianoMidiIn.Item(N_Note).BringToFront()
-    '        LabelPianoMidiIn.Item(N_Note).BackColor = Color.Red
-    'Else
-    'If Det_NoteEstDiése(N_Note) = "#" Then
-    '           LabelPianoMidiIn.Item(N_Note).BackColor = Color.Black
-    'Else
-    '           LabelPianoMidiIn.Item(N_Note).BackColor = Color.White
-    'End If
-    'End If
-    'End Sub
     Private Function Det_NoteEstDiése(Note As Byte) As String
         Dim i, j, k As Integer
 
@@ -18759,7 +18959,7 @@ Public Class Form1
             End If
             '
             i = Det_IndexGrid3_De_ColGrid2(Colonne) ' Det_IndexGrid3_De_ColGrid2(Grid2.ActiveCell.Col)
-            If i <> 1 Then ' ici on ne traite que les couluers uaf les couleurs de la colonne 1 qui et toujours en rouge
+            If i <> 1 Then ' ici on ne traite que les couleurs sauf les couleurs de la colonne 1 qui et toujours en rouge
                 Grid2.AutoRedraw = False
                 Grid3.AutoRedraw = False
                 '
@@ -18788,6 +18988,13 @@ Public Class Form1
                                 m As Integer, t As Integer, ct As Integer) ' les variables Tonalités, Accord, Gamme et Mode sont exprimées ici en Anglais et en #
         Dim tbl() As String
         Dim a, b As String
+        Dim lst1 As New List(Of String) From {"m", "mb5", "5#", "m", "7", "", "mb5"} ' chiffrage du mode mineur harmonique
+
+        '
+
+        Grid2.AutoRedraw = False
+
+
 
         DerGridCliquée = GridCours.Grid2
         ' Pour CTRL Z
@@ -18801,7 +19008,7 @@ Public Class Form1
         If b = "b" Then ' si oui, il est nécessaire de tout transformer en "b"
             Tonalité = TradAcc_DieseEnBem(Tonalité)
             Accord = TradAcc_DieseEnBem(Accord)
-            Gamme = TradAcc_DieseEnBem(Gamme)
+            'Gamme = TradAcc_DieseEnBem(Gamme)
             Mode = TradAcc_DieseEnBem(Mode)
         End If
         TableEventH(m, t, ct).Tonalité = Trim(Tonalité) '  Trim(ComboBox1.Text) 'Entrée_Tonalité
@@ -18809,17 +19016,20 @@ Public Class Form1
         TableEventH(m, t, ct).Gamme = Trim(Gamme)
         TableEventH(m, t, ct).Mode = Trim(Mode)        ' Mode = Gamme - le mode n'est pas affiché mais je garde l'info por le moment
 
+
         '
         ' ECRITURE dans Grid2
         ' *******************
         Grid2.AutoRedraw = False
-        If Trim(Grid2.Cell(1, m).Text) = "" Then
+        If Trim(Grid2.Cell(1, m).Text) = Nothing Then
             Grid2.Cell(1, m).Alignment = FlexCell.AlignmentEnum.CenterCenter
+            'End If
+            'Accord = " / " + "Accord" ' Nothing est mis à jour dans Transposer2
             Grid2.Cell(1, m).Text = Accord
             Grid2.Cell(1, m).Locked = True
             Grid2.ReadonlyFocusRect = FlexCell.FocusRectEnum.Solid
         Else
-            Grid2.Cell(1, m).Text = ChaineAccord(m)
+            Grid2.Cell(1, m).Text = ChaineAccord(m)  ' L'alignement est traité dans ChaineAccord
         End If
         Grid2.Refresh()
         Grid2.AutoRedraw = True
@@ -18837,8 +19047,85 @@ Public Class Form1
             '
         End If
         '
-        Refresh()
+        Grid2.AutoRedraw = True
+        Grid2.Refresh()
     End Sub
+    Function Det_RelativeMin(TonaMaj As String) As String
+        Dim TonaMajEn As New List(Of String)
+        Dim TonaMinEn As New List(Of String)
+
+        TonaMajEn.Add("C# Maj")
+        TonaMajEn.Add("F# Maj")
+        TonaMajEn.Add("B Maj")
+        TonaMajEn.Add("E Maj")
+        TonaMajEn.Add("A Maj")
+        TonaMajEn.Add("D Maj")
+        TonaMajEn.Add("G Maj")
+        TonaMajEn.Add("C Maj")
+        TonaMajEn.Add("F Maj")
+        TonaMajEn.Add("Bb Maj")
+        TonaMajEn.Add("Eb Maj")
+        TonaMajEn.Add("Ab Maj")
+
+
+        TonaMinEn.Add("A# MinH")
+        TonaMinEn.Add("D# MinH")
+        TonaMinEn.Add("G# MinH")
+        TonaMinEn.Add("C# MinH")
+        TonaMinEn.Add("F# MinH")
+        TonaMinEn.Add("B MinH")
+        TonaMinEn.Add("E MinH")
+        TonaMinEn.Add("A MinH")
+        TonaMinEn.Add("D MinH")
+        TonaMinEn.Add("G MinH")
+        TonaMinEn.Add("C MinH")
+        TonaMinEn.Add("F MinH")
+        Dim i As Integer = TonaMajEn.IndexOf(Trim(TonaMaj))
+        Return TonaMinEn(i)
+    End Function
+    Function TonalitéMinDsClef(NoteTona) As String
+        Select Case Trim(NoteTona)
+            Case "D", "G", "C", "F"
+                TonalitéMinDsClef = "b"
+            Case Else
+                TonalitéMinDsClef = "#"
+        End Select
+    End Function
+    Function det_NoteMoins1(note As String) As String
+        Select Case note
+
+            Case "C"
+                Return "B"
+            Case "C#"
+                Return "C"
+            Case "D"
+                Return "C#"
+            Case "D#"
+                Return "D"
+            Case "E"
+                Return "D#"
+            Case "F"
+                Return "E"
+            Case "F#"
+                Return "F"
+            Case "G"
+                Return "F#"
+            Case "G#"
+                Return "G"
+            Case "A"
+                Return "G#"
+            Case "A#"
+                Return "A"
+            Case "B"
+                Return "A#"
+            Case Else
+                Return "C"
+        End Select
+
+    End Function
+
+
+
     Function Det_RacinePréced(mesure As Integer) As String
         Dim m, t, ct As Integer
         Dim sortir As Boolean = False
@@ -19287,19 +19574,41 @@ Public Class Form1
         ' 
         'DessinApplication2()
         '
-        Try
-            ' Dimensions pour l'onglet de navigation PDF
-            ' *****************************************
-
-            '
+        Try ' **************************
+            ' * Déploiement Click Once *
+            ' **************************
             Dim aa As AppDomainSetup = AppDomain.CurrentDomain.SetupInformation
             If Not (aa.ActivationArguments Is Nothing) Then
+                'MessageBox.Show("Mesage 1 : Entrée dans l'évènement Shown")
+                'MessageBox.Show("Message 2 : Etat de aa.ActivationArgument --> " + aa.ActivationArguments.ActivationData(0))
+                '
                 If (aa.ActivationArguments.ActivationData.Count >= 1) Then
                     FichierEntréSurClic = aa.ActivationArguments.ActivationData(0)
+                    'MessageBox.Show("Message 3 : Etat de aa.ActivationArgument --> " + FichierEntréSurClic)
                     Ouvrir2()
                 End If
+            Else
+                ' *******************
+                ' * Déploiement msi *
+                ' *******************
+                Dim args As String() = Environment.GetCommandLineArgs()
+                If args.Length > 1 Then
+                    ' Le chemin du fichier double-cliqué est le premier argument (args(1))
+                    Dim filePath As String = args(1) ' Le premier argument est souvent le chemin de l'application
+
+                    ' Récupérer l'extension du fichier
+                    'Dim extension As String = Path.GetExtension(filePath).ToLower()
+                    'If Not (String.IsNullOrEmpty(extension)) And extension = "zic3" Then
+                    'MessageBox.Show($"Chemin récupéré : {filePath}")
+                    FichierEntréSurClic = filePath
+                    'MessageBox.Show($"Chemin récupéré dans FichierEntréSurClic : " + FichierEntréSurClic)
+                    Ouvrir2()
+                    'End If
+                End If
             End If
-        Catch
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
         End Try
     End Sub
     Public Sub Calcul_AutoVoicingZ_PLAY()
@@ -19511,10 +19820,10 @@ Public Class Form1
             Next j
         Next i
     End Sub
-    Private Sub Button11_Click_3(sender As Object, e As EventArgs) Handles Button11.Click
+    Private Sub Button11_Click_3(sender As Object, e As EventArgs)
         Dim i As Integer = NouveauProjet()
     End Sub
-    Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
+    Private Sub Button13_Click(sender As Object, e As EventArgs)
         Enregistrer()
     End Sub
     Private Sub Button27_Click(sender As Object, e As EventArgs) Handles Button27.Click
@@ -19544,12 +19853,8 @@ Public Class Form1
         Coller()
         Calcul_AutoVoicingZ()
     End Sub
-
-    Private Sub Button23_Click_1(sender As Object, e As EventArgs)
-        MIDIReset()
-    End Sub
-    Private Sub Button29_Click(sender As Object, e As EventArgs) Handles Button29.Click
-        MIDIReset()
+    Private Sub Button29_Click(sender As Object, e As EventArgs)
+        MIDI_Panic()
     End Sub
     Public Function Det_DerMesure() As Integer
         Dim i As Integer
@@ -19800,6 +20105,10 @@ Public Class Form1
         Clef = sauv_Clef
         Maj_TabNotes(Clef) ' restitution de tabnotes
     End Sub
+    ''' <summary>
+    ''' Transpotsion diatonique
+    ''' </summary>
+    ''' <param name="vTransp">ancienne procédure à base de menu contextuel à supprimer avec toute le méthode qui l'aapelent (faire hierarchie d'appel)</param>
     Sub Transposer2(vTransp As String)
         Dim i, k As Integer
         Dim valTransp As Integer
@@ -19814,7 +20123,7 @@ Public Class Form1
 
         valTransp = Val(vTransp)
         '
-        ZAnnulation_Sauvegarde(Grid2.Selection.FirstCol, Grid2.Selection.LastCol) ' (mdeb, mfin)
+        ' ZAnnulation_Sauvegarde(Grid2.Selection.FirstCol, Grid2.Selection.LastCol) ' (mdeb, mfin)
         '
         For i = Grid2.Selection.FirstCol To Grid2.Selection.LastCol
             '
@@ -19891,6 +20200,7 @@ Public Class Form1
                         '
                         ' Ecriture de la transpostion
                         ' ***************************
+
                         EcritureAccordDsGrid2_2(Tonalité, Accord, Gamme, Mode, m, t, ct) ' cette procédure d'écriture d'accords dans Grid2 n'est utilisé que par la procédure "Transposer"
                         '
                     End If
@@ -19898,6 +20208,7 @@ Public Class Form1
             Next t
         Next i
         '
+        ZAnnulation_Valide = False ' pas de CTRL Z pour transposition
         Ecriture_Entrée_Ds_CompoGrid() ' ' Mise à jour correspondante dans Grid1
         '
         ' Positionner barre bleu-Barre rouge
@@ -19911,6 +20222,482 @@ Public Class Form1
         '
         Clef = sauv_Clef
         Maj_TabNotes(Clef) ' restitution de tabnotes
+        '
+
+
+    End Sub
+
+    Sub TransposerChromatique(vTransp As Integer, debut As Integer, fin As Integer)
+        Dim i, k As Integer
+        Dim b, c, f As String
+        Dim m, t, ct As Integer
+        Dim Sortir As Boolean = False
+        Dim Tonalité, Accord, Gamme, Mode As String
+        Dim sauv_Clef As String = Clef
+        Dim tbl2() As String
+
+
+
+        '
+        ZAnnulation_Sauvegarde(Grid2.Selection.FirstCol, Grid2.Selection.LastCol) ' (mdeb, mfin)
+        '
+        ' Effacer les cellules de Grid2 appartenant à la sélection
+        ' *******************************************************
+        For j = debut To fin
+            Grid2.Cell(1, j).Text = Nothing
+        Next
+        '
+        Grid2.Cell(1, i).Text = "" 'effacer la cellule Grid2 contenant le ou les accord(s)
+        '
+        ' Détermination des index m, t, ct dans TableEventH
+        ' *************************************************
+        For i = debut To fin
+
+            m = i
+            Sortir = False
+            For t = 0 To UBound(TableEventH, 2)
+                For ct = 0 To UBound(TableEventH, 3)
+                    If Trim(TableEventH(m, t, ct).Accord) <> "" Then
+                        Maj_TabNotes("#") ' tout est calculé en # --> on prépare la table Tabnotes en Anglais et en #
+                        '
+                        ' le calcul se fait en notation anglaise et en #
+                        ' Détermination de Tonalité
+                        ' *************************
+                        f = TableEventH(m, t, ct).Tonalité
+                        f = TradAcc_BemEnDiese(f) ' 
+                        tbl2 = (Trim(f)).Split
+                        b = LCase(tbl2(0)) ' lecture de la tonique de la tonalité --> on passe minuscule
+                        ' rechercher la note dans ListNotesd
+                        k = Det_NoteDsTabnotes(b)
+                        ' détermination de la nouvelle tonique transposée
+                        c = UCase(TabNotes(k + vTransp))
+                        ' 
+                        Tonalité = Trim(c) + " " + Trim(tbl2(1))
+
+                        ' Détermination de Accord
+                        ' ***********************
+                        f = TableEventH(m, t, ct).Accord
+                        f = TradAcc_BemEnDiese(f)
+                        tbl2 = Split(Trim(f), " ")
+                        b = LCase(tbl2(0)) ' lecture de la tonique de l'accord
+                        ' rechercher la note dans ListNotesd
+                        k = Det_NoteDsTabnotes(b)
+                        ' détermination de la nouvelle tonique transposée
+                        c = UCase(TabNotes(k + vTransp))
+                        ' 
+                        If UBound(tbl2) = 0 Then
+                            Accord = Trim(c)
+                        Else
+                            Accord = Trim(c) + " " + Trim(tbl2(1))
+                        End If
+                        '
+                        'Maj_RenvPourTransp(Accord, m, t, ct)
+                        '
+                        ' Détermination de Gamme
+                        ' **********************
+                        f = TableEventH(m, t, ct).Gamme
+                        f = TradAcc_BemEnDiese(f)
+                        tbl2 = Split(Trim(f), " ")
+                        b = LCase(tbl2(0)) ' lecture de la tonique de la gamme
+                        ' rechercher la note dans ListNotesd
+                        k = Det_NoteDsTabnotes(b)
+                        ' détermination de la nouvelle tonique transposée
+                        c = UCase(TabNotes(k + vTransp))
+                        ' 
+                        Gamme = Trim(c) + " " + Trim(tbl2(1))
+                        '
+                        ' Détermination de Mode
+                        ' *********************
+                        f = TableEventH(m, t, ct).Mode
+                        f = TradAcc_BemEnDiese(f)
+                        tbl2 = Split(Trim(f), " ")
+                        b = LCase(tbl2(0)) ' lecture de la tonique de la gamme
+                        ' rechercher la note dans ListNotesd
+                        k = Det_NoteDsTabnotes(b)
+                        ' détermination de la nouvelle tonique transposée
+                        c = UCase(TabNotes(k + vTransp))
+                        ' 
+                        Mode = Trim(c) + " " + Trim(tbl2(1))
+                        ' les variables Tonalités, Accord, Gamme et Mode sont exprimées ici en Anglais et en #
+                        '
+                        ' Ecriture de la transpostion dans la cellule considérée
+                        ' ******************************************************
+                        EcritureAccordDsGrid2_2(Tonalité, Accord, Gamme, Mode, m, t, ct) ' cette procédure d'écriture d'accords dans Grid2 n'est utilisé que par la procédure "Transposer"
+
+
+                        Calcul_AutoVoicingZ()
+                        '
+                    End If
+                Next ct
+            Next t
+        Next i
+        '
+        Ecriture_Entrée_Ds_CompoGrid() ' Mise à jour correspondante dans Grid1
+        '
+        Clef = sauv_Clef
+        Maj_TabNotes(Clef) ' restitution de tabnotes
+        '
+        '
+        ' TRANSPOSITION DU MODE
+        ' *********************
+        '
+
+    End Sub
+    ''' <summary>
+    ''' Transposition Modale
+    ''' Si Mode Origine est Majeur, on transpose en Mineur
+    ''' Si Mode Origine est Mineur, on transpose en Majeur
+    ''' </summary>
+    Sub TransposerMode()
+        Dim Tonalité, Accord, Gamme, Mode As String
+        Dim m, t, ct As Integer
+        Dim i As Integer = 0
+        Dim j As Integer = 0
+        Dim k As Integer = 0
+        Dim tbl1() As String
+        Dim tbl2() As String
+        Dim Ton As String
+        Dim ModeOrig As String
+        Dim ModeDest As String
+        Dim degré As Integer
+        Dim Chiff As String = ""
+
+        Dim lMaj3notes As New List(Of String) From {"", "m", "m", "", "", "m", "mb5"}
+        Dim lMaj4notes As New List(Of String) From {"M7", "m7", "m7", "M7", "7", "m7", "m7b5"}
+        '
+        Dim lMinH3notes As New List(Of String) From {"m", "mb5", "5#", "m", "", "", "mb5"}
+        Dim lMinH4notes As New List(Of String) From {"mM7", "m7b5", "M75#", "m7", "7", "M7", "7Dim"}
+        '
+        Dim LMaj As New List(Of Integer) From {0, 2, 4, 5, 7, 9, 11}
+        Dim LMinH As New List(Of Integer) From {0, 2, 3, 5, 7, 8, 11}
+        '
+        Dim listeNotes As New List(Of String) From {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"}
+        '
+        Dim Scale As New List(Of String)
+        '
+        'ZAnnulation_Sauvegarde(Grid2.Selection.FirstCol, Grid2.Selection.LastCol) ' (mdeb, mfin)
+        '
+        For i = Grid2.Selection.FirstCol To Grid2.Selection.LastCol
+            '
+            Grid2.Cell(1, i).Text = "" 'effacer la cellule Grid2 cotenant le ou les accord(s)
+            '
+            ' Détermination des index m, t, ct dans TableEventH
+            ' *************************************************
+            m = i
+            Sortir = False
+            For t = 0 To UBound(TableEventH, 2)
+                For ct = 0 To UBound(TableEventH, 3)
+                    If Trim(TableEventH(m, t, ct).Accord) <> "" Then
+                        ' détermination du type de mode origine
+                        tbl1 = Trim(TableEventH(m, t, ct).Mode).Split()
+                        ' détermination du Mode source
+                        Ton = Trim(tbl1(0))
+                        ModeOrig = Trim(tbl1(1))
+                        If ModeOrig = "Maj" Then
+                            ModeDest = "MinH"
+                            Tonalité = Det_RelativeMajeure(Ton + " " + "MinH") ' détermination de la signature
+                            ' Détermination du dégré
+                            degré = TableEventH(m, t, ct).Degré
+                            tbl2 = Trim(TableEventH(m, t, ct).Accord).Split() ' tbl2 contient tonique et chiffrage de l'Accord
+                            tbl1(0) = Trad_BemDiesNoteMaj(tbl1(0))
+                            k = listeNotes.IndexOf(tbl1(0))
+                            If tbl2.Count > 1 Then Chiff = Trim(tbl2(1))
+                            If lMaj3notes.Contains(Chiff) Then ' passer en mineur pour accord de 3 notes
+                                j = -1
+                                For Each a As String In lMinH3notes
+                                    j += 1
+                                    i = k + LMinH(j)
+                                    Scale.Add(listeNotes(i) + " " + a)
+                                Next
+                            Else ' passer en mineur pour accord de 4 notes
+                                j = -1
+                                For Each a As String In lMinH4notes
+                                    j += 1
+                                    i = k + LMinH(j)
+                                    Scale.Add(listeNotes(i) + " " + a)
+                                Next
+                            End If
+                            '
+                        Else
+                            ModeDest = "Maj"
+                            Tonalité = Det_RelativeMajeure(Trim(Ton + " " + "Maj")) ' détermination de la signature
+                            ' Détermination du dégré
+                            degré = TableEventH(m, t, ct).Degré
+                            tbl2 = Trim(TableEventH(m, t, ct).Accord).Split() ' tbl2 contient tonique et chiffrage de l'Accord
+                            tbl1(0) = Trad_BemDiesNoteMaj(tbl1(0))
+                            k = listeNotes.IndexOf(tbl1(0))
+                            If tbl2.Count > 1 Then Chiff = Trim(tbl2(1))
+                            If lMaj3notes.Contains(Chiff) Then ' passer en mineur pour accord de 3 notes
+                                j = -1
+                                For Each a As String In lMaj3notes
+                                    j += 1
+                                    i = k + LMinH(j)
+                                    Scale.Add(listeNotes(i) + " " + a)
+                                Next
+                            Else ' passer en mineur pour accord de 4 notes
+                                j = -1
+                                For Each a As String In lMaj4notes
+                                    j += 1
+                                    i = k + LMinH(j)
+                                    Scale.Add(listeNotes(i) + " " + a)
+                                Next
+                            End If
+                        End If
+                        'Bilan
+                        ' Tonalité = Signature est mis à jour dans le code précédent
+                        Mode = Ton + " " + ModeDest
+                        Gamme = Ton + " " + ModeDest
+                        Accord = Scale(degré)
+                        '
+                        EcritureAccordDsGrid2_2(Tonalité, Accord, Gamme, Mode, m, t, ct)
+                        Calcul_AutoVoicingZ()
+                    End If
+                Next ct
+            Next t
+        Next i
+        Ecriture_Entrée_Ds_CompoGrid() ' ' Mise à jour correspondante dans Grid1
+    End Sub
+    Sub TransposerMode2(m As Integer, t As Integer, ct As Integer)
+        Dim Tonalité, Accord, Gamme, Mode As String
+        Dim i As Integer = 0
+        Dim j As Integer = 0
+        Dim k As Integer = 0
+        Dim tbl1() As String
+        Dim tbl2() As String
+        Dim Ton As String
+        Dim ModeOrig As String
+        Dim ModeDest As String
+        Dim degré As Integer
+        Dim Chiff As String = ""
+
+        Dim lMaj3notes As New List(Of String) From {"", "m", "m", "", "", "m", "mb5"}
+        Dim lMaj4notes As New List(Of String) From {"M7", "m7", "m7", "M7", "7", "m7", "m7b5"}
+        '
+        Dim lMinH3notes As New List(Of String) From {"m", "mb5", "5#", "m", "", "", "mb5"}
+        Dim lMinH4notes As New List(Of String) From {"mM7", "m7b5", "M75#", "m7", "7", "M7", "7Dim"}
+        '
+        Dim LMaj As New List(Of Integer) From {0, 2, 4, 5, 7, 9, 11}
+        Dim LMinH As New List(Of Integer) From {0, 2, 3, 5, 7, 8, 11}
+        '
+        Dim listeNotes As New List(Of String) From {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"}
+        '
+        Dim Scale As New List(Of String)
+        '
+        'ZAnnulation_Sauvegarde(Grid2.Selection.FirstCol, Grid2.Selection.LastCol) ' (mdeb, mfin)
+        '
+        '
+
+        Grid2.Cell(1, i).Text = "" 'effacer la cellule Grid2 contenant le ou les accord(s)
+        '
+        If Trim(TableEventH(m, t, ct).Accord) <> "" Then
+            ' détermination du type de mode origine
+            tbl1 = Trim(TableEventH(m, t, ct).Mode).Split()
+            ' détermination du Mode source
+            Ton = Trim(tbl1(0))
+            ModeOrig = Trim(tbl1(1))
+            If ModeOrig = "Maj" Then
+                ModeDest = "MinH"
+                'Tonalité = Det_RelativeMajeure(Ton + " " + "MinH") ' détermination de la signature
+                Tonalité = Trim(TableEventH(m, t, ct).Tonalité) ' quand le mode de majeur à mineur la signature ne change pas
+                ' Détermination du dégré
+                degré = TableEventH(m, t, ct).Degré
+                tbl2 = Trim(TableEventH(m, t, ct).Accord).Split() ' tbl2 contient tonique et chiffrage de l'Accord
+                Mode = Det_RelativeMineure2(Ton + " " + "Maj")
+                tbl1 = Mode.Split()
+                tbl1(0) = Trad_BemDiesNoteMaj(tbl1(0))
+                k = listeNotes.IndexOf(tbl1(0))
+                If tbl2.Count > 1 Then Chiff = Trim(tbl2(1))
+                If lMaj3notes.Contains(Chiff) Then ' passer en mineur pour accord de 3 notes
+                    j = -1
+                    For Each a As String In lMinH3notes
+                        j += 1
+                        i = k + LMinH(j)
+                        Scale.Add(listeNotes(i) + " " + a)
+                    Next
+                Else ' passer en mineur pour accord de 4 notes
+                    j = -1
+                    For Each a As String In lMinH4notes
+                        j += 1
+                        i = k + LMinH(j)
+                        Scale.Add(listeNotes(i) + " " + a)
+                    Next
+                End If
+                '
+            Else
+                ModeDest = "Maj"
+                'Tonalité = Det_RelativeMajeure(Trim(Ton + " " + "Maj")) ' détermination de la signature
+                Tonalité = Trim(TableEventH(m, t, ct).Tonalité)
+                Mode = Tonalité
+                ' Détermination du dégré
+                degré = TableEventH(m, t, ct).Degré
+                tbl2 = Trim(TableEventH(m, t, ct).Accord).Split() ' tbl2 contient tonique et chiffrage de l'Accord
+                'tbl1(0) = Trad_BemDiesNoteMaj(tbl1(0))
+                tbl1 = Mode.Split()
+                tbl1(0) = Trad_BemDiesNoteMaj(tbl1(0))
+                k = listeNotes.IndexOf(tbl1(0))
+                If tbl2.Count > 1 Then Chiff = Trim(tbl2(1))
+                If lMinH3notes.Contains(Chiff) Then ' passer en mineur pour accord de 3 notes
+                    j = -1
+                    For Each a As String In lMaj3notes
+                        j += 1
+                        i = k + LMaj(j)
+                        Scale.Add(listeNotes(i) + " " + a)
+                    Next
+                Else ' passer en mineur pour accord de 4 notes
+                    j = -1
+                    For Each a As String In lMaj4notes
+                        j += 1
+                        i = k + LMaj(j)
+                        Scale.Add(listeNotes(i) + " " + a)
+                    Next
+                End If
+            End If
+            'Bilan
+            ' Tonalité = Signature est mis à jour dans le code précédent
+            tbl1 = Tonalité.Split()
+            Dim aa As Char = Convert.ToChar("b")
+            Gamme = Trad_BemDies(Mode) ' la gamme est toujours en #
+            If tbl1(0).Contains(aa) Or tbl1(0) = "F" Then
+                'Mode = Trad_DiesBem(Mode)
+                Accord = Trad_DiesBem(Scale(degré))
+            Else
+                'Mode = Trad_BemDies(Ton + " " + ModeDest)
+                Accord = Trad_BemDies(Scale(degré))
+            End If
+            '
+            EcritureAccordDsGrid2_2(Tonalité, Accord, Gamme, Mode, m, t, ct)
+            Calcul_AutoVoicingZ()
+        End If
+        Ecriture_Entrée_Ds_CompoGrid() ' ' Mise à jour correspondante dans Grid1
+    End Sub
+    Sub TransposerMode3(debut As Integer, fin As Integer)
+        Dim Tonalité, Accord, Gamme, Mode As String
+        Dim i As Integer = 0
+        Dim j As Integer = 0
+        Dim k As Integer = 0
+
+        Dim tbl1() As String
+        Dim tbl2() As String
+        Dim Ton As String
+        Dim ModeOrig As String
+        Dim ModeDest As String
+        Dim degré As Integer
+        Dim Chiff As String = ""
+
+        Dim lMaj3notes As New List(Of String) From {"", "m", "m", "", "", "m", "mb5"}
+        Dim lMaj4notes As New List(Of String) From {"M7", "m7", "m7", "M7", "7", "m7", "m7b5"}
+        '
+        Dim lMinH3notes As New List(Of String) From {"m", "mb5", "5#", "m", "", "", "mb5"}
+        Dim lMinH4notes As New List(Of String) From {"mM7", "m7b5", "M75#", "m7", "7", "M7", "7Dim"}
+        '
+        Dim LMaj As New List(Of Integer) From {0, 2, 4, 5, 7, 9, 11}
+        Dim LMinH As New List(Of Integer) From {0, 2, 3, 5, 7, 8, 11}
+        '
+        Dim listeNotes As New List(Of String) From {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"}
+        '
+        Dim Scale As New List(Of String)
+        '
+        'ZAnnulation_Sauvegarde(Grid2.Selection.FirstCol, Grid2.Selection.LastCol) ' (mdeb, mfin)
+        '
+        '
+        ' Détermination des index m, t, ct dans TableEventH
+        ' *************************************************
+        For m = debut To fin
+            '
+            ' Détermination des index m, t, ct dans TableEventH
+            ' *************************************************
+            For t = 0 To UBound(TableEventH, 2)
+                For ct = 0 To UBound(TableEventH, 3)
+                    '
+                    If Trim(TableEventH(m, t, ct).Accord) <> "" Then
+                        Grid2.Cell(1, i).Text = "" 'effacer la cellule Grid2 contenant le ou les accord(s)
+                        ' détermination du type de mode origine
+                        tbl1 = Trim(TableEventH(m, t, ct).Mode).Split()
+                        ' détermination du Mode source
+                        Ton = Trim(tbl1(0))
+                        ModeOrig = Trim(tbl1(1))
+                        If ModeOrig = "Maj" Then
+                            ModeDest = "MinH"
+                            'Tonalité = Det_RelativeMajeure(Ton + " " + "MinH") ' détermination de la signature
+                            Tonalité = Trim(TableEventH(m, t, ct).Tonalité) ' quand le mode de majeur à mineur la signature ne change pas
+                            ' Détermination du dégré
+                            degré = TableEventH(m, t, ct).Degré
+                            tbl2 = Trim(TableEventH(m, t, ct).Accord).Split() ' tbl2 contient tonique et chiffrage de l'Accord
+                            Mode = Det_RelativeMineure2(Ton + " " + "Maj")
+                            tbl1 = Mode.Split()
+                            tbl1(0) = Trad_BemDiesNoteMaj(tbl1(0))
+                            k = listeNotes.IndexOf(tbl1(0))
+                            If tbl2.Count > 1 Then Chiff = Trim(tbl2(1))
+                            If lMaj3notes.Contains(Chiff) Then ' passer en mineur pour accord de 3 notes
+                                j = -1
+                                For Each a As String In lMinH3notes
+                                    j += 1
+                                    i = k + LMinH(j)
+                                    Scale.Add(listeNotes(i) + " " + a)
+                                Next
+                            Else ' passer en mineur pour accord de 4 notes
+                                j = -1
+                                For Each a As String In lMinH4notes
+                                    j += 1
+                                    i = k + LMinH(j)
+                                    Scale.Add(listeNotes(i) + " " + a)
+                                Next
+                            End If
+                            '
+                        Else
+                            ModeDest = "Maj"
+                            'Tonalité = Det_RelativeMajeure(Trim(Ton + " " + "Maj")) ' détermination de la signature
+                            Tonalité = Trim(TableEventH(m, t, ct).Tonalité)
+                            Mode = Tonalité
+                            ' Détermination du dégré
+                            degré = TableEventH(m, t, ct).Degré
+                            tbl2 = Trim(TableEventH(m, t, ct).Accord).Split() ' tbl2 contient tonique et chiffrage de l'Accord
+                            'tbl1(0) = Trad_BemDiesNoteMaj(tbl1(0))
+                            tbl1 = Mode.Split()
+                            tbl1(0) = Trad_BemDiesNoteMaj(tbl1(0))
+                            k = listeNotes.IndexOf(tbl1(0))
+                            If tbl2.Count > 1 Then Chiff = Trim(tbl2(1))
+                            If lMinH3notes.Contains(Chiff) Then ' passer en mineur pour accord de 3 notes
+                                j = -1
+                                For Each a As String In lMaj3notes
+                                    j += 1
+                                    i = k + LMaj(j)
+                                    Scale.Add(listeNotes(i) + " " + a)
+                                Next
+                            Else ' passer en mineur pour accord de 4 notes
+                                j = -1
+                                For Each a As String In lMaj4notes
+                                    j += 1
+                                    i = k + LMaj(j)
+                                    Scale.Add(listeNotes(i) + " " + a)
+                                Next
+                            End If
+                        End If
+                        'Bilan
+                        ' Tonalité = Signature est mis à jour dans le code précédent
+                        tbl1 = Tonalité.Split()
+                        Dim aa As Char = Convert.ToChar("b")
+                        Gamme = Trad_BemDies(Mode) ' la gamme est toujours en #
+                        If tbl1(0).Contains(aa) Or tbl1(0) = "F" Then
+                            'Mode = Trad_DiesBem(Mode)
+                            Accord = Trad_DiesBem(Scale(degré))
+                        Else
+                            'Mode = Trad_BemDies(Ton + " " + ModeDest)
+                            Accord = Trad_BemDies(Scale(degré))
+                        End If
+                        '
+                        EcritureAccordDsGrid2_2(Tonalité, Accord, Gamme, Mode, m, t, ct)
+
+                    End If
+                Next
+            Next
+        Next
+        ZAnnulation_Valide = False ' pas de CTRL Z pour transposition
+        Ecriture_Entrée_Ds_CompoGrid() ' ' Mise à jour correspondante dans Grid1
+        Calcul_AutoVoicingZ()
+    End Sub
+    Private Sub TranspMode_Click(sender As Object, e As EventArgs) Handles TranspMode.Click
+        TransposerMode3(Grid2.Selection.FirstCol, Grid2.Selection.LastCol)
     End Sub
     Function TonalitéDsClef(Tonalité) As String
         Dim table1(0 To 12) As String
@@ -19947,6 +20734,7 @@ Public Class Form1
             TonalitéDsClef = "b"
         End If
     End Function
+
     Function TonalitéDsClef2(Tonalité) As String
         Dim table1(0 To 12) As String
         Dim table2(0 To 12) As String
@@ -20661,6 +21449,44 @@ Public Class Form1
 
         End If
     End Function
+    Function Det_RelativeMineure2(Mode As String) As String
+        Dim tbl() As String
+        Dim note As String
+        '
+        Det_RelativeMineure2 = Trim(Mode)
+
+        tbl = Split(Mode)
+        If Trim(tbl(1)) = "Maj" Then
+            note = tbl(0)
+            Select Case Trim(note)
+                Case "C#"
+                    Det_RelativeMineure2 = "A# " + "MinH"
+                Case "F#"
+                    Det_RelativeMineure2 = "D# " + "MinH"
+                Case "B"
+                    Det_RelativeMineure2 = "G# " + "MinH"
+                Case "E"
+                    Det_RelativeMineure2 = "C# " + "MinH"
+                Case "A"
+                    Det_RelativeMineure2 = "F# " + "MinH"
+                Case "D"
+                    Det_RelativeMineure2 = "B " + "MinH"
+                Case "G"
+                    Det_RelativeMineure2 = "E " + "MinH"
+                Case "C"
+                    Det_RelativeMineure2 = "A " + "MinH"
+                Case "F"
+                    Det_RelativeMineure2 = "D " + "MinH"
+                Case "Bb"
+                    Det_RelativeMineure2 = "G " + "MinH"
+                Case "Eb"
+                    Det_RelativeMineure2 = "C " + "MinH"
+                Case "Ab"
+                    Det_RelativeMineure2 = "F " + "MinH"
+            End Select
+
+        End If
+    End Function
 
     Function Det_RelatMaj(acc As String) As String
         Dim tbl() As String
@@ -20706,7 +21532,7 @@ Public Class Form1
         Dim tbl() As String
         Dim note As String
         '
-        ' ici la note du Mode mineure doivent arriver obligatoirement en notation anglo-saxonne
+        ' ici la note du Mode mineure doit arriver obligatoirement en notation anglo-saxonne
         '
         Det_RelativeMajeure2 = Trim(Mode)
 
@@ -20890,7 +21716,7 @@ Public Class Form1
     End Function
 
     Private Sub AideToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AideToolStripMenuItem.Click
-        Dim a As String = "https://compomusic.fr/guide-rapide/"
+        Dim a As String = "https: //compomusic.fr/guide-rapide/"
         '
         Process.Start(Trim(a))
     End Sub
@@ -21210,14 +22036,12 @@ Public Class Form1
     End Sub
 
     Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs)
-        If EnChargement = False Then ' And ChangementLangue = False
-            'ChoixTypeAccord()
-            CAD_Maj_TableGlobalAcc()
-        End If
+
     End Sub
 
     Private Sub ComboBox3_SelectedIndexChanged(sender As Object, e As EventArgs)
         ModeSimple_Cadence = "Maj" ' pour Ouvrir/Enregsitrer
+        CoulCadDegréMaj()
         ComboBox4.Select(0, 0)
         '
         If EnChargement = True Or ChangementLangue = False Then
@@ -21405,6 +22229,7 @@ Public Class Form1
         Dim tona As String
         Dim tonaMin As String
         Dim tbl() As String
+        Dim a As String
         '
         tbl = Split(Trim(ComboBox1.Text))
 
@@ -21428,10 +22253,6 @@ Public Class Form1
             '
             ' Mise à jour Modulation
             ' **********************        '
-            'If TGrille2 = TGrilleCours.Rien Then
-            ' Maj_ModulationRadioB()
-            'Maj_Modulation()
-            'End If
 
             Refresh()
             CAD_Maj_TableGlobalAcc()
@@ -21439,20 +22260,30 @@ Public Class Form1
 
             '
             RAZ_CouleurMarquée()
-
+            Restit_CoulModes(SauvCoul.oldrow, SauvCoul.oldcol)
             Refresh()
             Entrée_Tonalité = Trim(Det_TonaCours2() + " " + "Maj")
             Refresh()
             '
             ' Mise à jours onglet Modes
             ' *************************
+            ' Détermination du Ton du Mode à partir de l'armure dans onglet Modes
             Dim tbl1() As String = Trim(ComboBox1.Text).Split()
-            MLabTon.Text = tbl1(0)
+            MLabTon.Text = Trim(ComboBox1.Text) 'tbl1(0)
             a = LCase(tbl1(0))
-            ' mise à jour tonalité dans  Onglet Modes
+            ' détermination du Mode à partir de l'affichage du Mode dans onglet Modes
             If Trim(MLabNomG.Text) <> "" Then
-                Dim tbl2() As String = MLabNomG.Text.Split()
-                Dim b = tbl2(2)
+                If MTypeMode = MTyMode.MinH Or MTypeMode = MTyMode.MinM Then
+                    a = Det_TonaMinCours2()
+                End If
+                '
+                Dim tbl2() As String = MLabNomG.Text.Split(":")
+                Dim tbl3() As String = Trim(tbl2(0)).Split
+                b = tbl3(1)
+                '
+                If tbl3.Count = 3 Then
+                    b = Trim(b + " " + Trim(tbl3(2)))
+                End If
                 ' Détermination des accords possibles
                 ' ***********************************
                 Calc_AccMode(a, b)
@@ -21507,6 +22338,7 @@ Public Class Form1
             Mode_Cadence = Cad_OrigineAccord
             '
             Cad_RAZ_CouleurMarquée()
+            CoulCadDegréMaj()
             '
             Select Case ComboBox3.Text
                 Case "Anatole"
@@ -21519,7 +22351,7 @@ Public Class Form1
 
                 Case "Forme3"
                     Cad_Forme3()
-                    Label28.Text = "Forme3"
+                    Label28.Text = "Forme3 (Bach)"
                     '
                 Case "Complète"
                     Cad_ComplèteMaj()
@@ -21528,6 +22360,10 @@ Public Class Form1
                 Case "Complete"
                     Cad_ComplèteMaj()
                     Label28.Text = "Complete"
+
+                Case "Bach"
+                    Cad_Bach()
+                    Label28.Text = "Bach"
                     '
                 Case "2-5-1"
                     Cad_251Maj()
@@ -21628,24 +22464,21 @@ Public Class Form1
 
     Private Sub ComboBox4_SelectedIndexChanged_1(sender As Object, e As EventArgs) Handles ComboBox4.SelectedIndexChanged
         ModeSimple_Cadence = "Min" ' pour Ouvrir/Enregistrer
+
         ComboBox3.Select(0, 0)
         '
         If EnChargement = False And ChangementLangue = False Then
-            '
-            'Mode_Cadence = "Min"
-            '
 
             Cad_OrigineAccord = Modes.Cadence_Mineure
             OrigineAccord = Modes.Cadence_Mineure
             Mode_Cadence = Cad_OrigineAccord
             '
             Cad_RAZ_CouleurMarquée()
+            CoulCadDegréMin()
             Select Case ComboBox4.Text 'ComboBox4.Text
                 Case "Anatole Min"
                     Cad_AnatoleMin()
                     Label28.Text = "Anatole Min"
-
-
                 Case "Pseudo 2-5-1"
                     Cad_Pseudo251Min()
                     Label28.Text = "Pseudo 2-5-1"
@@ -21681,29 +22514,26 @@ Public Class Form1
             CAD_Maj_TableGlobalAcc()
         End If
     End Sub
-    Private Sub Tempo_ValueChanged(sender As Object, e As EventArgs) Handles Tempo.ValueChanged
-
-    End Sub
-    Private Sub StopMidi_Click(sender As Object, e As EventArgs) Handles StopMidi.Click
-        StopPlay()
-    End Sub
-    Private Sub PlayMidi_Click(sender As Object, e As EventArgs) Handles PlayMidi.Click
-        Me.Terme.BackColor = Color.White
-        TermeFin = Me.Terme.Value
-        i = Me.Det_DerEventH2()
-        If Me.Début.Value <= i Then
-            If i < Me.Terme.Value Then
-                TermeFin = i
-                Me.Terme.BackColor = Color.Orange
-            End If
-        End If
-        Calcul_AutoVoicingZ()
-        INIT_LesPistes()
-        CalculMusique(False)
-        '
-        PlayArp()
-        'PlayAccords()
-    End Sub
+    'Private Sub StopMidi_Click(sender As Object, e As EventArgs) Handles StopMidi.Click
+    '    StopPlay()
+    'End Sub
+    'Private Sub PlayMidi_Click(sender As Object, e As EventArgs) Handles PlayMidi.Click
+    ' Me.Terme.BackColor = Color.White
+    '    TermeFin = Me.Terme.Value
+    '   i = Me.Det_DerEventH2()
+    'If Me.Début.Value <= i Then
+    'If i < Me.Terme.Value Then
+    '           TermeFin = i
+    'Me.Terme.BackColor = Color.Orange
+    'End If
+    'End If
+    '   Calcul_AutoVoicingZ()
+    '  INIT_LesPistes()
+    ' CalculMusique(False)
+    ''
+    'PlayArp()
+    ''PlayAccords()
+    'End Sub
 
     Sub StopPlay()
         If ComboMidiOut.Items.Count > 0 Then '
@@ -21712,35 +22542,24 @@ Public Class Form1
         End If
     End Sub
     Private Sub Grid2_DragDrop(sender As Object, e As DragEventArgs) Handles Grid2.DragDrop
-
-        Colonne_Drag = Grid2.MouseCol
-        Ligne_Drag = Grid2.MouseRow
-        Valeur_Drag = e.Data.GetData(DataFormats.Text)
-        Flag_EcrDragDrop = True
-        GridDest = TGridDest.Grid2
+        If e.Data.GetDataPresent(DataFormats.Text) Then
+            Colonne_Drag = Grid2.MouseCol
+            Ligne_Drag = Grid2.MouseRow
+            Valeur_Drag = e.Data.GetData(DataFormats.Text)
+            Flag_EcrDragDrop = True
+            GridDest = TGridDest.Grid2
+        End If
 
     End Sub
 
-
-    Sub Maj_Extension()
-        Select Case Etat_Extension
-            Case Ty_Extension.Accords
-                Maj_Extension_Accord()
-            Case Ty_Extension.Gammes
-                Maj_Extension_Gamme()
-            Case Ty_Extension.Modes
-                Maj_Extension_Mode()
-            Case Ty_Extension.Tonalités
-                Maj_Extension_Tonalité()
-        End Select
-    End Sub
     Private Sub Grid3_DragDrop(sender As Object, e As DragEventArgs) Handles Grid3.DragDrop
-
-        Colonne_Drag = Grid3.MouseCol
-        Ligne_Drag = Grid3.MouseRow
-        Valeur_Drag = e.Data.GetData(DataFormats.Text)
-        Flag_EcrDragDrop = True
-        GridDest = TGridDest.Grid3
+        If e.Data.GetDataPresent(DataFormats.Text) Then
+            Colonne_Drag = Grid3.MouseCol
+            Ligne_Drag = Grid3.MouseRow
+            Valeur_Drag = e.Data.GetData(DataFormats.Text)
+            Flag_EcrDragDrop = True
+            GridDest = TGridDest.Grid3
+        End If
 
     End Sub
 
@@ -21793,37 +22612,15 @@ Public Class Form1
         Dim tbl() As String
         Dim a, b As String
         Dim Sauvclef As String
-
-
-
         '                                                                                                                                       
         ' Jouer les EventH cliqués dans Grid1
         ' ***********************************
-        Grid1.Focus()
-        Grid1.Refresh()
         i = Grid1.MouseRow
         j = Grid1.MouseCol
         ro = i
         co = j
         '
-        ' Mise a jour du tableau des modes Tabtons sur un clic dans Grid2 àtravers combobox1 et combobox2
-        ' ************************************************************************************************
-        a = Trim(Grid1.Cell(Grid1.ActiveCell.Row, 3).Text)
-        If a <> "" Then
-            tbl = a.Split
-            If tbl(1) = "Maj" Then
-                a = " " + tbl(0) + " Major"
-                ii = ComboBox1.Items.IndexOf(a)
-                ComboBox1.SelectedIndex = ii
-            Else
-                a = " " + tbl(0) + " Minor"
-                ii = ComboBox2.Items.IndexOf(a)
-                ComboBox1.SelectedIndex = ii
-            End If
-        End If
-
-
-        If i > 0 And j >= 0 Then
+        If i <> -1 And j <> -1 Then
             ' Selection de la colonne de 'Vue Notes'(Grid6) et de la piste accord (Grid2) correspondant à la ligne de Grid1
             ' *************************************************************************************************************
             a = Grid1.Cell(i, 1).Text
@@ -21834,7 +22631,6 @@ Public Class Form1
                 tbl = Split(Trim(a), ".")
                 k = Val(tbl(0))
                 Grid2.LeftCol = k ' positionnement de grid2 
-                'Grid2.Range(0, k, Grid2.Rows - 1, k).SelectCells()
                 Grid3.LeftCol = ((Grid2.LeftCol - 1) * nbColonnesGrid3ParMesure) + 1 ' positionnement de grid3 en fonction de Grid2
             End If
             '
@@ -21888,10 +22684,7 @@ Public Class Form1
                         End Select
 
                     Case Else
-
                 End Select
-                'Else
-                'RAZ_Clavier()
             End If
 
             ' Jouer "Accord"
@@ -21964,43 +22757,58 @@ Public Class Form1
                         End If
                     End If
                 End If
+
+                '
+                ' Affichage notes accords sur clavier sans jouer l'accord
+                ' *******************************************************
+                If e.Button() = MouseButtons.Middle And Not (My.Computer.Keyboard.CtrlKeyDown) And Not (My.Computer.Keyboard.AltKeyDown) _
+                                        And Not (My.Computer.Keyboard.ShiftKeyDown) Then
+                    If Trim(Grid1.Cell(i, 4).Text) <> "" And Grid1.MouseCol = 4 Then
+                        AfficherAccordRapport(Trim(Grid1.Cell(i, 1).Text))
+                    End If
+                End If
+                '
+                ' Positionnement du scrolling de l'ascenceur vertical de Grid4
+                ' ************************************************************
+                Grid4.TopRow = 1
+                Grid4.Cell(1, 1).SetFocus() ' sélectionner la ligne TopRow=1
+                ' 
+                ' Zone d'extension
+                ' ****************
+                Select Case j
+                    Case 3
+                        Maj_Extension_Tonalité()
+                    Case 4
+                        Maj_Extension_Accord()
+                    Case 5
+                        Maj_Extension_Gamme()
+                End Select
             End If
             '
-            ' Affichage notes accords sur clavier sans jouer l'accord
-            ' *******************************************************
-            If e.Button() = MouseButtons.Middle And Not (My.Computer.Keyboard.CtrlKeyDown) And Not (My.Computer.Keyboard.AltKeyDown) _
-                                        And Not (My.Computer.Keyboard.ShiftKeyDown) Then
-                If Trim(Grid1.Cell(i, 4).Text) <> "" And Grid1.MouseCol = 4 Then
-                    AfficherAccordRapport(Trim(Grid1.Cell(i, 1).Text))
+            ' Mise à jour des Modes dans l'onglet Pont
+            ' ****************************************
+            LabModulat.Item(0).Font = New System.Drawing.Font("Verdana", 8, FontStyle.Regular)
+            LabModulat.Item(1).Text = ""
+            LabModulat.Item(2).Text = ""
+            If Accords3notes(Trim(Grid1.Cell(i, 4).Text)) And Trim(Grid1.Cell(i, 4).Text) <> "" Then
+                LabModulat.Item(0).Font = New System.Drawing.Font("Arial Narrow", 15, FontStyle.Bold)
+                LabModulat.Item(0).ForeColor = Color.Black
+                If ro >= 1 Then Maj_Modulation(i)
+            Else
+                Label79.Text = "x/x"
+                LabModulat.Item(0).ForeColor = Color.White
+                EffacerTonsModulation()
+                If Trim(Grid1.Cell(i, 4).Text) <> "" Then
+                    If LangueIHM = "fr" Then
+                        LabModulat.Item(0).Text = "Accords de 3 notes seulement"
+                    Else
+                        LabModulat.Item(0).Text = "3-note chords only"
+                    End If
+                Else
+                    LabModulat.Item(0).Text = ""
                 End If
             End If
-            '
-            ' Positionner les curseurs Rouge/Bleu
-            ' ***********************************
-            'Grid1.Cell(Grid1.ActiveCell.Row, 0).EnsureVisible() ' doit être placé avant
-            PositionnerCurseursRougeBleu(i) ' i=Grid1.mouserow
-            ' Positionnement du scrolling de l'ascenceur vertical de Grid4
-            ' ************************************************************
-            Grid4.TopRow = 1
-            Grid4.Cell(1, 1).SetFocus() ' sélectionner la ligne TopRow=1
-            ' 
-            ' Zone d'extension
-            ' ****************
-            Select Case j
-                Case 3
-                    Maj_Extension_Tonalité()
-                Case 4
-                    Maj_Extension_Accord()
-                Case 5
-                    Maj_Extension_Gamme()
-            End Select
         End If
-        '
-        ' Mise à jour de la tonalités de départ de l'onglet de Modulation
-        ' **************************************************************
-        ro = Grid1.MouseRow
-        If ro >= 1 Then Maj_ModulationRadioB2(ro)
-
         '
     End Sub
     Sub Aff_Clavier()
@@ -22326,23 +23134,26 @@ Public Class Form1
         '
         ' Mise a jour Onglet TON sur un clic dans Grid2 à travers combobox1 et combobox2
         ' ******************************************************************************
-        a = Trim(Grid1.Cell(Grid1.ActiveCell.Row, 3).Text) ' leture TONALITE
-        If Trim(a) <> "" Then
-            tbl = a.Split
-            If tbl(1) = "Maj" Then
-                a = " " + tbl(0) + " Major"
-                ii = ComboBox1.Items.IndexOf(a)
-                ComboBox1.SelectedIndex = ii
-            Else
-                a = " " + tbl(0) + " Minor"
-                ii = ComboBox2.Items.IndexOf(a)
-                ComboBox1.SelectedIndex = ii
+        If SynchroTona.Checked Then
+            a = Trim(Grid1.Cell(Grid1.ActiveCell.Row, 3).Text) ' leture TONALITE
+            If Trim(a) <> "" Then
+                tbl = a.Split
+                If tbl(1) = "Maj" Then
+                    a = " " + tbl(0) + " Major"
+                    a = TradTonaD(a)
+                    ii = ComboBox1.Items.IndexOf(a)
+                    ComboBox1.SelectedIndex = ii
+                Else
+                    a = " " + tbl(0) + " Minor"
+                    ii = ComboBox2.Items.IndexOf(a)
+                    ComboBox1.SelectedIndex = ii
+                End If
             End If
         End If
         '
         ' Mise a jour Onglet MODES sur un clic dans Grid2 à travers combobox1 et combobox2
         ' ********************************************************************************
-        Maj_MODES(Grid1.ActiveCell.Row)
+        'Maj_MODES(Grid1.ActiveCell.Row)
         '
         ' Effacer accord extension (Notes en jaunes sur piano) (suite à jouerdétails)
         ' ***************************************************************************
@@ -22713,7 +23524,7 @@ Public Class Form1
             '****************************************
             ' Incrémenter/Décrémenter les vélocités *
             '****************************************
-            If (e.KeyCode = Keys.P Or e.KeyCode = Keys.M) And Grid1.Selection.FirstCol = ColVélo And OK_KeyDown = True Then
+            If (e.KeyCode = Keys.P Or e.KeyCode = Keys.Add Or e.KeyCode = Keys.M Or e.KeyCode = Keys.Subtract) And Grid1.Selection.FirstCol = ColVélo And OK_KeyDown = True Then
                 Grid1.AutoRedraw = False
                 Grid1.Range(0, ColVélo, nbLignesGrid1 - 1, ColVélo).Locked = False ' Vérouillage des cellules
                 ' arrowdirection
@@ -22757,13 +23568,13 @@ Public Class Form1
                             t = Convert.ToInt16(tbl3(1))
                             ct = Convert.ToInt16(tbl3(2))
                             '
-                            If e.KeyCode = Keys.P Then
+                            If e.KeyCode = Keys.P Or e.KeyCode = Keys.Add Then
                                 k = Convert.ToInt16(a) + 1
                                 If k <= 127 Then
                                     Grid1.Cell(i, j).Text = Convert.ToString(k)
                                     TableEventH(m, t, ct).Vel = Grid1.Cell(i, j).Text
                                 End If
-                            ElseIf e.KeyCode = Keys.M Then
+                            ElseIf e.KeyCode = Keys.M Or e.KeyCode = Keys.Subtract Then
                                 k = Convert.ToInt16(a) - 1
                                 If k >= 0 Then
                                     Grid1.Cell(i, j).Text = Convert.ToString(k)
@@ -22813,14 +23624,14 @@ Public Class Form1
             '****************************************
             ' Incrémenter/Décrémenter les racines   *
             '****************************************
-            If (e.KeyCode = Keys.P Or e.KeyCode = Keys.M) And Grid1.Selection.FirstCol = ColRacine And OK_KeyDown = True Then
+            If (e.KeyCode = Keys.P Or e.KeyCode = Keys.Add Or e.KeyCode = Keys.M Or e.KeyCode = Keys.Subtract) And Grid1.Selection.FirstCol = ColRacine And OK_KeyDown = True Then
 
                 Grid1.AutoRedraw = False
                 Grid1.Range(0, 8, nbLignesGrid1 - 1, ColRacine).Locked = False ' Vérouillage des cellules
                 RAZ_Clavier()
                 ' arrowdirection
                 b = CellDyn_Racines()
-                ' traitement des dynamiques avec les touches + et -
+                ' traitement avec les touches + et -
                 If Trim(b) <> "" Then
                     tbl1 = Split(b)
                     For ii = 0 To UBound(tbl1)
@@ -22862,9 +23673,7 @@ Public Class Form1
                             m = Convert.ToInt16(tbl3(0))
                             t = Convert.ToInt16(tbl3(1))
                             ct = Convert.ToInt16(tbl3(2))
-                            'If IsNumeric(a) Then
-                            If e.KeyCode = Keys.P Then
-                                'k = Convert.ToInt16(a) + 1
+                            If e.KeyCode = Keys.P Or e.KeyCode = Keys.Add Then
                                 k = Tracine.IndexOf(a)
                                 k += 1
                                 If k <= Tracine.Count - 1 Then
@@ -22872,8 +23681,7 @@ Public Class Form1
                                     TableEventH(m, t, ct).Racine = Trim(Tracine.Item(k))
                                     JouerAcc(Grid1.Cell(Grid1.ActiveCell.Row, 1).Text) ' jouer l'accord si un seul accord est sélectionné
                                 End If
-                            ElseIf e.KeyCode = Keys.M Then
-                                'k = Convert.ToInt16(a) - 1
+                            ElseIf e.KeyCode = Keys.M Or e.KeyCode = Keys.Subtract Then
                                 k = Tracine.IndexOf(Trim(Grid1.Cell(i, j).Text))
                                 k -= 1
                                 If k >= 0 Then
@@ -22883,7 +23691,7 @@ Public Class Form1
                                 End If
                             End If
                         Next
-                        ' remarque : Calcul_AutoVoicingZ() est appelé dans JouerAcc
+                        ' remarque : Calcul_AutoVoicingZPlay() est appelé dans JouerAcc
                         Maj_VueNotes()
                         OK_KeyDown = False
                     End If
@@ -22939,7 +23747,7 @@ Public Class Form1
         End If
     End Sub
     ''' <summary>
-    ''' Joueur accord dans Grid à une position données
+    ''' Jouer accord dans Grid à une position données
     ''' </summary>
     ''' <param name="Position">Position (mesure) de l'accord à jouer</param>
     Sub JouerAcc(Position As String)
@@ -23005,131 +23813,10 @@ Public Class Form1
             End If
 
         Next
-        CellDyn_Racines = Trim(a)
+        CellDyn_Racines = Trim(a) ' retourn ligne,colonne
     End Function
 
 
-
-    Private Sub Grid2_KeyDown(Sender As Object, e As KeyEventArgs) Handles Grid2.KeyDown
-        Dim a As String
-        Dim i As Integer
-        Dim j As Integer
-        Dim k As Integer
-        Dim m As Integer
-        Dim mDeb As Integer
-        Dim mFin As Integer
-        Dim ComptMes As Integer
-        Dim t As Integer
-        Dim c As Integer
-        Dim ct As Integer
-        Dim NbDivMesure As Integer
-
-        a = e.KeyData
-        mDeb = Grid2.Selection.FirstCol
-        mFin = Grid2.Selection.LastCol
-        t = 1
-        ct = 1
-        '
-        NbDivMesure = Det_NbDivisionMesure()
-        If DerGridCliquée = GridCours.Grid2 Then
-            If a = "46" And Grid2.ActiveCell.Col > 1 Then ' 46 = delete Touche Suppr
-                '
-                ' Pour CTRL Z
-                ' ***********
-                ZAnnulation_Sauvegarde(mDeb, mFin)
-                '
-                ' Mise àjour de grid2
-                ' *******************
-                k = (mFin - mDeb)
-                '
-                For i = mDeb To mFin
-                    Grid2.Column(i).Locked = False
-                Next
-                '
-                Grid2.AutoRedraw = False
-                '
-                ' Grid2.Selection.ClearText() ' <-- semble ne pas toujors fonctionner
-                '
-                For i = mDeb To mFin
-                    Grid2.Column(i).Locked = True
-                    Grid2.Cell(Grid2.ActiveCell.Row, i).BackColor = Color.White
-                    Grid2.Cell(Grid2.ActiveCell.Row, i).ForeColor = Color.Black
-                    Grid2.Cell(Grid2.ActiveCell.Row, i).Text = ""
-                Next
-                '
-                '
-                Grid2.Refresh()
-                Grid2.AutoRedraw = True
-
-                ' mise à jour de grid3
-                ' ********************
-                c = ((mDeb - 1) * NbDivMesure) + 1
-                m = mDeb
-                ComptMes = 1
-                For j = c To (mFin * NbDivMesure)
-                    If Grid3.Cell(2, c).BackColor = Couleur_Accord_Grid3 Then
-                        '
-                        ' Détermination des index t et ct à partir de grid3
-                        ' *************************************************
-                        ct = 0 '-1
-                        For i = c To 0 Step -1
-                            ct = ct + 1
-                            If Trim(Grid3.Cell(2, i).Text) <> "" Then
-                                t = Val(Trim(Grid3.Cell(2, i).Text)) '- 1
-                                Exit For
-                            End If
-                        Next i
-                        '
-                        ' Effacement
-                        ' **********
-                        ' Effacement Couleur
-                        If Not (mDeb = 1) Then ' ne jamais effacer a couleur de la mesure 1
-                            ' Grid2.ActiveCell.Text = ""
-                            ' Grid2.ActiveCell.BackColor = Color.White
-                            ' Grid2.Cell(Grid2.ActiveCell.Row, m).BackColor = Color.White
-                            If ct <> 1 Then
-                                Grid3.Cell(2, c).BackColor = Couleur_CTemps
-                                Grid3.Cell(2, c).ForeColor = Color.Black
-                            Else
-                                If EstPair(t) Then
-                                    Grid3.Cell(2, c).BackColor = Couleur_CTemps
-                                    Grid3.Cell(2, c).ForeColor = Color.Black
-                                Else
-                                    Grid3.Cell(2, c).BackColor = Couleur_Temps
-                                    Grid3.Cell(2, c).ForeColor = Color.Black
-                                End If
-                            End If
-                        End If
-                        ' Effacement text dans TableEventH
-                        If Not (mDeb = 1 And t = 0) Then ' ne jamais effacer l'accord du temp=1 de la mesure=1 ()
-                            '
-                            TableEventH(m, t, ct).Accord = ""
-                            TableEventH(m, t, ct).Gamme = ""
-                            TableEventH(m, t, ct).Marqueur = ""
-                            TableEventH(m, t, ct).Tonalité = ""
-                            TableEventH(m, t, ct).Mode = ""
-                            TableEventH(m, t, ct).Détails = ""
-                            TableEventH(m, t, ct).Degré = ""
-                            TableEventH(m, t, ct).Position = ""
-                            TableEventH(m, t, ct).Ligne = -1
-                        End If
-                        '
-                    End If
-                    c = c + 1                           ' comptge des colonnes de grid3
-                    ComptMes = ComptMes + 1             ' comptage des numéro de mesures
-                    If ComptMes = NbDivMesure + 1 Then
-                        ComptMes = 1
-                        m = m + 1
-                    End If
-
-                Next j
-                Ecriture_Entrée_Ds_CompoGrid()
-                Maj_PianoRoll()
-                Maj_DrumEdit()
-                EcritUneFois = True
-            End If
-        End If
-    End Sub
 
     Private Sub Grid2_Scroll(Sender As Object, e As EventArgs) Handles Grid2.Scroll
         If QuiScroll = "Grid2" Then
@@ -23286,18 +23973,21 @@ Public Class Form1
             '
             ' Mise a jour du tableau des modes Tabtons sur un clic dans Grid2 à travers combobox1 et combobox2
             ' ************************************************************************************************
-            a = Trim(TableEventH(m, t, ct).Accord) ' c'est la valeur de l'accord dans TableEventH qui définit préence ou absence d'un EVENTH
-            If a <> "" Then
-                a = Trim(TableEventH(m, t, ct).Tonalité)
-                tbl = a.Split
-                If tbl(1) = "Maj" Then
-                    a = " " + tbl(0) + " Major"
-                    ii = ComboBox1.Items.IndexOf(a)
-                    ComboBox1.SelectedIndex = ii
-                Else
-                    a = " " + tbl(0) + " Minor"
-                    ii = ComboBox2.Items.IndexOf(a)
-                    ComboBox1.SelectedIndex = ii
+            If SynchroTona.Checked Then
+                a = Trim(TableEventH(m, t, ct).Accord) ' c'est la valeur de l'accord dans TableEventH qui définit préence ou absence d'un EVENTH
+                If a <> "" Then
+                    a = Trim(TableEventH(m, t, ct).Tonalité)
+                    tbl = a.Split
+                    If tbl(1) = "Maj" Then
+                        a = " " + tbl(0) + " Major"
+                        a = TradTonaD(a)
+                        ii = ComboBox1.Items.IndexOf(a)
+                        ComboBox1.SelectedIndex = ii
+                    Else
+                        a = " " + tbl(0) + " Minor"
+                        ii = ComboBox2.Items.IndexOf(a)
+                        ComboBox1.SelectedIndex = ii
+                    End If
                 End If
             End If
             '
@@ -23456,7 +24146,7 @@ Public Class Form1
         Dim ligne As Integer = 1
         Do
             j = j + 1
-        Loop Until (Trim(Grid6.Cell(ligne, j).Text) = Trim(mesure)) Or (Trim(Grid6.Cell(ligne, j).Text) = "") Or (j = Grid6.cols - 1)
+        Loop Until (Trim(Grid6.Cell(ligne, j).Text) = Trim(mesure)) Or (Trim(Grid6.Cell(ligne, j).Text) = "") Or (j = Grid6.Cols - 1)
         Return j
     End Function
     Private Sub Grid3_MouseHover(Sender As Object, e As EventArgs) Handles Grid3.MouseHover
@@ -23478,12 +24168,12 @@ Public Class Form1
         Dim m As Integer
         Dim t As Integer
         Dim ct As Integer
-        Dim ligne As Integer = Grid3.MouseRow
-        Dim col As Integer = Grid3.MouseCol
+        Dim ligne As Integer = Grid3.ActiveCell.Row 'Grid3.MouseRow
+        Dim col As Integer = Grid3.ActiveCell.Col 'Grid3.MouseCol
 
         ' Ecriture accord de MODES
         ' ************************
-        If My.Computer.Keyboard.AltKeyDown Then ECR_MODES(TGridDest.Grid3)
+        'If My.Computer.Keyboard.AltKeyDown Then ECR_MODES(TGridDest.Grid3)
 
         '
         If (Grid3.MouseCol <= (nbMesures * nbColonnesGrid3ParMesure) - 1) And
@@ -23568,6 +24258,8 @@ Public Class Form1
                     MenuContextGrid2Grid3(m, t, ct) 'Calcul des sous menus du  menu flottant accord
                     ToolStripSeparator7.Visible = False
                     Transpo.Visible = False
+                    TranspMode.Visible = False
+                    ToolStripSeparator11.Visible = False
                     ToolStripSeparator6.Visible = True
                     Flot_Couper.Enabled = True ' mise à jour du menu couper,copier,coller
                     Flot_Copier.Enabled = True
@@ -23578,7 +24270,9 @@ Public Class Form1
                     ContextMenu3Accord.Visible = False
                     ToolStripSeparator7.Visible = False
                     Transpo.Visible = False
+                    TranspMode.Visible = False
                     ToolStripSeparator6.Visible = False
+                    ToolStripSeparator11.Visible = False
                     Flot_Couper.Enabled = False
                     Flot_Copier.Enabled = False
                     Flot_Coller.Enabled = True
@@ -23628,6 +24322,128 @@ Public Class Form1
     Private Sub TabPage21_Paint(sender As Object, e As PaintEventArgs) Handles TabPage21.Paint
         OngletCours = 21
     End Sub
+    Private Sub Grid2_KeyDown(Sender As Object, e As KeyEventArgs) Handles Grid2.KeyDown
+        Dim a As String
+        Dim i As Integer
+        Dim j As Integer
+        Dim k As Integer
+        Dim m As Integer
+        Dim mDeb As Integer
+        Dim mFin As Integer
+        Dim ComptMes As Integer
+        Dim t As Integer
+        Dim c As Integer
+        Dim ct As Integer
+        Dim NbDivMesure As Integer
+
+
+
+        a = e.KeyData
+        mDeb = Grid2.Selection.FirstCol
+        mFin = Grid2.Selection.LastCol
+        t = 1
+        ct = 1
+        '
+        NbDivMesure = Det_NbDivisionMesure()
+        If DerGridCliquée = GridCours.Grid2 Then
+            If a = "46" And Grid2.ActiveCell.Col > 1 Then ' 46 = delete Touche Suppr
+                '
+                ' Pour CTRL Z
+                ' ***********
+                ZAnnulation_Sauvegarde(mDeb, mFin)
+                '
+                ' Mise àjour de grid2
+                ' *******************
+                k = (mFin - mDeb)
+                '
+                For i = mDeb To mFin
+                    Grid2.Column(i).Locked = False
+                Next
+                '
+                Grid2.AutoRedraw = False
+                '
+                ' Grid2.Selection.ClearText() ' <-- semble ne pas toujors fonctionner
+                '
+                For i = mDeb To mFin
+                    Grid2.Column(i).Locked = True
+                    Grid2.Cell(Grid2.ActiveCell.Row, i).BackColor = Color.White
+                    Grid2.Cell(Grid2.ActiveCell.Row, i).ForeColor = Color.Black
+                    Grid2.Cell(Grid2.ActiveCell.Row, i).Text = ""
+                Next
+                '
+                '
+                Grid2.Refresh()
+                Grid2.AutoRedraw = True
+
+                ' mise à jour de grid3
+                ' ********************
+                c = ((mDeb - 1) * NbDivMesure) + 1
+                m = mDeb
+                ComptMes = 1
+                For j = c To (mFin * NbDivMesure)
+                    If Grid3.Cell(2, c).BackColor = Couleur_Accord_Grid3 Then
+                        '
+                        ' Détermination des index t et ct à partir de grid3
+                        ' *************************************************
+                        ct = 0 '-1
+                        For i = c To 0 Step -1
+                            ct = ct + 1
+                            If Trim(Grid3.Cell(2, i).Text) <> "" Then
+                                t = Val(Trim(Grid3.Cell(2, i).Text)) '- 1
+                                Exit For
+                            End If
+                        Next i
+                        '
+                        ' Effacement
+                        ' **********
+                        ' Effacement Couleur
+                        If Not (mDeb = 1) Then ' ne jamais effacer a couleur de la mesure 1
+                            ' Grid2.ActiveCell.Text = ""
+                            ' Grid2.ActiveCell.BackColor = Color.White
+                            ' Grid2.Cell(Grid2.ActiveCell.Row, m).BackColor = Color.White
+                            If ct <> 1 Then
+                                Grid3.Cell(2, c).BackColor = Couleur_CTemps
+                                Grid3.Cell(2, c).ForeColor = Color.Black
+                            Else
+                                If EstPair(t) Then
+                                    Grid3.Cell(2, c).BackColor = Couleur_CTemps
+                                    Grid3.Cell(2, c).ForeColor = Color.Black
+                                Else
+                                    Grid3.Cell(2, c).BackColor = Couleur_Temps
+                                    Grid3.Cell(2, c).ForeColor = Color.Black
+                                End If
+                            End If
+                        End If
+                        ' Effacement text dans TableEventH
+                        If Not (mDeb = 1 And t = 0) Then ' ne jamais effacer l'accord du temp=1 de la mesure=1 ()
+                            '
+                            TableEventH(m, t, ct).Accord = ""
+                            TableEventH(m, t, ct).Gamme = ""
+                            TableEventH(m, t, ct).Marqueur = ""
+                            TableEventH(m, t, ct).Tonalité = ""
+                            TableEventH(m, t, ct).Mode = ""
+                            TableEventH(m, t, ct).Détails = ""
+                            TableEventH(m, t, ct).Degré = ""
+                            TableEventH(m, t, ct).Position = ""
+                            TableEventH(m, t, ct).Ligne = -1
+                        End If
+                        '
+                    End If
+                    c = c + 1                           ' comptge des colonnes de grid3
+                    ComptMes = ComptMes + 1             ' comptage des numéro de mesures
+                    If ComptMes = NbDivMesure + 1 Then
+                        ComptMes = 1
+                        m = m + 1
+                    End If
+
+                Next j
+                Ecriture_Entrée_Ds_CompoGrid()
+                Maj_PianoRoll()
+                Maj_DrumEdit()
+                EcritUneFois = True
+            End If
+        End If
+    End Sub
     Private Sub Grid2_MouseDown(Sender As Object, e As MouseEventArgs) Handles Grid2.MouseDown
         Dim i As Integer
         Dim j As Integer
@@ -23649,46 +24465,51 @@ Public Class Form1
         Grid2.Refresh()
         i = Grid2.MouseRow
         j = Grid2.MouseCol
-        '
-        ' Mise a jour du tableau des modes Tabtons sur un clic dans Grid2 àtravers combobox1 et combobox2
-        ' ************************************************************************************************
-        a = Trim(TableEventH(j, 1, 1).Tonalité)
-        If a <> "" Then
-            tbl = a.Split
-            If tbl(1) = "Maj" Then
-                a = " " + tbl(0) + " Major"
-                ii = ComboBox1.Items.IndexOf(a)
-                ComboBox1.SelectedIndex = ii
-            Else
-                a = " " + tbl(0) + " Minor"
-                ii = ComboBox2.Items.IndexOf(a)
-                ComboBox1.SelectedIndex = ii
+
+        If i <> -1 And j <> -1 Then
+            '
+            ' Mise a jour du tableau des modes Tabtons sur un clic dans Grid2 àtravers combobox1 et combobox2
+            ' ***********************************************************************************************
+            If SynchroTona.Checked Then
+                a = Trim(TableEventH(j, 1, 1).Tonalité)
+                If a <> "" Then
+                    tbl = a.Split
+                    If tbl(1) = "Maj" Then
+                        a = " " + tbl(0) + " Major"
+                        a = TradTonaD(a)
+                        ii = ComboBox1.Items.IndexOf(a)
+                        ComboBox1.SelectedIndex = ii
+                    Else
+                        a = " " + tbl(0) + " Minor"
+                        ii = ComboBox2.Items.IndexOf(a)
+                        ComboBox1.SelectedIndex = ii
+                    End If
+                End If
             End If
-        End If
-        '
-        ' Ecrire les notes de l'accord dans la textbox en haut à droite dans barre outil de tabtons
-        ' *****************************************************************************************
-        Dim AA As String = Trim(Grid2.Cell(1, j).Text)
-        If Trim(AA) <> "" Then
-            Dim tbl2() As String = AA.Split("/") ' Trim(ComboBox1.Text).Split()
-            Dim tbl1() As String = tbl2(0).Split()
-            Dim bb As String
+            '
+            ' Ecrire les notes de l'accord dans la textbox en haut à droite dans barre outil de tabtons
+            ' *****************************************************************************************
+            Dim AA As String = Trim(Grid2.Cell(1, j).Text)
+            If Trim(AA) <> "" Then
+                Dim tbl2() As String = AA.Split("/") ' Trim(ComboBox1.Text).Split()
+                Dim tbl1() As String = tbl2(0).Split()
+                Dim bb As String
 
 
-            If Len(tbl1(0)) > 1 Then
-                bb = Mid(tbl1(0), 2, 1)
-                If Trim(bb) = "b" Then
-                    TextBox1.Text = Det_NotesAccord3(Trim(tbl2(0)), "b")
+                If Len(tbl1(0)) > 1 Then
+                    bb = Mid(tbl1(0), 2, 1)
+                    If Trim(bb) = "b" Then
+                        TextBox1.Text = Det_NotesAccord3(Trim(tbl2(0)), "b")
+                    Else
+                        TextBox1.Text = Det_NotesAccord3(Trim(tbl2(0)), "#")
+                    End If
                 Else
                     TextBox1.Text = Det_NotesAccord3(Trim(tbl2(0)), "#")
                 End If
-            Else
-                TextBox1.Text = Det_NotesAccord3(Trim(tbl2(0)), "#")
             End If
-        End If
 
 
-        If i >= 0 And j >= 0 Then ' pour prévenir e bug où MouseRow ou MouseCol restitue -1 
+
             '
             If j <= nbMesures And Grid2.Selection.LastCol <= nbMesures Then
                 ' 
@@ -23729,7 +24550,7 @@ Public Class Form1
                 ' *******************************************
                 m = MesureCourante
                 If e.Button() = Windows.Forms.MouseButtons.Left And Trim(TableEventH(m, 1, 1).Accord) <> "" And
-                         Not ((My.Computer.Keyboard.CtrlKeyDown) And (My.Computer.Keyboard.AltKeyDown)) Then ' TabControl4.SelectedIndex = 2 --> onglet Substitution
+                             Not ((My.Computer.Keyboard.CtrlKeyDown) And (My.Computer.Keyboard.AltKeyDown)) Then ' TabControl4.SelectedIndex = 2 --> onglet Substitution
 
                     Dim TMaj, TMin As String
 
@@ -23765,7 +24586,7 @@ Public Class Form1
                 ' Affichage notes accords sur clavier sans jouer l'accord
                 ' *******************************************************
                 If e.Button() = MouseButtons.Middle And Not (My.Computer.Keyboard.CtrlKeyDown) And Not (My.Computer.Keyboard.AltKeyDown) _
-                                                    And Not (My.Computer.Keyboard.ShiftKeyDown) Then
+                                                        And Not (My.Computer.Keyboard.ShiftKeyDown) Then
                     a = Det_PosPremierAccordMesure(j)
                     AfficherAccordRapport(Trim(a))
                 End If
@@ -23797,7 +24618,6 @@ Public Class Form1
                 '
                 If (e.Button() = MouseButtons.Right) And (My.Computer.Keyboard.AltKeyDown) Then
                     i = Grid2.MouseCol
-                    '
                     If (e.Button() = MouseButtons.Right) And (My.Computer.Keyboard.AltKeyDown) Then
                         i = Grid2.MouseCol
                         '
@@ -23810,12 +24630,15 @@ Public Class Form1
                             End If
                         End If
                     End If
-                    '
                 End If
                 '
             End If
         End If
     End Sub
+
+
+
+
     Private Sub Maj_Substitutions(m, t, ct)
         Dim accord As String = Trim(TableEventH(m, t, ct).Accord)
         Dim degré As String = Det_DegréRomain2(TableEventH(m, t, ct).Degré)
@@ -23867,16 +24690,6 @@ Public Class Form1
 
                 LabSubsti.Item(0).Text = Retab_Note_Tona(EventhSubsti(0).Tonalité, TableGlobalAccSubsti(TypAcc - 3, 3, deg))
 
-                'tbl = EventhSubsti(0).Tonalité.Split()
-                'Dim clf As String = Det_Clef(Trim(tbl(0)))                    ' calcul de la clef de la note de la tonalité
-                'tbl3 = TableGlobalAccSubsti(TypAcc - 3, 3, deg).Split()       ' décomposition de l'accord note-chiffrage
-                '
-                'If clf = "#" Then
-                'tbl3(0) = Trad_BemDies_Maj(tbl3(0))
-                'Else
-                'tbl3(0) = Trad_DiesBem_Maj(tbl3(0))
-                'End If
-                'LabSubsti.Item(0).Text = Join(tbl3, " ")
                 '
                 ' Ici --> deg du nouvel accord = deg d'ancien accord
                 EventhSubsti(0).Gamme = Trim(gamme)
@@ -23918,9 +24731,9 @@ Public Class Form1
                 '
                 a = NoteInterval(Trim(a), "5")
                 a = UCaseBémol(a)
-                If TypAcc = 4 Then
-                    a = a + " 7"
-                End If
+                'If TypAcc = 4 Then
+                a = a + " 7"
+                'End If
                 LabSubsti.Item(3).Text = Trim(a)
                 EventhSubsti(3).Accord = Trim(a)
             Else
@@ -24104,9 +24917,11 @@ Public Class Form1
         i = Grid2.MouseRow 'Grid2.ActiveCell.Row
         j = Grid2.MouseCol 'Grid2.ActiveCell.Col
 
+
+
         ' Ecriture accord de MODES
         ' ************************
-        If My.Computer.Keyboard.AltKeyDown Then ECR_MODES(TGridDest.Grid3)
+        'If My.Computer.Keyboard.AltKeyDown Then ECR_MODES(TGridDest.Grid2)
 
         If Grid2.MouseCol <= nbMesures And Grid2.Selection.LastCol <= nbMesures And (i >= 0 And j >= 0) Then ' (i >= 0 And j >= 0) pour prévenir le cas où  Grid2.MouseRow=-1 ou  Grid2.MouseCol=-1
             If Grid2.Selection.LastCol <= nbMesures Then
@@ -24154,6 +24969,8 @@ Public Class Form1
                             MenuContextGrid2Grid3(m, t, ct)
                             ToolStripSeparator7.Visible = True
                             Transpo.Visible = True
+                            TranspMode.Visible = True
+                            ToolStripSeparator11.Visible = True
                             ToolStripSeparator6.Visible = True
                             Flot_Couper.Enabled = True
                             Flot_Copier.Enabled = True
@@ -24162,6 +24979,8 @@ Public Class Form1
                             ContextMenu3Accord.Visible = False ' sélection de 1 seule cellule vide pour proposer  Coller dans le menu contextuel
                             ToolStripSeparator7.Visible = False
                             Transpo.Visible = False
+                            TranspMode.Visible = False
+                            ToolStripSeparator11.Visible = False
                             ToolStripSeparator6.Visible = False
                             Flot_Couper.Enabled = False
                             Flot_Copier.Enabled = False
@@ -24181,6 +25000,8 @@ Public Class Form1
                             ToolStripSeparator7.Visible = False
                             Transpo.Visible = True
                             ToolStripSeparator6.Visible = True
+                            TranspMode.Visible = True
+                            ToolStripSeparator11.Visible = True
                             Flot_Couper.Enabled = True
                             Flot_Copier.Enabled = True
                             Flot_Coller.Enabled = True
@@ -24189,6 +25010,8 @@ Public Class Form1
                             ToolStripSeparator7.Visible = False
                             Transpo.Visible = False
                             ToolStripSeparator6.Visible = False
+                            TranspMode.Visible = False
+                            ToolStripSeparator11.Visible = False
                             Flot_Couper.Enabled = False
                             Flot_Copier.Enabled = False
                             Flot_Coller.Enabled = True
@@ -24218,7 +25041,7 @@ Public Class Form1
         + "- " + "Accord  : " + accord + " Degré : " + degré + Chr(13) _
         + "- " + "Gamme : " + Trad_GammeEn_D_Maj(gamme) ' les gammes sont toujours exprimées en #
 
-        RichTextBox1.Text = Trim(a)
+        'Label103.Text = Trim(a)
     End Sub
     Private Sub Grid4_MouseDown(Sender As Object, e As MouseEventArgs) Handles Grid4.MouseDown
         Dim i As Integer '= Grid4.ActiveCell.Row 'Grid4.MouseRow
@@ -24234,24 +25057,26 @@ Public Class Form1
         i = Grid4.MouseRow
         j = Grid4.MouseCol
         '
-        a = Trim(Grid4.Cell(i, 1).Text)
+        If i <> -1 And j <> -1 Then
+            a = Trim(Grid4.Cell(i, 1).Text)
 
-        If e.Button() = MouseButtons.Left And (My.Computer.Keyboard.AltKeyDown) And (Trim(a) <> "") And i <> 0 Then
-            Grid4.DoDragDrop(a, DragDropEffects.Copy Or DragDropEffects.Move)
-            Grid1.AllowDrop = True
-        End If
-        '
-        If My.Computer.Keyboard.CtrlKeyDown And Trim(Grid4.Cell(i, j).Text) <> "" And i <> 0 Then
-            'JouerNoteG4(i, j)
-            If GammeAEtéJouée = False Then
-                If e.Button() = Windows.Forms.MouseButtons.Left Then
-                    SENSGamme = "Monter"
-                Else
-                    SENSGamme = "Descendre"
+            If e.Button() = MouseButtons.Left And (My.Computer.Keyboard.AltKeyDown) And (Trim(a) <> "") And i <> 0 Then
+                Grid4.DoDragDrop(a, DragDropEffects.Copy Or DragDropEffects.Move)
+                Grid1.AllowDrop = True
+            End If
+            '
+            If My.Computer.Keyboard.CtrlKeyDown And Trim(Grid4.Cell(i, j).Text) <> "" And i <> 0 Then
+                'JouerNoteG4(i, j)
+                If GammeAEtéJouée = False Then
+                    If e.Button() = Windows.Forms.MouseButtons.Left Then
+                        SENSGamme = "Monter"
+                    Else
+                        SENSGamme = "Descendre"
+                    End If
+                    'Création_Schedule2(CréationFichierScheduleGamme("FichierGamme", Trim(Grid1.Cell(i, 3).Text), "", i))
+                    GammeAEtéJouée = True
+                    JouerGamme(Trim(a), Grid1.ActiveCell.Row)
                 End If
-                'Création_Schedule2(CréationFichierScheduleGamme("FichierGamme", Trim(Grid1.Cell(i, 3).Text), "", i))
-                GammeAEtéJouée = True
-                JouerGamme(Trim(a), Grid1.ActiveCell.Row)
             End If
         End If
     End Sub
@@ -24324,7 +25149,6 @@ Public Class Form1
         SplitContainer2.Panel2.Visible = True
         Panel10.Visible = False
         '
-        ButtModes.Visible = True
         '
         Position_Transport()
     End Sub
@@ -24350,7 +25174,7 @@ Public Class Form1
         SplitContainer2.SplitterDistance = 500
         ' Boutons pour vue Harmo
         PanelBoutons.Visible = False
-        ButtModes.Visible = False
+        'ButtModes.Visible = False
         '
         ' Barre de transport à podition initiale
         Position_Transport()
@@ -24360,17 +25184,12 @@ Public Class Form1
         Dim s As New Size
 
         Panel10.Visible = True
-        ButtModes.Visible = False
-        '
-        w = LonBarresBleuRouge - 365
-        h = EpaisBarresBleuRouge
-        Label32.Size = New Size(w, h)
-        Label33.Size = Label32.Size
+        'ButtModes.Visible = False
         '
         ' Largeur de Grid1
         Grid1.Size = New Size(470, Grid1.Size.Height)
         ' Largeur Appli
-        Me.Width = 1320
+        Me.Width = 1317
         Grid1.Size = New Size(470, 430)
         SplitContainer2.IsSplitterFixed = False
 
@@ -24380,7 +25199,7 @@ Public Class Form1
         '
         ' Boutons pour vue Harmo
         PanelBoutons.Visible = False
-        ButtModes.Visible = False
+        'ButtModes.Visible = False
 
         Dim p As New Point(0, 0)
         s.Height = Panel11.Height
@@ -24390,7 +25209,6 @@ Public Class Form1
         ' Barre de transport à podition initiale
         Position_Transport()
     End Sub
-
     Sub Vue_Harmo()
         Dim s As New Size
         Dim p As New Point(0, 0)
@@ -24399,7 +25217,6 @@ Public Class Form1
         Grid1.Size = New Size(835, Grid1.Size.Height)
         ' Largeur Appli
         Me.Width = 1450
-        ButtModes.Visible = True
 
         SplitContainer2.IsSplitterFixed = False
         '
@@ -24415,11 +25232,10 @@ Public Class Form1
         Panel11.Location = p
         Panel11.Size = New Size(Grid1.Width + TabControl3.Width + 10, s.Height) ' panneau du piano
         '
+        ' Panneau AIDE
+        PanelAide.Visible = False
         ' Barre de transport à podition initiale
         Position_Transport()
-    End Sub
-    Private Sub Button23_Click_2(sender As Object, e As EventArgs) Handles Button23.Click
-        Vue_Réduite()
     End Sub
 
     Private Sub Maj_FlagMode1() ' procédure permettant de charger l'application sans aucune extension non utilisée
@@ -24501,7 +25317,7 @@ Public Class Form1
                 s.Height = Panel11.Height
                 Panel11.Location = p
                 Panel11.Size = New Size(Grid1.Width + TabControl3.Width + 15, s.Height) ' panneau du piano
-                Panel11.HorizontalScroll.Value = 0
+
                 '
                 Button30.Visible = False
             Case 2, 3 ' simple
@@ -24671,7 +25487,7 @@ Public Class Form1
             Clef = SauvClef
         End If
     End Sub
-    Private Sub Button19_Click_1(sender As Object, e As EventArgs) Handles ButtTonalités.Click
+    Private Sub Button19_Click_1(sender As Object, e As EventArgs)
         Maj_Extension_Tonalité()
     End Sub
     Private Sub Maj_Extension_Tonalité()
@@ -24738,7 +25554,7 @@ Public Class Form1
             Clef = SauvClef
         End If
     End Sub
-    Private Sub Maj_DétailsColler(ligne As Integer)
+    Private Sub Maj_DétailsColler(ligne As Integer, m As Integer, t As Integer, ct As Integer)
         Dim j As Integer
         'Grid1.Range(ligne, 8, ligne, nbColonnesGrid1 - 2).ClearText()
         'Grid1.Range(ligne, 8, ligne, nbColonnesGrid1 - 2).ClearBackColor()
@@ -24755,7 +25571,7 @@ Public Class Form1
             Case Ty_Extension.Gammes
                 Extension_Gamme(ligne)
             Case Ty_Extension.Modes
-                Extension_Mode(ligne)
+                Extension_Mode(ligne, m, t, ct)
             Case Else
                 ' ne rien faire
         End Select
@@ -24804,7 +25620,7 @@ Public Class Form1
             '
         End If
     End Sub
-    Private Sub Button26_Click(sender As Object, e As EventArgs) Handles ButtModes.Click
+    Private Sub Button26_Click(sender As Object, e As EventArgs)
         Maj_Extension_Mode()
     End Sub
     Sub Maj_Extension_Mode()
@@ -24827,6 +25643,103 @@ Public Class Form1
         Grid1.Refresh()
     End Sub
     Sub Extension_Mode(ligne As Integer)
+        Dim Mode As String
+        Dim SigneClef As String
+        Dim tbl() As String
+        Dim r As Integer
+        Dim i As Integer
+        Dim TabPourMode(0 To 35) As String
+        Dim tbl1() As String
+        Dim m, t, ct As Integer
+
+        If Trim(Grid1.Cell(ligne, 6).Text) <> "" Then
+            SauvClef = Clef
+            '
+            EcritUneFois = True
+            RAZ_DétailsEventH(ligne)
+            '
+            tbl = Split(Grid1.Cell(ligne, 3).Text) ' on va chercher le signe de clef dans la tonalité
+
+            SigneClef = Trim(Det_ClefEn2(tbl(0), tbl(1)))
+
+            ' RAZ_DétailsEventH(ligne)
+            '
+            ' Affichage des notes de la tonalité dans compogrid
+            ' *************************************************
+            Accord = Trim(Grid1.Cell(ligne, 4).Text)
+            tbl = Split(Accord, " ")
+            Tonique = Trim(LCase((tbl(0))))
+            Tonique = Trad_NoteEnDMin(Tonique)
+            '
+            ' Détermination de la position
+            tbl1 = Trim(Grid1.Cell(ligne, 1).Text).Split(".")
+            m = tbl1(0)
+            t = tbl1(1)
+            ct = tbl1(2)
+            '
+            '**************************************************************************************
+            Mode = TableEventH(m, t, ct).Mode ' choix de la tonalité pour construire le mode <
+            '***************************************************************************************
+            '
+            tbl = Split(Det_NotesGammes(Trim(Mode)), " ")
+            '
+            ' écriture de la table TabPourMode
+            j = 0
+            Do
+                For i = 0 To UBound(tbl)
+                    TabPourMode(j) = tbl(i)
+                    j = j + 1
+                    If j = 36 Then Exit For
+                Next i
+            Loop Until j >= 36
+            '
+            ' détermination de la 1ere norz du mode grec
+            For i = 0 To 35
+                If Tonique = TabPourMode(i) Then
+                    Exit For
+                End If
+            Next i
+
+            Degré = TradDegré_ChiffreLettre(i)
+            '
+            ' constitution de la gamme
+            a = ""
+            For j = i To UBound(tbl) + i
+                a = a + TabPourMode(j) + " "
+            Next
+            '
+            ' Affichage des notes de la gamme dans compogrid
+            ' **********************************************
+            tbl = Split(Trim(a), " ")
+            j = 11
+            tbl2 = Split(Grid1.Cell(ligne, 4).Text, " ")
+            If Det_NomMode(Mode, Degré) <> "" And Trim(Degré) <> "" Then
+                Grid1.Cell(ligne, 10).Text = Trim(Trim(tbl2(0))) + " " + Det_NomMode(Mode, Degré) ' écriture du nom du mode
+                'Grid1.Cell(ligne, 10).BackColor = ButtModes.BackColor
+                Maj_Détails(ligne, "ModeG")
+                For i = 0 To UBound(tbl)
+                    Grid1.Cell(ligne, j).Text = LCase(Trim(tbl(i))) 'tbl(i)
+                    'Grid1.Cell(ligne, j).BackColor = ButtModes.BackColor
+                    If SigneClef = "b" Then
+                        r = ListNd.IndexOf(tbl(i))
+                        If r <> -1 Then ' si r =-1 c'est que la note n'a pas été trouvée et donc qu'elle est déjà en "b"
+                            Grid1.Cell(ligne, j).Text = ListNb(r)
+                        End If
+                        Grid1.Cell(ligne, j).Text = LCase(Trim(Grid1.Cell(ligne, j).Text))
+                    End If
+                    j = j + 1
+                Next i
+            End If
+            '
+            'Grid1.Cell(ligne, nbColonnesGrid1 - 1).Text = "0"
+            If CheckBoxTout.Checked Then
+                'Grid1.Cell(ligne, nbColonnesGrid1 - 1).Text = "1"
+            End If
+            '
+            Clef = SauvClef
+        End If
+    End Sub
+    Sub Extension_Mode(ligne As Integer, m As Integer, t As Integer, ct As Integer)
         Dim Gamme As String
         Dim SigneClef As String
         Dim tbl() As String
@@ -24852,7 +25765,11 @@ Public Class Form1
             tbl = Split(Accord, " ")
             Tonique = Trim(LCase((tbl(0))))
             Tonique = Trad_NoteEnDMin(Tonique)
-            Gamme = Trim(Grid1.Cell(ligne, 3).Text) ' choix de la tonalité pour construire le mode
+            '
+            ' *********************************************************************************************************************
+            Gamme = Trim(TableEventH(m, t, ct).Mode) ' on prend Maj, MinH ou MinM pour construire le mode correspondant à l'accord
+            ' *********************************************************************************************************************
+            '
             tbl = Split(Det_NotesGammes(Trim(Gamme)), " ")
             '
             j = 0
@@ -24869,7 +25786,7 @@ Public Class Form1
                     Exit For
                 End If
             Next i
-
+            'If Trouvé Then
             Degré = TradDegré_ChiffreLettre(i)
             '
             a = ""
@@ -24884,11 +25801,11 @@ Public Class Form1
             tbl2 = Split(Grid1.Cell(ligne, 4).Text, " ")
             If Det_NomMode(Gamme, Degré) <> "" And Trim(Degré) <> "" Then
                 Grid1.Cell(ligne, 10).Text = Trim(Trim(tbl2(0))) + " " + Det_NomMode(Gamme, Degré) ' écriture du nom du mode
-                Grid1.Cell(ligne, 10).BackColor = ButtModes.BackColor
+                'Grid1.Cell(ligne, 10).BackColor = ButtModes.BackColor
                 Maj_Détails(ligne, "ModeG")
                 For i = 0 To UBound(tbl)
                     Grid1.Cell(ligne, j).Text = LCase(Trim(tbl(i))) 'tbl(i)
-                    Grid1.Cell(ligne, j).BackColor = ButtModes.BackColor
+                    'Grid1.Cell(ligne, j).BackColor = ButtModes.BackColor
                     If SigneClef = "b" Then
                         r = ListNd.IndexOf(tbl(i))
                         If r <> -1 Then ' si r =-1 c'est que la note n'a pas été trouvée et donc qu'elle est déjà en "b"
@@ -24900,10 +25817,7 @@ Public Class Form1
                 Next i
             End If
             '
-            'Grid1.Cell(ligne, nbColonnesGrid1 - 1).Text = "0"
-            If CheckBoxTout.Checked Then
-                'Grid1.Cell(ligne, nbColonnesGrid1 - 1).Text = "1"
-            End If
+            'End If
             '
             Clef = SauvClef
         End If
@@ -25734,8 +26648,8 @@ Public Class Form1
                     Grid1.ActiveCell.ForeColor = Color.Yellow
                     TableEventH(m, t, ct).Marqueur = Trim(b)
                     Grid1.Cell(ligne, 2).Text = Trim(b)
-                Else
-                    Grid1.ActiveCell.BackColor = Couleur_Marqueurs
+                Else 'effacement marqueur
+                    Grid1.ActiveCell.BackColor = Couleur_Marqueurs ' couleur de la colonne Armure
                     Grid1.ActiveCell.ForeColor = Color.Black
                     '
                     TableEventH(m, t, ct).Marqueur = ""
@@ -25776,11 +26690,13 @@ Public Class Form1
             End If
             '
             TMarqueur.Visible = False
+            Ecriture_Entrée_Ds_CompoGrid()
             '
             'Maj_VueNotes()
             Maj_PianoRoll()
             Maj_DrumEdit()
             Maj_VueNotes()
+
         End If
 
     End Sub
@@ -25860,7 +26776,7 @@ Public Class Form1
             If Not (SortieMidi.Item(ChoixSortieMidi).IsOpen) Then
                 SortieMidi.Item(ChoixSortieMidi).Open()
             End If
-            SortieMidi.Item(ChoixSortieMidi).SendControlChange(CanalThru.Value - 1, 7, Vol.Value)
+            'SortieMidi.Item(ChoixSortieMidi).SendControlChange(CanalThru.Value - 1, 7, Vol.Value)
         End If
     End Sub
     Private Sub Reverb_ValueChanged(sender As Object, e As EventArgs) Handles Reverb.ValueChanged
@@ -25937,7 +26853,7 @@ Public Class Form1
     Private Sub Button36_Click(sender As Object, e As EventArgs) Handles Button36.Click
         ExportHTML()
     End Sub
-    Private Sub Form1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles Me.KeyPress
+    Private Sub Form1_KeyPress(sender As Object, e As KeyPressEventArgs) Handles MyBase.KeyPress
         ' Remarque importante : pour ça fonctionne ici, il faut que la propriété de form1 KeyPreview =  true
 
         'If e.KeyChar.ToString() = " " Then
@@ -25958,16 +26874,16 @@ Public Class Form1
 
     End Sub
 
-    Function Init_P() As Point
-        Dim p As New Point
-        Init_P.X = 5 '
-        Init_P.Y = 9 '
-    End Function
-    Function Init_PP() As Point
-        Dim p As New Point
-        Init_PP.X = 5 '
-        Init_PP.Y = 15 '
-    End Function
+    'Function Init_P() As Point
+    '   Dim p As New Point
+    '  Init_P.X = 5 '
+    ' Init_P.Y = 9 '
+    'End Function
+    'Function Init_PP() As Point
+    '   Dim p As New Point
+    '  Init_PP.X = 5 '
+    ' Init_PP.Y = 15 '
+    'End Function
     Private Sub CheckBoxTout_CheckedChanged_1(sender As Object, e As EventArgs) Handles CheckBoxTout.CheckedChanged
         Dim i As Integer
         'l = Det_NbLignesUtilisées()
@@ -26293,7 +27209,7 @@ Public Class Form1
             ' Maj des propriétés de Pianoroll
             listPIANOROLL.Item(i).PLangue = Module1.LangueIHM
             listPIANOROLL.Item(i).PNbMesures = nbMesures ' Arrangement1.nbMesures
-            listPIANOROLL.Item(i).PMétrique = Métrique.Text
+            listPIANOROLL.Item(i).PMétrique = "4/4" 'Métrique.Text
             listPIANOROLL.Item(i).PnbRépétitionMax = nbRépétitionMax
             listPIANOROLL.Item(i).PN_Can1erPianoR = 2
 
@@ -26357,7 +27273,7 @@ Public Class Form1
         ' ******************************
         Drums.PLangue = Module1.LangueIHM
         Drums.PNbMesures = nbMesures '
-        Drums.PMétrique = Métrique.Text
+        Drums.PMétrique = "4/4" 'Métrique.Text
         Drums.PnbRépétitionMax = nbRépétitionMax
         Drums.PListAcc = Det_ListAcc()
         Drums.PListMarq = Det_ListMarq()
@@ -26416,7 +27332,7 @@ Public Class Form1
                         t1 = Convert.ToString(t)
                         ct1 = Convert.ToString(ct)
                         d1 = m1 + "." + t1 + "." + ct1
-                        a = a + Trim(d1) + "-" + Trim(TableEventH(m, t, ct).Mode) + ";"
+                        a = a + Trim(d1) + "-" + Trim(TableEventH(m, t, ct).Mode) + ";" ' OK , c'est bien MODE et non pas TON
                     End If
                 Next ct
             Next t
@@ -26445,7 +27361,8 @@ Public Class Form1
         Dim liste1 As New List(Of String)
         '
         For i = 1 To Grid1.Rows - 1
-            If Trim(Grid1.Cell(i, 2).Text) <> "" Then
+            'If Trim(Grid1.Cell(i, 2).Text) <> "" Then
+            If Grid1.Cell(i, 2).BackColor = Color.Green Then ' présence d'un marqueur ?
                 a = a + Trim(Grid1.Cell(i, 1).Text) + "-" + Trim(Grid1.Cell(i, 2).Text) + ";" ' liste : 1.1.1-D;2.1.1-Am etc..
             End If
         Next
@@ -26475,6 +27392,24 @@ Public Class Form1
 
         Next
     End Sub
+    '
+    Public Sub Maj_PianoRoll2(NumPianR As Integer)
+        Dim i As Integer
+        Dim a, b, c, d As String
+        a = Trim(Det_ListAcc())
+        b = Trim(Det_ListGam())
+        c = Trim(Det_ListMarq())
+        d = Trim(Det_ListTon())
+
+        listPIANOROLL(NumPianR).PListAcc = a 'Det_ListAcc()
+        listPIANOROLL(NumPianR).PListGam = b 'Det_ListGam()
+        listPIANOROLL(NumPianR).PListMarq = c 'Det_ListMarq()
+        listPIANOROLL(NumPianR).PListTon = d 'Det_ListMarq()
+        'listPIANOROLL(i).F1_Refresh()
+        listPIANOROLL(NumPianR).Maj_CalquesMIDI()
+        'listPIANOROLL(i).Clear_AllLayers()
+        'listPIANOROLL(i).F1_Refresh()
+    End Sub
     Sub Maj_DrumEdit()
         Drums.PListAcc = Det_ListAcc()
         Drums.PListMarq = Det_ListMarq()
@@ -26502,7 +27437,7 @@ Public Class Form1
         End If
 
     End Sub
-    Public Sub NomduSon_TextChanged(sender As Object, e As EventArgs) Handles NomduSon.TextChanged 'Handles NomduSon.TextChanged  ' <-- concerne  les noms des bloc - il faudra créer un nom pour la piste accord seulement
+    Public Sub NomduSon_TextChanged(sender As Object, e As EventArgs) Handles NomduSon.TextChanged   'Handles NomduSon.TextChanged  ' <-- concerne  les noms des bloc - il faudra créer un nom pour la piste accord seulement
         Dim a As String
         Dim b As String = Trim(NomduSon.Text)
         Dim j1, j2, k As Integer
@@ -26590,6 +27525,7 @@ Public Class Form1
         Else
             Retablir.Enabled = True
         End If
+        '
     End Sub
     ' **********************************************************************
     ' Récup_Volume : récupération des volumes des pistes                   *
@@ -26631,11 +27567,13 @@ Public Class Form1
             Transport.Show()
         Else
             '
-            Dim x = Me.Location.X + (Me.Size.Width - Transport.Width) \ 2 'r.Left + (r.Width - Transport.Width) \ 2
-            Dim y = Me.Location.Y 'r.Top + (r.Height - Transport.Height) \ 2
+            'Dim x = Me.Location.X + (Me.Size.Width - Transport.Width) \ 2 'r.Left + (r.Width - Transport.Width) \ 2
+            'Dim y = Me.Location.Y 'r.Top + (r.Height - Transport.Height) \ 2
             Transport.TopLevel = True
             Transport.TopMost = True
-            Transport.Location = New Point(x, y)
+            Position_Transport()
+            'Transport.Location = New Point(x, y)
+            Transport.Show()
         End If
 
     End Sub
@@ -26686,6 +27624,7 @@ Public Class Form1
 
         Horloge1.Reset()
         Horloge1.BeatsPerMinute = Transport.Tempo.Value
+
 
         NumMesList22()  ' call back pour affichage des mesures
         For i = 0 To nb_TotalPistes - 1 'Arrangement1.Nb_PistesMidi
@@ -26749,6 +27688,7 @@ Public Class Form1
                                 Horloge1.Schedule(New CallbackMessage(AddressOf EVT_FIN, Position + 1))
                             End If
                         Case Else
+
                     End Select
                 Next j
             End If
@@ -26784,6 +27724,7 @@ Public Class Form1
             PlayMidi.Enabled = False
             If Transport.Remote.Checked Then Send_CTRL54_Remote()
             Horloge1.Start()
+
             Tempo_Aff_EventH.Start()
 
             '
@@ -26889,6 +27830,7 @@ Public Class Form1
         Dim Vélocité, Vélocité_Stack As String
         Dim nte, nte_stack As String
         Dim Sortir As Boolean = False
+        Dim colonne As Integer
 
         ' Initialisation des variables
 
@@ -26936,6 +27878,7 @@ Public Class Form1
 
 
         ' Ecriture du changement de programme (program change)
+        ' ****************************************************
         Dim PRG_ As Integer = ListGS.SelectedIndex - 1
         If PRG_ <> -1 Then
             a = a + "PRG" + " " + Trim(n) + " " + Trim(n) + " " + "0" + " " + Convert.ToString(PRG_) + "-"
@@ -26972,7 +27915,7 @@ Public Class Form1
                                 Sortir = True ' sortir de la boucle pour cause de dernier accord
                                 'If ii = Boucle-1 Then DuréedeNote = Trim(Det_DuréeFIN2(Trim(Position), Val(DuréedeNote), True)) ' rallongement du dernier accord
                                 If ii = Boucle - 1 Then
-                                    DuréedeNote = DuréedeNote + (16 * Transport.LFinal.Value) ' rallonge de l'accord de fin
+                                    DuréedeNote = DuréedeNote '+ (16 * Transport.LFinal.Value) ' rallonge de l'accord de fin
                                 End If
 
                             End If
@@ -27005,10 +27948,10 @@ Public Class Form1
                             '
                             a = a + ligne1
 
-                            ' Courbe expression sur la colonne courante
-                            ' *****************************************
+                            ' COURBEXP : Courbe expression sur la colonne courante
+                            ' ****************************************************
                             If ActExp.Checked And ActExp.Enabled Then
-                                finexp = Convert.ToInt16(DuréedeNote) '+ (16 * Transport.LFinal.Value) ' si dernière note traité alors on prolonge la maj du contrôleur
+                                finexp = Convert.ToInt16(DuréedeNote) - 1 '+ (16 * Transport.LFinal.Value) ' si dernière note traitée alors on prolonge la maj du contrôleur
                                 If m <> 0 And t <> 0 And ct <> 0 Then
                                     colonne = Tad_Pos_Col(m, t, ct)
                                     For k = 0 To finexp - 1
@@ -27047,7 +27990,6 @@ Public Class Form1
     Function CTRL_exp_Symph(j As Integer, canal As Byte, k As Integer) As String ' j est la colonne en cours, k est le nombre de répétition
         Dim DebPart As Integer
         Dim FinPart As Integer
-        Dim TValPréded As String = "0"
         Dim ValeurCtrl As String
         Dim Form1_Début As Integer = Transport.Début.Value
         Dim Form1_Fin As Integer = Transport.Terme.Value
@@ -27056,7 +27998,7 @@ Public Class Form1
         Dim Répéter As Boolean = Transport.Répéter.Checked
         Dim nbColonnesMes As Integer = Det_DivisionMes()
         Dim DebutNote As Integer
-        Dim CTRL As String = 1 'Det_CTRL(0).ToString
+        Dim CTRL As String = 11 'Det_CTRL(0).ToString
         Dim Ligne As String = "-1"
         Dim n As String
         Dim P As Integer = 0 ' P est le N° de CTRL dans l'ordre des onglets ici il est toujours = 0
@@ -27067,31 +28009,19 @@ Public Class Form1
         Dim LongueurPart As Integer = ((FinPart - DebPart) + 1) * nbColonnesMes ' Longueur de la séquence à jouer en nombre de colonnes
         '
         n = Convert.ToString(canal)
-
         '
         If Répéter Then _boucle = Boucle ' répéter doit être à False quand on exporte un MIDI File /_boucle sera alors à 1 (voir le dim de _boucle)
         nbColonnesMes = Det_DivisionMes()
-        ' Rétablissement de Form1_Fin en fonction du nombre de prolongation de l'acccord qu'il pointe <-- voir pour supprimer aussi dans pianoroll
-        'a = Grid2.Cell(1, Form1_Fin).Text
-        'i = Val(Grid2.Cell(1, Form1_Fin).Text) - 1
-        'If Form1_Fin = Det_NumDerAccord() Then
-        'Form1_Fin = Form1_Fin + Val(Grid2.Cell(1, Form1_Fin).Text) - 1 ' cacul du N° de mesure du ernier accord à jouer
-        'End If
         ' Détermination du DEPART et de la FIN en N° de colonnes de la séquence à jouer(sert à la boucle exécuter plus loins)
         Départ = ((nbColonnesMes) * (Form1_Début - 1)) + 1 ' DEPART en N° de colonnes
-        'nbColonnes = (nbColonnesMes) * Form1_Fin           ' FIN en N° de colonnes
-
         ' analyse des courbes de controleurs
         ' **********************************
         j = j + 1
-        ValeurCtrl = VAL_Ctrl_exp(j) ' j= colonnes en cours
-        If (ValeurCtrl <> TValPréded And Trim(ValeurCtrl) <> "-1") Or (j = Départ) Then '' ValeurCtrl= -1 ignifie pas de valeur
-            ' on n'écrit l'expression que si le check du CTRL est true
-            If j = Départ And j > 1 Then ' on va rechercher une valeur de CTRL située au départ ou avant la valeur de départ. Si le départ est en colonne 1 alors on prendre la valeur de la colonne car il n'y a pas de valeur avant la colonne 1
-                ValeurCtrl = DetCTRLAvant(P, j)
-                If ValeurCtrl = "-1" And P <> 0 Then ValeurCtrl = "0" ' P=0 est le CTRL d'expression et on peut pas le mettre à Zéro si aucune valeur n'est présente car cela coupe le son du canal
-            End If
-            If Trim(ValeurCtrl) <> "-1" Then ' cas du controleur d'expression sans valeur avant
+        'ValeurCtrl = VAL_Ctrl_exp(j) ' j= colonnes en cours
+        ValeurCtrl = DetCTRLAvant(j)
+
+        If (ValeurCtrl <> TValPréded And Trim(ValeurCtrl) <> "-1") Or (j = Départ) Then '' ValeurCtrl= -1 signifie pas de valeur
+            If Trim(ValeurCtrl) <> "-1" Then ' =-1 => cas du controleur d'expression sans valeur avant
                 NumPiste = "0"
                 canal = Trim(n)
                 DebutNote = (j - 1) - ((Form1_Début - 1) * nbColonnesMes)
@@ -27111,18 +28041,20 @@ Public Class Form1
     Private Function VAL_Ctrl_exp(colonne As Integer) As String
         Dim ligne As Integer
         Dim j As Integer = colonne
-        Dim k As Integer = 0
-        For ligne = 4 To Courbexp.Rows - 1
-            If ligne = Courbexp.Rows - 1 Then ' courbes.Rows=dernière ligne donc 0 pour le ctrl
-                k = 0 ' remise à 0 du CTRl si pas de valeur
-            Else
-                If Courbexp.Cell(ligne, j).BackColor <> Color.White Then
-                    k = ((Courbexp.Rows - 1 - ligne) * 2) - 1
-                    Exit For
+        Dim k As Integer = -1
+        If j <= Courbexp.Cols - 1 Then
+            For ligne = 4 To Courbexp.Rows - 1
+                If ligne = Courbexp.Rows - 1 Then ' courbes.Rows=dernière ligne donc 0 pour le ctrl
+                    k = -1 ' remise à 0 du CTRl si pas de valeur
+                Else
+                    If Courbexp.Cell(ligne, j).BackColor <> Color.White Then
+                        k = ((Courbexp.Rows - 1 - ligne) * 2) - 2
+                        Exit For
+                    End If
                 End If
-            End If
-        Next
-        k = k - 1
+            Next
+        End If
+        'k = k - 1
         Return k.ToString
     End Function
     Function Det_CTRL(n_Courbe As Integer) As Byte
@@ -27145,13 +28077,13 @@ Public Class Form1
         End Select
         Return k
     End Function
-    Private Function DetCTRLAvant(Ctrl As Integer, coldeb As Integer)
-        Dim i As Integer
+    Private Function DetCTRLAvant(coldeb As Integer)
+        Dim j As Integer
         Dim a As String = -1
-        For i = coldeb To 1 Step -1
-            a = VAL_Ctrl_exp(i)
+        For j = coldeb To 1 Step -1
+            a = VAL_Ctrl_exp(j)
             If a <> "-1" Then Exit For
-        Next i
+        Next j
         Return a
     End Function
     Function Det_DivisionMes() As Integer
@@ -27428,7 +28360,7 @@ Public Class Form1
             End If
         End If
     End Sub
-    Private Sub Form1_Move(sender As Object, e As EventArgs) Handles Me.Move
+    Private Sub Form1_Move(sender As Object, e As EventArgs) Handles MyBase.Move
         Position_Transport()
     End Sub
     Sub Position_Transport()
@@ -27442,7 +28374,7 @@ Public Class Form1
         'Transport.AuDessus.Checked = True
 
     End Sub
-    Private Sub Form1_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+    Private Sub Form1_Closing(sender As Object, e As CancelEventArgs) Handles MyBase.Closing
         Dim i As Integer
 
         Position_Transport()
@@ -27463,8 +28395,25 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Form1_Activated(sender As Object, e As EventArgs) Handles Me.Activated
+    Private Sub Form1_Activated(sender As Object, e As EventArgs) Handles MyBase.Activated
         Clipboard.Clear()
+        '
+        ' Positionnement de la barre de scrolling du piano
+        ' ************************************************
+        If Not scrollPianoInit Then
+            Panel11.Refresh()
+            ' Réglage barre de défilement horizontale
+            Panel11.AutoScroll = True
+            Panel11.HorizontalScroll.Visible = True
+
+            ' Positionner la barre de défilement horizontale à la moitié de sa course
+            Dim maxScroll As Integer = Panel11.HorizontalScroll.Maximum
+            Dim minScroll As Integer = Panel11.HorizontalScroll.Minimum
+            Panel11.HorizontalScroll.Value = 747 '((maxScroll - minScroll) \ 2)
+            'Panel11.AutoScrollPosition = New Point(747, 50)
+            Panel11.Refresh()
+            scrollPianoInit = True
+        End If
     End Sub
 
 
@@ -27795,10 +28744,10 @@ Public Class Form1
 
         Init_StackMode()
         '
-        Construction_Courbexp()
+        CONSTRUCTION_Courbexp()
 
     End Sub
-    Sub Construction_Courbexp()
+    Sub CONSTRUCTION_Courbexp()
         Dim i, j, k, m As Integer
         Dim LargCol As Integer = 10
         Dim fontExp = New Font("calibri", 10, FontStyle.Regular)
@@ -27810,11 +28759,16 @@ Public Class Form1
         Courbexp.Dock = DockStyle.Fill
         Courbexp.SelectionMode = FlexCell.SelectionModeEnum.ByColumn
         Courbexp.SelectionBorderColor = Color.White
+
+
         '
         Courbexp.ScrollBars = ScrollBarsEnum.Horizontal
         Courbexp.FixedRows = 3
         Courbexp.FixedCols = 1
         Courbexp.DefaultFont = fontExp
+
+        Courbexp.AllowUserReorderColumn = False
+        Courbexp.AllowUserResizing = False
 
         Courbexp.Cols = 16 * nbMesures + 1
         Courbexp.Rows = 69
@@ -27827,7 +28781,7 @@ Public Class Form1
         '
         Courbexp.Row(1).Height = 23
         Courbexp.Row(2).Height = 23
-
+        '
         For i = 3 To (Courbexp.Rows - 1)
             Courbexp.AutoRedraw = False
             '
@@ -27838,14 +28792,19 @@ Public Class Form1
         Next
         '
         Courbexp.Row(Courbexp.Rows - 1).Height = 7
-
+        '
         For j = 0 To Courbexp.Cols - 1
             Courbexp.Column(j).Width = LargCol
         Next
-
-        Courbexp.BackColorFixed = ColorTranslator.FromHtml("#7cc576") 'Color.Khaki '  CoulExp
-        Courbexp.BackColorFixedSel = ColorTranslator.FromHtml("#a3d39c") 'Color.Khaki
         '
+        'Courbexp.BackColorFixed = ColorTranslator.FromHtml("#ff7133") 'Color.Khaki '  CoulExp
+        'Courbexp.BackColorFixedSel = ColorTranslator.FromHtml("#ff7133") 'Color.Gray 'ColorTranslator.FromHtml("#f7133") 'Color.Khaki #e5e8e8 
+        '
+        '
+        Courbexp.BackColorFixed = Color.Green 'ColorTranslator.FromHtml("#ff7133") 'Color.Khaki '  CoulExp
+        Courbexp.BackColorFixedSel = Color.Green 'ColorTranslator.FromHtml("#ff7133") 'Color.Gray 'ColorTranslator.FromHtml("#f7133") 'Color.Khaki #e5e8e8 
+        '
+        Courbexp.Range(0, 0, Courbexp.Rows - 1, Courbexp.Cols - 1).ForeColor = Color.White
         ' Grid1.Range(2, i, 2, i + (Me.DivisionMes - 1)).Merge() ' Merges pour Accords
         k = 1
         m = 1
@@ -27864,6 +28823,109 @@ Public Class Form1
         Next
 
     End Sub
+    Private Sub Courbexp_KeyDown(Sender As Object, e As KeyEventArgs) Handles Courbexp.KeyDown
+        Dim i As Integer = Courbexp.Selection.FirstRow ' on n'agit ici que sur une colonne à la fois.
+        Dim j As Integer = Courbexp.Selection.FirstCol
+        Dim k As Integer
+        Dim b As String
+
+
+        Courbexp.Focus()
+
+        If e.KeyCode <> Keys.ControlKey Then
+            If e.KeyCode = Keys.Add Or e.KeyCode = Keys.Subtract Or e.KeyCode = Keys.P Or e.KeyCode = Keys.M Then
+                b = ValCtrl_Ligne(j) ' 
+                k = Convert.ToInt16(Trim(b)) ' lecture de la ligne actuelle
+                '
+                ' Traitement incrémentation/décrémentation (si sortir = false)
+                ' ************************************************************
+                '
+                ' INCREMENTATION
+                ' **************
+                If e.KeyCode = Keys.Add Or e.KeyCode = Keys.P Then
+                    k -= 1
+                    If k > 2 Then
+                        Courbexp.AutoRedraw = False
+                        Courbexp.Range(k, j, Courbexp.Rows - 1, j).BackColor = Color.Green
+                        Courbexp.AutoRedraw = True
+                        Courbexp.Refresh()
+                    End If
+                    'vv = ValCtrl(j)
+                    'If Trim(vv) <> "-1" Then v = Convert.ToByte(vv)
+                    '
+                    ' DECREMENTATION
+                    ' **************
+                ElseIf e.KeyCode = Keys.Subtract Or e.KeyCode = Keys.M Then
+                    k += 1
+                    If k <= Courbexp.Rows - 2 Then '  And k <= Courbexp.Rows - 1 
+                        Courbexp.AutoRedraw = False
+
+                        Courbexp.Range(3, j, Courbexp.Rows - 1, j).BackColor = Color.White
+                        If k <> Courbexp.Rows - 2 Then Courbexp.Range(Courbexp.Rows - 1, j, k, j).BackColor = Color.Green ', j).BackColor = Color.White
+                        'If k <> Courbexp.Rows - 1 Then Courbexp.Range(Courbexp.Rows - 1, j, k, j).BackColor = Color.Green 'Det_CouleurCTRL(ind)
+                        Courbexp.AutoRedraw = True
+                        Courbexp.Refresh()
+                        'vv = ValCtrl(j)
+                        'If Trim(vv) <> "-1" Then v = Trim(vv) 'Convert.ToByte(vv)
+                    End If
+                End If
+            End If
+        End If
+    End Sub
+    Private Function ValCtrl_Ligne(colonne As Integer) As String
+        Dim Ligne As Integer
+        Dim j As Integer = colonne
+        Dim a As String = (Courbexp.Rows - 1).ToString
+        '
+        For Ligne = 3 To Courbexp.Rows - 1
+            If Courbexp.Cell(Ligne, j).BackColor <> Color.White Then ' on recherche ici la 1erre cellule dont la couleur n'est blanche
+                a = Ligne.ToString ' ligne est le N° de ligne
+                Exit For
+            End If
+        Next
+
+        Return a
+    End Function
+
+    Private Function ValCtrl(colonne As Integer) As String
+        Dim ligne As Integer
+        Dim j As Integer = colonne
+        Dim k As Integer = 0
+        For ligne = 1 To Courbexp.Rows - 1
+            If ligne = Courbexp.Rows - 1 Then ' /si/ courbe non dessinée dans la colonne
+                k = CTRL_ValAmont(colonne)
+                Exit For
+            Else
+                If Courbexp.Cell(ligne, j).BackColor <> Color.White Then
+                    k = ((Courbexp.Rows - 1 - ligne) * 2) - 1
+                    Exit For
+                End If
+            End If
+        Next
+        k = k - 1
+        Return k.ToString
+    End Function
+    '
+    Function CTRL_ValAmont(colonne As Integer) As Integer
+        Dim j As Integer
+        Dim ligne As Integer
+        Dim k As Integer = 0
+        Dim flag As Boolean = False
+
+
+        For j = colonne To 1 Step -1
+            For ligne = 1 To Courbexp.Rows - 1
+                If Courbexp.Cell(ligne, j).BackColor <> Color.White Then ' valeur trouvée
+                    k = ((Courbexp.Rows - 1 - ligne) * 2) - 1 ' 1ere valeur trouvée dans un colonne précédent du CTRL
+                    flag = True
+                    Exit For
+                End If
+            Next
+            If flag Then Exit For
+        Next
+        Return k
+    End Function
+
     'Private Sub Courbexp_MouseDown(Sender As Object, e As MouseEventArgs)
     '    'Dim com As FlexCell.Grid = Sender
     '    'Dim ind As Integer = com.Tag
@@ -27895,7 +28957,7 @@ Public Class Form1
                 Courbexp.Range(3, j, Courbexp.Rows - 1, j).ClearBackColor()
                 '
                 If i <> Courbexp.Rows - 1 Then ' ce test permet d'obtenir la RAZ de la dernière cellule du bas par Ctrl + clic
-                    Courbexp.Range(Courbexp.Rows - 1, j, i, j).BackColor = Color.DarkOliveGreen 'Det_CouleurCTRL(ind)
+                    Courbexp.Range(Courbexp.Rows - 1, j, i, j).BackColor = Color.Green 'ColorTranslator.FromHtml("#ff7133") 'Color.DarkOliveGreen 'Det_CouleurCTRL(ind)
                 End If
                 Courbexp.Refresh()
                 Courbexp.AutoRedraw = True
@@ -27906,7 +28968,54 @@ Public Class Form1
         Courbexp.AutoRedraw = True
         Courbexp.Refresh()
     End Sub
-
+    Sub Coller_Courbexp(fr As Integer, fc As Integer, lr As Integer, lc As Integer)
+        '
+        Dim i As Integer = Courbexp.MouseRow
+        Dim j As Integer = Courbexp.MouseCol
+        '
+        Courbexp.AutoRedraw = False
+        '
+        If i <> -1 And j <> -1 And i > 2 Then
+            Courbexp.AutoRedraw = False
+            If My.Computer.Keyboard.CtrlKeyDown Then ' vérouillage est mis à jour dans l'évènement CTRL + V : il empêche d'écrire dans la courbe quand on fait un "coller" avec CTRL+V
+                Courbexp.Range(3, j, Courbexp.Rows - 1, j).ClearBackColor()
+                '
+                If i <> Courbexp.Rows - 1 Then ' ce test permet d'obtenir la RAZ de la dernière cellule du bas par Ctrl + clic
+                    Courbexp.Range(Courbexp.Rows - 2, fc, lr, lc).BackColor = Color.Green 'ColorTranslator.FromHtml("#ff7133") 'Color.DarkOliveGreen 'Det_CouleurCTRL(ind)
+                End If
+                Courbexp.Refresh()
+                Courbexp.AutoRedraw = True
+                Courbexp.Refresh()
+            End If
+        End If
+        '
+        Courbexp.AutoRedraw = True
+        Courbexp.Refresh()
+    End Sub
+    Sub Charger_Courbexp(valeurs As String)
+        Dim tbl() As String = valeurs.Split(",")
+        Dim tbl1() As String
+        Dim Fin As Integer = Courbexp.Rows - 1
+        Dim Ligne, Colonne As Integer
+        '
+        If Trim(tbl(1)) = "True" Then
+            ActExp.Checked = True
+        Else
+            ActExp.Checked = False
+        End If
+        '
+        Courbexp.AutoRedraw = False
+        '
+        For i = 2 To tbl.Count - 1
+            tbl1 = tbl(i).Split
+            Ligne = tbl1(0)
+            Colonne = tbl1(1)
+            Courbexp.Range(Ligne, Colonne, Fin, Colonne).BackColor = Color.Green 'ColorTranslator.FromHtml("#ff7133")
+        Next i
+        '
+        Courbexp.AutoRedraw = True
+        Courbexp.Refresh()
+    End Sub
     Sub Refresh_Courbexp()
         Dim j, colonne As Integer
 
@@ -27919,8 +29028,6 @@ Public Class Form1
             End If
         Next
         '
-        Courbexp.AutoRedraw = True
-        Courbexp.Refresh()
     End Sub
     Private Function Det_Canal(N_voie As Integer, N_Canal As String) As String
         If StackMode.Checked Then
@@ -27942,6 +29049,22 @@ Public Class Form1
             Return Trim(N_Canal)
         End If
     End Function
+    Private Function ValCtrlexp_Ligne(colonne As Integer) As String ' utiliser dans enregistrer sous
+        Dim Ligne As Integer
+        Dim j As Integer = colonne
+        a = ""
+        '
+        For Ligne = Courbexp.FixedRows To Courbexp.Rows - 1
+            If Courbexp.Cell(Ligne, j).BackColor <> Color.White Then ' on recherche ici la 1erre cellule dont la couleur n'est blanche
+                a = Ligne.ToString ' ligne est le N° de ligne, donc la valeur du ctrl
+                Exit For
+            End If
+        Next
+
+        Return a
+    End Function
+
+
     Sub LangueStacking()
         If Module1.LangueIHM = "fr" Then
             LabCanal.Text = "Canal"
@@ -28456,21 +29579,25 @@ Public Class Form1
         End Select
         '
         Select Case e.Index
-            Case 0, 1, 2  ' Gammes d'accords et progression
-                e.Graphics.FillRectangle(New SolidBrush(Color.LightSteelBlue), e.Bounds) ' backcolor
-                e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.MenuText, paddedBounds) ' ForeColor
-            Case 3, 4       ' Substitution
-                e.Graphics.FillRectangle(New SolidBrush(Color.PaleGoldenrod), e.Bounds) ' backcolor
-                e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.MenuText, paddedBounds) ' ForeColor
-            Case 5  ' Emplilement
-                e.Graphics.FillRectangle(New SolidBrush(Color.LightGray), e.Bounds)
-                e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.InfoText, paddedBounds)
-            Case 6     ' Vue notes
+            Case 0, 1, 2, 3, 4 ' vert
+                e.Graphics.FillRectangle(New SolidBrush(Color.YellowGreen), e.Bounds) ' backcolor
+                e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.MenuText, paddedBounds) ' définition du ForeColor
+                'Case 3, 4       ' orange
+                'e.Graphics.FillRectangle(New SolidBrush(Color.PaleGoldenrod), e.Bounds) ' backcolor
+                'e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.MenuText, paddedBounds) ' définition du ForeColor
+                'Case 5          ' Gris
+                'e.Graphics.FillRectangle(New SolidBrush(Color.LightSalmon), e.Bounds)
+                'e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.InfoText, paddedBounds) ' définition du ForeColor
+                'Case 6, 7    ' Jaune pâle
+                'e.Graphics.FillRectangle(New SolidBrush(Color.BurlyWood), e.Bounds) ' backcolor
+                'e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.MenuText, paddedBounds) ' définition du ForeColor
+            Case 7         ' Maroon
                 e.Graphics.FillRectangle(New SolidBrush(Color.Maroon), e.Bounds) ' backcolor
-                e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.HighlightText, paddedBounds) ' ForeColor
-            Case 7    ' Multicanal
-                e.Graphics.FillRectangle(New SolidBrush(Color.Linen), e.Bounds) ' backcolor
-                e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.MenuText, paddedBounds) ' ForeColor
+                e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.HighlightText, paddedBounds) ' définition du ForeColor pour du blanc mettre HighlightText au lieu de menu text
+            Case 5, 6         ' Maroon
+                e.Graphics.FillRectangle(New SolidBrush(Color.Gold), e.Bounds) ' backcolor
+                e.Graphics.DrawString(TabControl2.TabPages(e.Index).Text, fnt1, SystemBrushes.MenuText, paddedBounds) ' définition du ForeColor pour du blanc mettre HighlightText au lieu de menu text
+
         End Select
     End Sub
     Private Sub Grid1_KeyUp(Sender As Object, e As KeyEventArgs) Handles Grid1.KeyUp
@@ -28480,29 +29607,6 @@ Public Class Form1
         If AccordAEtéJoué = True Then
             CouperJouerAccord()
             AccordAEtéJoué = False
-        End If
-    End Sub
-
-    Private Sub ComboBox13_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox13.SelectedIndexChanged
-        If Not EnChargement Then
-            If Trim(Lab_1) <> "" And Trim(Lab_2) <> "" Then
-                Maj_Cadence(Trim(Lab_1), Trim(Lab_2))
-            End If
-        End If
-    End Sub
-
-    Private Sub ComboBox9_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox9.SelectedIndexChanged
-        If Not EnChargement Then
-            Dim i As Integer
-            '
-            EffacerTonVoisins()
-            '
-            ' Mise à jour de la tonalité en cours
-            ' ***********************************
-            For i = 0 To 6
-                Grid5.Cell(1, i + 1).Text = TableGlobalAcc(ComboBox9.SelectedIndex, RadioModulat_SelectedIndex, i) 'tbl1(i) ' mise de la gamme de C Maj dans l'onglet Modulation
-            Next i
-            '
         End If
     End Sub
     Function RadioModulat_SelectedIndex() As Integer
@@ -28520,16 +29624,18 @@ Public Class Form1
         Dim tbl() As String
         Dim i As Integer = 0
         Dim j As Integer = 0
-        Dim k As Integer
+        Dim ii As Integer = 0
+        Dim jj As Integer = 0
         Dim _1sep As Integer = 1 ' nombre de ligne de séparation
         Dim _2sep As Integer = 2
         Dim SepH As Integer = 2
-        Dim SauvNotes(0 To 6) As String
+
         '
         Grid6.AutoRedraw = False
         '
         Grid6.Cols = Grid1.Rows
         Grid6.Rows = 20
+        Dim SauvNotes(0 To Grid6.Cols - 1, 0 To 4) As String ' à laisser après la définition de Grid6.Cols 
         '
         For i = 0 To Grid6.Rows - 1
             Grid6.Row(i).Height = 19
@@ -28540,7 +29646,7 @@ Public Class Form1
         Next
         '
         Grid6.Column(0).Alignment = AlignmentEnum.LeftCenter
-        Grid6.Column(0).Width = 52
+        Grid6.Column(0).Width = 57
         Grid6.Row(2).Height = SepH ' 2e ligne de séparation
         Grid6.Row(8).Height = SepH ' 2e ligne de séparation
         '
@@ -28554,22 +29660,42 @@ Public Class Form1
             Grid6.Cell(7 + _2sep, 0).Text = "Racines"
             Grid6.Cell(8 + _2sep, 0).Text = "Accords"
             Grid6.Cell(9 + _2sep, 0).Text = "Marqueurs"
-            Grid6.Cell(10 + _2sep, 0).Text = "Tonalités"
+            Grid6.Cell(10 + _2sep, 0).Text = "Signat." ' "Tonalités"
             Grid6.Cell(11 + _2sep, 0).Text = "Modes"
             Grid6.Cell(12 + _2sep, 0).Text = "Gammes"
         Else
             Grid6.Cell(7 + _2sep, 0).Text = "Roots"
             Grid6.Cell(8 + _2sep, 0).Text = "Chords"
             Grid6.Cell(9 + _2sep, 0).Text = "Markers"
-            Grid6.Cell(10 + _2sep, 0).Text = "Tonalities"
+            Grid6.Cell(10 + _2sep, 0).Text = "Signat."
             Grid6.Cell(11 + _2sep, 0).Text = "Modes"
             Grid6.Cell(12 + _2sep, 0).Text = "Scales"
         End If
 
         '
+        ' Sauvegarde des notes présentes
+        ' ******************************
+
+
+        For ii = 0 To 4
+            For jj = 0 To Grid6.Cols - 1
+                SauvNotes(jj, ii) = Grid6.Cell((7 - ii), jj).Text
+            Next
+        Next
+
+
+
+
+        '
         ' Effacer tout le texte et vérouiller les cellules
         ' ************************************************
-        Grid6.Range(1, 1, Grid6.Rows - 1, Grid6.Cols - 1).ClearText()
+        'Grid6.Range(1, 1, Grid6.Rows - 1, Grid6.Cols - 1).ClearText()
+        For ii = 0 To Grid6.Rows - 1
+            For jj = 1 To Grid6.Cols - 1
+                Grid6.Cell(ii, jj).Text = ""
+            Next
+        Next
+        '
         For i = 0 To Grid6.Cols - 1
             Grid6.Column(i).Locked = True
         Next i
@@ -28589,6 +29715,8 @@ Public Class Form1
         '
         Grid6.Range(9, 1, 9, Grid6.Cols - 1).BackColor = Color.Orange 'Mettre les racines en orange 
         '
+
+        j = 0
         For m = 0 To nbMesures - 1
             For t = 0 To 5
                 For ct = 0 To 4
@@ -28597,10 +29725,10 @@ Public Class Form1
                         '
                         ' Mise à jour des notes
                         ' *********************
-                        For k = 0 To 6
-                            SauvNotes(k) = Trim(Grid6.Cell((6 - k) + _1sep, j).Text)
-                            Grid6.Cell(k, j).Text = "" ' effacement des notes
-                        Next k
+                        'For k = 0 To 6
+                        'SauvNotes(k) = Trim(Grid6.Cell((6 - k) + _1sep, j).Text)
+                        'Grid6.Cell(k, j).Text = "" ' effacement des notes
+                        'Next k
                         '
                         Grid6.Cols = Grid6.Cols + 1
                         Grid6.Column(j).Width = 50
@@ -28609,9 +29737,9 @@ Public Class Form1
                         Grid6.Cell(0, j).Text = j.ToString
                         tbl = Trim(TableNotesAccordsZ(m, t, ct)).Split
                         For i = 0 To tbl.Count - 1
-                            If Trim(SauvNotes(i)) <> Trim(tbl(i)) And Trim(SauvNotes(i)) <> "" Then
-                                Grid6.Cell((6 - i) + _1sep, j).BackColor = Color.Beige
-                                Grid6.Cell((6 - i) + _1sep, j).ForeColor = Color.Red
+                            If Trim(SauvNotes(j, i)) <> Trim(tbl(i)) And Trim(SauvNotes(j, i)) <> "" Then
+                                Grid6.Cell((6 - i) + _1sep, j).BackColor = Color.OldLace
+                                Grid6.Cell((6 - i) + _1sep, j).ForeColor = Color.Black
                             Else
                                 Grid6.Cell((6 - i) + _1sep, j).BackColor = Color.Maroon
                                 Grid6.Cell((6 - i) + _1sep, j).ForeColor = Color.Yellow
@@ -28622,7 +29750,7 @@ Public Class Form1
                         ' Mise à jour autres info : accord, tonalités ...
                         ' ***********************************************
                         Grid6.Cell(1, j).Orientation = FlexCell.TextOrientationEnum.Horizontal
-                        Grid6.Cell(1, j).Text = m.ToString() + "." + t.ToString + "." + ct.ToString
+                        Grid6.Cell(1, j).Text = m.ToString() + "." + t.ToString + "." + ct.ToString ' mesure ligne 1
                         '
                         Grid6.Cell(7 + _2sep, j).Text = TableEventH(m, t, ct).Racine
                         Grid6.Cell(8 + _2sep, j).Text = TableEventH(m, t, ct).Accord
@@ -28789,7 +29917,7 @@ Public Class Form1
             Calcul_AutoVoicingZ()
         End If
     End Sub
-    Private Sub ComboBox12_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox12.SelectedIndexChanged
+    Private Sub ComboBox12_SelectedIndexChanged(sender As Object, e As EventArgs)
         If Not EnChargement Then
             Calcul_AutoVoicingZ()
         End If
@@ -28800,7 +29928,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub UpDown2_ValueChanged(sender As Object, e As EventArgs) Handles UpDown2.ValueChanged
+    Private Sub UpDown2_ValueChanged(sender As Object, e As EventArgs)
         If Not EnChargement Then
             Calcul_AutoVoicingZ()
         End If
@@ -28810,7 +29938,9 @@ Public Class Form1
     End Sub
 
     Private Sub ToolStripLicence_Click(sender As Object, e As EventArgs) Handles ToolStripLicence.Click
-        Licence.ShowDialog()
+        'Licence.ShowDialog()
+        Dim url As String = "https://compomusic.fr/licence/"
+        Process.Start(url)
     End Sub
 
     Public Sub AllerVerPR(compteur As String)
@@ -28840,6 +29970,7 @@ Public Class Form1
         '       'Orig_PianoR.Orig1 = OrigPianoCourbe.Courbe
         '       'Orig_PianoR.N_Courbe = ind
         '
+        Courbexp.Focus()
         Tracé_Courbexp()
     End Sub
 
@@ -28848,7 +29979,7 @@ Public Class Form1
         Dim com As FlexCell.Grid = Sender
         Dim ind As Integer = com.Tag
 
-        If (e.KeyCode = Keys.Delete Or e.KeyCode = Keys.Back) Then  ' And Orig_PianoR.Orig1 = OrigPianoCourbe.Courbe Then
+        If (e.KeyCode = Keys.Back) Then  ' e.KeyCode = Keys.Delete Or 'And Orig_PianoR.Orig1 = OrigPianoCourbe.Courbe Then
             Dim i As Integer = Courbexp.Selection.FirstRow
             Dim j As Integer = Courbexp.Selection.FirstCol
             Dim ii As Integer = Courbexp.Selection.LastRow
@@ -28862,14 +29993,7 @@ Public Class Form1
     End Sub
 
     Private Sub ActExp_CheckedChanged(sender As Object, e As EventArgs) Handles ActExp.CheckedChanged
-        'For i = 3 To (Courbexp.Rows - 1)
-        ' Courbexp.AutoRedraw = False
-        ' '
-        'Courbexp.Row(i).Height = 2
-        ' '
-        'Courbexp.AutoRedraw = True
-        'Courbexp.Refresh()
-        'Next
+        Courbexp.Enabled = Not Courbexp.Enabled
     End Sub
     Private Sub Standard_Click(sender As Object, e As EventArgs) Handles Standard.Click
         Dim i As Integer = NouveauProjet()
@@ -29104,13 +30228,13 @@ Public Class Form1
             .Cell(0, 1).Text = "Position"
             If LangueIHM = "fr" Then
                 .Cell(0, 2).Text = "Marqueurs"
-                .Cell(0, 3).Text = "Tonalités"
+                .Cell(0, 3).Text = "Signatures"
                 .Cell(0, 4).Text = "Accords"
                 .Cell(0, 5).Text = "Gammes"
                 .Cell(0, 6).Text = "Degrés"
             Else
                 .Cell(0, 2).Text = "Markers"
-                .Cell(0, 3).Text = "Keys"
+                .Cell(0, 3).Text = "Signatures"
                 .Cell(0, 4).Text = "Chords"
                 .Cell(0, 5).Text = "Scales"
                 .Cell(0, 6).Text = "Degrees"
@@ -29168,43 +30292,58 @@ Public Class Form1
         ' Mise à jour préalable des Locateurs gauche et droite
         ' *****************************************************
         Me.Terme.BackColor = Color.White
-        Transport.Début.Value = 1
-        Transport.Terme.Value = nbMesures
+        'Transport.Début.Value = 1
+        'Transport.Terme.Value = nbMesures
         TermeFin = Transport.Terme.Value
         '
-
 
         ' Annulation de la boucle (répétition) si elle existe
         ' ***************************************************
         Transport.Répéter.Checked = False
 
-            ' Lancement de l'export MIDI
-            ' **************************
-            MessageHV.PTypBouton = "OuiNon"
-            If LangueIHM = "fr" Then
-                MessageHV.PTitre = "Export CTRL"
-                MessageHV.PContenuMess = "Souhaitez-vous exporter les contrôleurs MIDI (Volume, Pan, PRG) dans le fichier MIDI ?"
-                MessageHV.PTitre = "CTRL Export"
-                MessageHV.PContenuMess = "Do you wish to export MIDI controlers (Volume, Pan, PRG) into the MIDI file  ?"
-            End If
-            'Cacher_FormTransparents()
-            MessageHV.ShowDialog()
-            If MessageHV.PSortie = "Oui" Then
-                ExporterCTRL = True
-            Else
-                ExporterCTRL = False
-            End If
-            Calcul_AutoVoicingZ()
-            ExportMIDI()
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default
-            '
-            ' Restitution de l'état de la case Boucle dans la barre de transport
-            ' ******************************************************************
-            Transport.Répéter.Checked = sauvBoucle
+        ' Lancement de l'export MIDI
+        ' **************************
+        MessageHV.PTypBouton = "OuiNon"
+        If LangueIHM = "fr" Then
+            MessageHV.PTitre = "Export CTRL"
+            MessageHV.PContenuMess = "Souhaitez-vous exporter les contrôleurs MIDI (Volume, Pan, PRG) dans le fichier MIDI ?"
+            MessageHV.PTitre = "CTRL Export"
+            MessageHV.PContenuMess = "Do you wish to export MIDI controlers (Volume, Pan, PRG) into the MIDI file  ?"
+        End If
+        'Cacher_FormTransparents()
+        MessageHV.ShowDialog()
+        If MessageHV.PSortie = "Oui" Then
+            ExporterCTRL = True
+        Else
+            ExporterCTRL = False
+        End If
+        Calcul_AutoVoicingZ()
+        ExportMIDI()
+        System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default
+        '
+        ' Restitution de l'état de la case Boucle dans la barre de transport
+        ' ******************************************************************
+        Transport.Répéter.Checked = sauvBoucle
 
         Me.Cursor = Cursors.Default
     End Sub
-
+    Function WarningExport() As Boolean
+        Dim b As Boolean = False
+        If Module1.LangueIHM = "fr" Then
+            MessageHV.PTitre = "Avertissement"
+            MessageHV.PContenuMess = "Vérifier, dans la barre de transport, que la valeurs des repère de début et de fin correspondaent à ce que vous souhaitez exporter."
+            MessageHV.PTypBouton = "OuiNon"
+        Else
+            MessageHV.PTitre = "Warning"
+            MessageHV.PContenuMess = "Check, in the transport bar, that the start and end locators values correspond to what you wish to export. "
+            MessageHV.PTypBouton = "OK"
+            MessageHV.PTypBouton = "OuiNon"
+        End If
+        Cacher_FormTransparents()
+        MessageHV.ShowDialog()
+        If MessageHV.Sortie <> "Non" Then b = True
+        Return b
+    End Function
     Private Sub AccordsEnTantQueMarqueurToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles AccordsEnTantQueMarqueurToolStripMenuItem.Click
         ExportChordsAsMarkers()
     End Sub
@@ -29213,9 +30352,807 @@ Public Class Form1
         ExportScalesAsMarkers()
     End Sub
 
-    Private Sub TMarqueur_TextChanged(sender As Object, e As EventArgs) Handles TMarqueur.TextChanged
+    Private Sub Button9_Click_2(sender As Object, e As EventArgs) Handles Button9.Click
+        Vue_Réduite()
+    End Sub
+
+    Private Sub TimerDragDrop_Tick(sender As Object, e As EventArgs) Handles TimerDragDrop.Tick
+        If Action_DragDrop Then
+            Action_DragDrop = False
+            ' Ecriture de l'accord
+            ' *******************
+            Maj_DragDrop()
+            '
+
+            Flag_EcrDragDrop = False
+            Valeur_Drag = ""
+            Colonne_Drag = -1
+            Ligne_Drag = -1
+
+            Action_DragDrop = False
+            TimerDragDrop.Interval = 0
+            TimerDragDrop.Stop()
+        End If
+    End Sub
+
+    'Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles MyBase.KeyDown
+    'If e.KeyCode = Keys.Space Then ' détection de la barre d'espace
+    '        ' Empêcher la touche espace de déclencher l'événement Click du bouton ayant le focus
+    '        e.SuppressKeyPress = True
+    ' If Transport.Play.Enabled Then
+    '            Transport.Play.PerformClick() ' lancer l'évènement Play_Click du bouton Play
+    'Else
+    '           Transport.Arrêt.PerformClick() ' lancer l'évènement Arrêt_Click du bouton Arrêt
+    'End If
+    'End If
+    'End Sub
+    Private Sub CalquesMIDIToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CalquesMIDIToolStripMenuItem.Click
+        ExportCalqueMIDI()
+    End Sub
+
+
+
+    ' *******************************************************
+    ' * PLay / Stop par Barrre d'espace                     *
+    ' *******************************************************
+    ' * Méthode  Form1_KeyDown permettant d'utiliser        * 
+    ' * la barre d'espace pour lancer ou arrêter la lecture *
+    ' * à partir de la fenêtre principale                   *
+    ' *******************************************************
+    Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
+        If Not TMarqueur.Focused Then
+            If e.KeyCode = Keys.Space Then ' détection de la barre d'espace
+
+                'e.SuppressKeyPress = True  ' Empêcher la touche espace de déclencher l'événement Click du bouton ayant le focus
+                If Transport.Play.Enabled Then
+                    Transport.Play.PerformClick() ' lancer l'évènement Play_Click du bouton Play
+                Else
+                    Transport.Arrêt.PerformClick() ' lancer l'évènement Arrêt_Click du bouton Arrêt
+                End If
+            End If
+        End If
+    End Sub
+
+    Private Sub Panel11_Scroll(sender As Object, e As ScrollEventArgs) Handles Panel11.Scroll
+        'Label100.Text = Panel11.HorizontalScroll.Value
+        'Label100.Refresh()
+    End Sub
+
+    Private Sub Button29_Click_1(sender As Object, e As EventArgs)
 
     End Sub
 
-End Class
+    Private Sub MIDIResetToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles Button29.Click
+        MIDI_Panic()
+    End Sub
 
+    Private Sub TabControl4_SelectedIndexChanged(sender As Object, e As EventArgs) Handles TabControl4.SelectedIndexChanged
+        If TabControl4.SelectedTab Is TabPage5 Or TabControl4.SelectedTab Is TabPage9 Or TabControl4.SelectedTab Is TabPage10 Or
+            TabControl4.SelectedTab Is TabPage13 Or TabControl4.SelectedTab Is TabPage14 Or TabControl4.SelectedTab Is TabPage15 Or
+             TabControl4.SelectedTab Is TabPage18 Or TabControl4.SelectedTab Is TabPage19 Or
+              TabControl4.SelectedTab Is TabPage11 Then
+            '
+            Grid1.Focus()
+            '
+        End If
+    End Sub
+    Private Sub CheckAide_CheckedChanged(sender As Object, e As EventArgs) Handles CheckAide.CheckedChanged
+        If CheckAide.Checked Then
+            PanelAide.Visible = True
+            PanelAide.BringToFront()
+            If LangueIHM = "fr" Then
+                H1.Text = "Aide"
+                H2.Text = AIDE_TEXTE("fr")
+            Else
+                H1.Text = "Help"
+                H2.Text = AIDE_TEXTE("en")
+            End If
+        Else
+            PanelAide.Visible = False
+        End If
+    End Sub
+    Private Sub ComboTransp_SelectedIndexChanged(sender As Object, e As EventArgs)
+
+    End Sub
+
+
+    ' ***********************************************************
+    ' ***********************************************************
+    ' *       Programmation des commentaires sur MouseMove      *
+    ' ***********************************************************
+    ' ***********************************************************
+
+    ' Gestion de la hauteur du titre H3
+    ' *********************************
+    'Private Sub AdjustTextBoxHeight(tb As TextBox)
+    '    ' Créer un objet Graphics pour mesurer le texte
+    '    Using g As Graphics = tb.CreateGraphics()
+    '        ' Mesurer la taille du texte avec la police actuelle
+    '        Dim textSize As SizeF = g.MeasureString(tb.Text, tb.Font, tb.Width)
+
+    '        ' Ajouter un espace pour le padding interne
+    '        Dim padding As Integer = tb.Height - tb.ClientSize.Height
+    '        Dim newHeight As Integer = CInt(Math.Ceiling(textSize.Height)) + padding
+
+    '        ' Ajuster la hauteur du TextBox
+    '        tb.Height = newHeight
+    '    End Using
+    'End Sub
+
+    'Private Sub H3_TextChanged(sender As Object, e As EventArgs) Handles H3.TextChanged
+    '    AdjustTextBoxHeight(H3)
+    '    'H2.Location = New Point(0, H1.Size.Height + H3.Size.Height + 7)
+    'End Sub
+
+
+    ' Combolist1 "Signature"
+    ' *********************
+    Private Sub ComboBox1_MouseMove(sender As Object, e As MouseEventArgs) Handles ComboBox1.MouseMove
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Signature : affectation d'une tonalité"
+                H2.Text = "But : sélectionner une tonalité majeure." + Chr(13) + Chr(13) +
+                "1 - Sélection d'une tonalité majeure. La relative mineure correspondante s'affiche automatiquement à droite." + Chr(13) +
+    "2 - Les onglets Tonalités, Progressions et Modes sont sont mis à jour selon la nouvelle tonalité."
+            Else
+                H1.Text = "Signature : assigning a tone"
+                H2.Text = "Aim: select a major key." + Chr(13) + Chr(13) +
+                "1 - Selecting a major key. The corresponding relative minor is automatically displayed on the right." + Chr(13) +
+    "2 - The Tones, Progressions and Modes tabs are updated to reflect the new tone."
+            End If
+        End If
+    End Sub
+
+    ' Combolist1 "Relative mineure"
+    ' ****************************
+    Private Sub ComboBox2_MouseMove(sender As Object, e As MouseEventArgs) Handles ComboBox2.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Relative mineure"
+                H2.Text = "But : Sélectionner une tonalité mineure." + Chr(13) + Chr(13) +
+                "1 - Sélection d'une tonalité mineure. La relative majeure correspondante s'affiche automatiquement à gauche." + Chr(13) +
+     "2 -Les onglets Tonalités, Progressions et Modes sont sont mis à jour selon la nouvelle tonalité."
+            Else
+                H1.Text = "Mineure relative"
+                H2.Text = "Aim: select a minor key." + Chr(13) + Chr(13) +
+                "1 - Selection of a minor key. The corresponding relative major is automatically displayed on the left." + Chr(13) +
+     "2 - The Tones, Progressions and Modes tabs are updated with the new tone."
+            End If
+        End If
+    End Sub
+    '
+    ' Combobox10 : Racine de lecture
+    ' ******************************
+    Private Sub ComboBox10_MouseMove(sender As Object, e As MouseEventArgs) Handles ComboBox10.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Racine d'écoute"
+                H2.Text = "But : modifier le voicing de pré-écoute des accords." + Chr(13) + Chr(13) +
+                "Le choix de cette note change les voicings de pré-écoute des accords (CTRL + Clic sur accord pour l'écouter)."
+            Else
+                H1.Text = "Listening root"
+                H2.Text = "Purpose: modify the pre-listening voicing of chords." + Chr(13) + Chr(13) +
+                "Selecting this note changes the chord pre-listening voicings (CTRL + Click on chord to listen).."
+            End If
+        End If
+    End Sub
+    ' Checkbox SynchroTona : "SynchroArmure"
+    Private Sub SynchroTona_MouseMove(sender As Object, e As MouseEventArgs) Handles SynchroTona.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Synchroniation avec Signature"
+                H2.Text = "Purpose: to synchronise the Signature with the data on a line of the Composition Grid." + Chr(13) + Chr(13) +
+                    "Check box to modify the general signature according to the signature of the line clicked in the Composition Grid."
+            Else
+                H1.Text = ""
+                H2.Text = ""
+            End If
+        End If
+    End Sub
+
+    ' Bouton Button29 : Init MIDI
+    ' ***************************
+    Private Sub Button29_MouseMove(sender As Object, e As MouseEventArgs) Handles Button29.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Initialisation du MIDI"
+
+                H2.Text = "But : arrêter le jeux des notes MIDI qui restent bloquées." + Chr(13) + Chr(13) + "1 - Envoi de noteOff de 0 à 127." + Chr(13) +
+                    "2 - Initialise les contrôleurs les plus courants." + Chr(13) +
+                    "3 - A utiliser principalement en cas de blocage de notes"
+            Else
+                H1.Text = "MIDI initialisation"
+
+                H2.Text = "Purpose: to stop MIDI notes that get stuck playing." + Chr(13) + Chr(13) + "1 - Send noteOff from 0 to 127." + Chr(13) +
+                    "2 - Initialise the most common controllers." + Chr(13) +
+                    "3 - Mainly for use when notes are blocked"
+            End If
+        End If
+    End Sub
+    ' Button 9, Button3, Button5 : Vue standard,  Vue Etendue et Vue Harmonique
+    ' ************************************************************************
+    Private Sub Button9_MouseMove(sender As Object, e As MouseEventArgs) Handles Button9.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Vue Standard"
+                H2.Text = "But : revenir à la vue Standard de l'application." + Chr(13) + Chr(13) +
+                    "Vue par défaut qui apparaît lors du chargement du logiciel."
+            Else
+                H1.Text = "Standard view"
+                H2.Text = "Purpose: return to the Standard view of the application." + Chr(13) + Chr(13) +
+                    "Default view that appears when the software is loaded."
+            End If
+        End If
+    End Sub
+
+    Private Sub Button3_MouseMove(sender As Object, e As MouseEventArgs) Handles Button3.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Vue Etendue"
+                H2.Text = "But : revenir à la vue Etendue de l'application." + Chr(13) + Chr(13) +
+                    "Agrandissement de la Piste Accords détaillée. Affichage grand format d'un compteur de mesures."
+            Else
+                H1.Text = "Extended View"
+                H2.Text = "Purpose: return to the Scope view of the application." + Chr(13) + Chr(13) +
+                    "Enlarged detailed chord track. Large display of a bar counter."
+            End If
+        End If
+    End Sub
+
+    Private Sub Button5_MouseMove(sender As Object, e As MouseEventArgs) Handles Button5.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Vue Harmonie"
+                H2.Text = "But : revenir à la vue Harmonie de l'application." + Chr(13) + Chr(13) +
+                "Etend la Grille de Composition. Un clic sur Modes, Accords ou Gammes affiche le détail de ces éléments."
+            Else
+                H1.Text = "Vue Harmony"
+                H2.Text = "Purpose: return to the Harmony view of the application." + Chr(13) + Chr(13) +
+                "Extends the Composition Grid. Clicking on Modes, Chords or Ranges displays details of these elements."
+            End If
+        End If
+    End Sub
+
+    '
+    ' Onglets Piste Acccords
+    ' ********************
+    Private Sub TabControl2_MouseMove(sender As Object, e As MouseEventArgs) Handles TabControl2.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            ' Obtenir l'index de l'onglet sous la souris
+            For i As Integer = 0 To TabControl2.TabCount - 1
+                Dim tabRect As Rectangle = TabControl2.GetTabRect(i)
+                ' Vérifiez si la souris est dans le rectangle de l'onglet de TabPage1 (index 0)
+                ' Onglet Tonalité
+                ' ***************
+                If tabRect.Contains(e.Location) AndAlso TabControl2.TabPages(i).Name = "TabPage1" Then
+                    If LangueIHM = "fr" Then
+                        H1.Text = "Tons (source d'accords)"
+                        H2.Text = "But : fournir des gammes d'accords dans une tonalité donnée." + Chr(13) + Chr(13) +
+                    "1 - Fournit les gammes d'accords dans la tonalité choisie." + Chr(13) + "2 - Ecriture : glisser/déposer un accord sur la Piste Accords." + Chr(13) +
+                "3 - Ecoute Accord : CTRL + Clic"
+                    Else
+                        H1.Text = "Tones (chords source)"
+                        H2.Text = "Aim:  provide chord scales in a given key." + Chr(13) + Chr(13) +
+                    "1 - Provides chord scales in the selected key." + Chr(13) + "2 - Ecriture : glisser/déposer un accord sur la Piste Accords." + Chr(13) +
+                "3 - Chord listening: CTRL + Click"
+                    End If
+                End If
+                '
+                ' Onglet Progressions
+                ' *******************
+                If tabRect.Contains(e.Location) AndAlso TabControl2.TabPages(i).Name = "TabPage2" Then
+                    If LangueIHM = "fr" Then
+                        H1.Text = "Progressions (source d'accords)"
+                        H2.Text = "But : fournir des progressions d'accords dans une tonalité donnée." + Chr(13) + Chr(13) +
+                     "1 - Ecriture : glisser/déposer un accord sur la Piste Accords." + Chr(13) +
+                "2 - Ecoute Accord : CTRL + Clic."
+                    Else
+                        H1.Text = "Progressions (chords source)"
+                        H2.Text = "Purpose:  provide chord progressions in a given key." + Chr(13) + Chr(13) +
+                     "1 - Writing: drag and drop a chord onto the Chord Track." + Chr(13) +
+                "2 - Listening Chord: CTRL + Click."
+                    End If
+                End If
+                '
+                ' Onglet Modes
+                ' ************
+                If tabRect.Contains(e.Location) AndAlso TabControl2.TabPages(i).Name = "TabPage21" Then
+                    If LangueIHM = "fr" Then
+                        H1.Text = "Modes (source d'accords)"
+                        H2.Text = "But : fournir des accords dans un mode donné." + Chr(13) + Chr(13) +
+                    "1 - Fournit les accords d'un mode donné." + Chr(13) + "2 - On choisi un mode à partir de la liste 'Mode Grec'" + Chr(13) + "3 - La tonalité du mode est définie par la 'Signature' globale(en haut à gauche)" + Chr(13) + "4 - Ecriture :glisser/déposer un accord sur la Piste Accords" + Chr(13) +
+                 "5 - Informations en orange : note typique du mode, dégrés des accords typiques du mode." + Chr(13) +
+                 "6 - Ecoute Accord : CTRL + Clic."
+                    Else
+                        H1.Text = "Modes (source of chords)"
+                        H2.Text = "Purpose: provide chords in a given mode." + Chr(13) + Chr(13) +
+                    "1 - Provides the chords for a given mode." + Chr(13) + "2 - Choose a mode from the 'Grec Mode' list'" + Chr(13) + "3 - The tone of the mode is defined by the global 'Signature' (top left).)" + Chr(13) + "4 - Writing: drag and drop a chord onto the Chord Track." + Chr(13) +
+                 "5 - Information in orange: typical note of the mode, degrees of typical chords of the mode." + Chr(13) +
+                 "6 - Chord listening: CTRL + Click."
+                    End If
+                End If
+                '
+                ' Onglet Subsitution
+                ' ******************
+                If tabRect.Contains(e.Location) AndAlso TabControl2.TabPages(i).Name = "TabPage16" Then
+                    If LangueIHM = "fr" Then
+                        H1.Text = "Substitution (source d'accords)"
+                        H2.Text = "But : remplacer ou étendre un accord" + Chr(13) + Chr(13) +
+                    "1 - Cliquer sur l'accord considéré dans la Piste Accords" + Chr(13) + "2 - Ecriture : glisser/déposer un accord sur la Piste Accords." + Chr(13) +
+                "3 - Ecoute Accord : CTRL + Clic" + Chr(13) + "4 - Remarque : l'accord d'extension est à placer avant l'accord considéré."
+                    Else
+                        H1.Text = "Substitution (chords source)"
+                        H2.Text = "Purpose: to replace or extend a chord" + Chr(13) + Chr(13) +
+                    "1 - Click on the chord in question in the Chords Track" + Chr(13) + "2 - Writing: drag and drop a chord onto the Chord Track." + Chr(13) +
+                "3 -  Chords listening: CTRL + Click" + Chr(13) + "4 - Note: the extension chord should be placed before the chord in question.."
+                    End If
+                End If
+                '
+                ' Onglet Pont
+                ' ***********
+                If tabRect.Contains(e.Location) AndAlso TabControl2.TabPages(i).Name = "TabPage7" Then
+                    If LangueIHM = "fr" Then
+                        H1.Text = "Modulation par accord pivot (source d'accords)"
+                        H2.Text =
+                        "But : contruire une modulation entre deux modes en utilisant un accord commun." + Chr(13) + Chr(13) +
+                        "1 - Sélectionnez l'accord pivot dans la Grille de Composition, logiquement c'est le dernier accord." + Chr(13) +
+                        "2 - Choisissez le mode de destination en cliquant sur une ligne du tableau." + Chr(13) +
+                        "3 - Les accords du pont s'affichent en bas du formulaire." + Chr(13) +
+                        "4 - Écrivez en glissant-déposant un accord sur la Piste Accords."
+                    Else
+                        H1.Text = "Pivot chord modulation (chords source)"
+                        H2.Text =
+                        "Purpose: build a transition between two modes using a common chord.                                                                                                                                     " + Chr(13) + Chr(13) +
+                        "1 - Select the pivot chord in the Composition Grid; logically, this is the last chord.." + Chr(13) +
+                        "2 - Choose the destination mode by clicking on a line of the table." + Chr(13) +
+                        "3 - The bridge agreements are displayed at the bottom of the form." + Chr(13) +
+                        "4 - Drag and drop a chord onto the Chords Track."
+                    End If
+                End If
+                '
+                ' Onglet Expression                                                                       
+                ' ******************
+                If tabRect.Contains(e.Location) AndAlso TabControl2.TabPages(i).Name = "TabPage20" Then
+                    If LangueIHM = "fr" Then
+                        H1.Text = "Expression"
+                        H2.Text =
+                        "But : tracer une courbe d'expression pour la Piste Accords." + Chr(13) + Chr(13) +
+                        "1 - Courbe d'Expression (ctrl N°11) pour la Piste Accords" + Chr(13) +
+                        "2 - Pour tracer la courbe : Activer la fonction puis faire CTRL + clic + déplacement souris." + Chr(13) +
+                        "3 - Edition : CTRL+C, CTRL+X,CTRL+V" + Chr(13) +
+                        "4 - Effacer zone : Retour arrière (backspace)"
+                    Else
+                        H1.Text = "Expression"
+                        H2.Text =
+                        "Purpose: to draw an expression curve for the Chords Track." + Chr(13) + Chr(13) +
+                        "1 - Expression curve (ctrl No. 11) for the Chords Track" + Chr(13) +
+                        "2 - To draw the curve: Activate the function then press CTRL + click + move mouse." + Chr(13) +
+                        "3 - Edition : CTRL+C, CTRL+X,CTRL+V" + Chr(13) +
+                        "4 - Delete zone : Backspace)"
+                    End If
+                End If
+                '
+                ' Onglet Vue Notes                                                                     
+                ' ****************
+                If tabRect.Contains(e.Location) AndAlso TabControl2.TabPages(i).Name = "TabPage17" Then
+                    If LangueIHM = "fr" Then
+                        H1.Text = "Vue Notes"
+                        H2.Text = "But : fournit tous les éléments entrant en jeu dans la composition." + Chr(13) + Chr(13) +
+                    "1 - Cette vue fournit tous les éléments harmoniques entrant en jeu dans la composition à une position donnée" + Chr(13) +
+                    "2 - Veuillez noter : " + Chr(13) +
+                    "     - la présence du voicing actuel de tous les accords de la Piste Accords." + Chr(13) +
+                    "     - le passage en surbrillance des accords concernés par un changement de voicing lors de la 
+modification de la racine (Root) des voicings dans la Grille de Composition."
+                    Else
+                        H1.Text = "Notes view"
+                        H2.Text = "Purpose: provides all the elements involved in the composition." + Chr(13) + Chr(13) +
+                    "1 - This view provides all the harmonic elements involved in the composition at a given position." + Chr(13) +
+                    "2 - Please note: " + Chr(13) +
+                    "     - the current voicing of all the chords on the Chords Track." + Chr(13) +
+                    "     - highlighting of chords affected by a voicing change when playing
+changing the voicing root in the Composition Grid."
+                    End If
+                End If
+                '
+                ' 
+            Next
+        End If
+    End Sub
+    '
+    ' GroupBox11 : Variations
+    ' ***********************
+    Private Sub GroupBox11_MouseMove(sender As Object, e As MouseEventArgs) Handles GroupBox11.MouseMove, BasseMoins12.MouseMove, ComboBox11.MouseMove, Label84.MouseMove, UpDown1.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Variations Accords"
+                H2.Text =
+                    "But : ajuster le comportement de la Piste Accords." + Chr(13) + Chr(13) +
+                    "1 - Basse-12 : ajout d'une basse avec la voix sélectionnée dans la liste." + Chr(13) +
+                    "2 - 4notes : ajout d'une 4ᵉ note aux accords de 3 notes avec la voix sélectionnée dans la liste." + Chr(13) +
+                    "3 - A partir de : la variation prend effet à partir de cette mesure." + Chr(13) +
+                    "4 - Leg./Stac.: Legato -> Valeur positive;Staccato -> valeur négative." + Chr(13) +
+                    "5 - Tranposer : changement de tonalité par demi ton. Le mode reste le même."
+            Else
+                H1.Text = "Chords Variations"
+                H2.Text =
+                    "Purpose: adjust the behaviour of the Accords Track." + Chr(13) + Chr(13) +
+                    "1 - Bass-12 : add a bass with the voice selected in the list." + Chr(13) +
+                    "2 - 4notes : addition of a 4ᵉ note to 3-note chords with the voice selected in the list." + Chr(13) +
+                    "3 - From: the variation takes effect from this measure." + Chr(13) +
+                    "4 - Legato/Staccato: Legato -> positive value; Staccato -> negative value." + Chr(13) +
+                    "5 - Tranpose: change of key by half-tone. The mode remains the same."
+            End If
+        End If
+    End Sub
+
+    Private Sub Grid2_MouseMove(Sender As Object, e As MouseEventArgs) Handles Grid2.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Piste Accords par mesures"
+                H2.Text =
+                    "But : placer des Accords sur le premier temps d'une mesure de la Piste d'Accords." + Chr(13) + Chr(13) +
+                    "1 - Glisser/déposer sur une mesure représentée par une cellule. L'accord peut venir des onglets sources Ton,Progression,Modes,Substitution,Modulation" + Chr(13) +
+                    "2 - Commandes : CTRL + C, V, X, Z" + Chr(13) +
+                    "3 - Ecoute des accords : CTRL + Clic sur accord"
+            Else
+                H1.Text = "Track Chords by bar"
+                H2.Text =
+                    "Purpose: place chords on the first beat of a bar on the Chord Tracks.." + Chr(13) + Chr(13) +
+                    "1 - Drag and drop on a bar represented by a cell. The tuning can come from the Tone, Progression, Modes, Substitution and Bridge source tabs." + Chr(13) +
+                    "2 - Commands : CTRL + C, V, X, Z" + Chr(13) +
+                    "3 - Chords Listening : CTRL + Click on chord"
+            End If
+        End If
+    End Sub
+
+    Private Sub Grid3_MouseMove(Sender As Object, e As MouseEventArgs) Handles Grid3.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Piste Accords détaillée"
+                H2.Text =
+                    "But : recevoir des Accords à l'intérieur d'une mesure de la Piste Accords." + Chr(13) + Chr(13) +
+                    "1 - Glisser/déposer un accord. L'accord peut venir des onglets sources Ton,Progression,Modes,Substitution,Pont" + Chr(13) +
+                    "2 - Commandes : CTRL + C, V, X, Z" + Chr(13) +
+                    "3 - Ecoute des accords : CTRL + Clic sur accord"
+            Else
+                H1.Text = "Detailed chords track"
+                H2.Text =
+                    "But : recevoir des Accords à l'intérieur d'une mesure de la Piste Accords." + Chr(13) + Chr(13) +
+                    "1 - Drag and drop a chord. The chord can come from the Tone, Progression, Modes, Substitution, Bridge source tabs." + Chr(13) +
+                    "2 - Commands : CTRL + C, V, X, Z" + Chr(13) +
+                    "3 -  Chords Listening : CTRL + Click on chord"
+            End If
+        End If
+    End Sub
+
+    Private Sub Grid1_MouseMove(Sender As Object, e As MouseEventArgs) Handles Grid1.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Grille de Composition."
+                H2.Text =
+                    "But : fournir les éléments harmoniques de la composition. Créer des marqueurs. Modifier les vélocités des accords. Modifier la racine du voicing des accords." + Chr(13) + Chr(13) +
+                    "1 - Contient tous les évènements harmoniques du projet ordonnés selon leur position." + Chr(13) +
+                    "2 - Cette grille est en 'Lecture seule' sauf pour  : " + Chr(13) +
+                    "    - créer des Marqueurs : Alt+clic dans colonne 'Signature'," + Chr(13) +
+                    "    - modifier les vélocités (colonne Vel.) : touche P et M." + Chr(13) +
+                    "    - modifier la  racine de voicing des accords (colonne Root) : touche P et M."
+            Else
+                H1.Text = "Grille de Composition."
+                H2.Text =
+                    "Purpose: to provide the harmonic elements of the composition. Creating markers. Modify chord velocities. Modify the voicing root of chords." + Chr(13) + Chr(13) +
+                    "1 - Contains all the harmonic events in the project, ordered by position." + Chr(13) +
+                    "2 - This grid is 'Read only' except for: " + Chr(13) +
+                    "    - create Markers: Alt+click in the 'Signature' column," + Chr(13) +
+                    "    - change velocity(Vel. column): press P and M." + Chr(13) +
+                    "    - change the voicing root of chords (Root column): press P and M."
+            End If
+        End If
+    End Sub
+    '
+    ' Menu Exporter/Projet
+    ' ********************
+    Private Sub ProjetToolStripMenuItem_MouseMove(sender As Object, e As MouseEventArgs) Handles ProjetToolStripMenuItem.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Export du projet en MidiFile."
+                H2.Text = "But : disposer des pistes de sa composition dans son DAW favori" + Chr(13) + Chr(13) +
+                    "Export de tout le projet au format MidiFile *.mid à importer dans une DAW : Piste Accords, Pistes Pianoroll et Batterie."
+            Else
+                H1.Text = "Exporting the project to MidiFile."
+                H2.Text = "Purpose: make tracks from your composition available in your favourite DAW" + Chr(13) + Chr(13) +
+                    "Export of the entire project in MidiFile *.mid format for import into a DAW: Chord tracks, Pianoroll and Drum tracks."
+            End If
+        End If
+    End Sub
+    '
+    ' Menu Exporter/Accords en tant que marqueurs
+    ' *******************************************
+    Private Sub AccordsEnTantQueMarqueurToolStripMenuItem_MouseMove(sender As Object, e As MouseEventArgs) Handles AccordsEnTantQueMarqueurToolStripMenuItem.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Export des Accords en tant que Marqueurs."
+                H2.Text = "But : utiliser les accords comme Marqueurs de la composition." + Chr(13) + Chr(13) + "- Export des Accords au format MidiFile *.mid dans une piste Marqueur à importer dans une DAW." + Chr(13) +
+                    "- Les accords s'affichent dans la DAW sur une piste Marqueurs aux positions définies dans la Piste Accords."
+            Else
+                H1.Text = "Exporting chords as markers."
+                H2.Text = "Purpose: use chords as compositional markers’." + Chr(13) + Chr(13) + " - Exporting chords In MidiFile *.mid format To a Marker track To be imported into a DAW." + Chr(13) +
+                    "- Chords are displayed in the DAW on a Markers track at the positions defined in the Chords Track."
+            End If
+        End If
+    End Sub
+    ' Menu Exporter/Gammes en tant que marqueurs
+    ' ******************************************
+    Private Sub GammesEnTantQueMarqueursToolStripMenuItem1_MouseMove(sender As Object, e As MouseEventArgs) Handles GammesEnTantQueMarqueursToolStripMenuItem1.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Export des Gammes en tant que marqueurs"
+                H2.Text = "But : utiliser les gammes comme Marqueurs de la composition." + Chr(13) + Chr(13) + "Les gammes s'affichent dans la DAW sur une piste Marqueurs à leurs positions."
+            Else
+                H1.Text = "Exporting scales as Markers"
+                H2.Text = "Purpose: use scales as compositional markers." + Chr(13) + Chr(13) + "Scales are displayed in the DAW on a track Markers at their positions."
+            End If
+        End If
+    End Sub
+    Private Sub CalquesMIDIToolStripMenuItem_MouseMove(sender As Object, e As MouseEventArgs) Handles CalquesMIDIToolStripMenuItem.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Export Calques MIDI"
+                H2.Text = "But : disposer de Calques MIDI dans son DAW favori." + Chr(13) + Chr(13) + "1 - Un Calque MIDI au format MIDIFILE contient les notes des gammes et des Accords sur toutes les octaves." + Chr(13) +
+                    "2 - Un Calque MIDI contient 2 pistes : une piste pour les gammes et une pour les Accords." + Chr(13) +
+    "3 - Ces deux pistes utilisées en arrière-plan d'un Editeur PianoRoll vous guident dans votre composition."
+            Else
+                H1.Text = "MIDI Layer Export"
+                H2.Text = "Purpose: provide MIDI layers in your favourite DAW." + Chr(13) + Chr(13) + "1 - A MIDI layer in MIDIFILE format contains the notes of scales and chords in all octaves." + Chr(13) +
+                    "2 - A MIDI layer contains 2 tracks: one for scales and one for chords." + Chr(13) +
+    "3 - These two tracks used in the background of a PianoRoll Editor guide you through your composition."
+            End If
+        End If
+    End Sub
+
+    Private Sub CheckAide_MouseMove(sender As Object, e As MouseEventArgs) Handles CheckAide.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Aide"
+                H2.Text = AIDE_TEXTE("fr")
+            Else
+                H1.Text = "Help"
+                H2.Text = AIDE_TEXTE("en")
+            End If
+        End If
+    End Sub
+
+    Private Sub Grid4_MouseMove(Sender As Object, e As MouseEventArgs) Handles Grid4.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If LangueIHM = "fr" Then
+                H1.Text = "Liste des gammes"
+                H2.Text = "But : indication de gammes jouables sur une série d'accords." + Chr(13) + Chr(13) + "1 - Sélectionner un ou plusieurs accords dans la Grille de Composition." + Chr(13) +
+    "2 - La liste affiche alors les gammes jouables sur ces Accords." + Chr(13) +
+    "3 - Choisir une gamme : cliquer sur la ligne correspondante puis appuyer sur la touche 'Entrée'." + Chr(13) +
+    "4 - La gamme choisie s'affiche devant les Accords sélectionnés dans la Grille de Composition" + Chr(13) +
+    "5 - Pour écouter la gamme : CTRL + Clic sur la gamme dans la liste ou dans la Grille de Composition." + Chr(13) +
+    "6 - Remarque sur le calcul : une gamme est considérée jouable sur un accord si elle contient au moins les notes de cet Accord."
+            Else
+                H1.Text = "List of scales"
+                H2.Text = "Purpose: indicate the scales that can be played on a series of chords." + Chr(13) + Chr(13) + "1 - Select one or more chords in the Composition Grid." + Chr(13) +
+    "2 - The list then displays the scales that can be played on these chords." + Chr(13) +
+    "3 - Choose a scale: click on the corresponding line then press the 'Enter' key." + Chr(13) +
+    "4 - The chosen scale is displayed in front of the Chords selected in the Composition Grid." + Chr(13) +
+    "5 - To listen to the scale: CTRL + Click on the scale in the list or in the Composition Grid." + Chr(13) +
+    "6 - Note on calculation: a scale is considered playable over a chord if it contains at least the notes of that chord."
+            End If
+        End If
+    End Sub
+    Private Sub PianoClick_MouseMove(Sender As Object, e As MouseEventArgs)
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            If LangueIHM = "fr" Then
+                H1.Text = "Piano"
+                H2.Text = "But : affficher les notes d'un élément harmonique de la Grille de Composition." + Chr(13) + Chr(13) + "1 - Cliquer sur un un mode, une gamme ou un accord dans la Grille de Compoition," + Chr(13) +
+    "2 - Les notes de cet élément harmonique apparaissent sur les touches du piano," + Chr(13) +
+    "3 - On peut écouter les notes en cliquant sur les touches correspondantes," + Chr(13) +
+    "4 - La lettre 'T' signifie Tonique de l'élément harmonique."
+            Else
+                H1.Text = "Piano"
+                H2.Text = "Purpose: display the notes of a harmonic element in the Composition Grid." + Chr(13) + Chr(13) + "1 - Click on a mode, scale or chord in the Compoition Grid." + Chr(13) +
+    "2 - The notes of this harmonic element appear on the piano keys." + Chr(13) +
+    "3 - You can listen to the notes by clicking on the corresponding keys." + Chr(13) +
+    "4 - The letter 'T' stands for Tonic of the harmonic element.."
+            End If
+        End If
+    End Sub
+
+    Private Sub TabControl4_MouseMove(sender As Object, e As MouseEventArgs) Handles TabControl4.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            For i As Integer = 0 To TabControl4.TabCount - 1
+                Dim tabRect As Rectangle = TabControl4.GetTabRect(i)
+                IsOverTabControl4 = False
+
+                ' Onglet Piste Accords
+                ' ********************
+                If tabRect.Contains(e.Location) AndAlso TabControl4.TabPages(i).Name = "TabPage8" Then
+
+                    If LangueIHM = "fr" Then
+                        H1.Text = "Piste Accords"
+                        H2.Text = "But : création/gestion d'une Piste Accords" + Chr(13) + Chr(13) +
+                        "Composition de la piste : " + Chr(13) +
+                        "1- Sources d'accords : Ton, Progressions, Modes, Subsitution, Ponts (onglets en Vert)" + Chr(13) +
+                        "2- Deux Pistes Accords :" + Chr(13) +
+                        "- une piste par mesure : l'accord est placé par glisser/déposer en début de mesure." + Chr(13) +
+                        "- une piste détaillée : l'accord est placé par glisser/déposer à l'intérieur d'une mesure."
+                    Else '
+                        H1.Text = "Chords track"
+                        H2.Text = "Purpose: creation/management of a Chords Track" + Chr(13) + Chr(13) +
+                        "Composition de la piste : " + Chr(13) +
+                        "1- Chords sources: Tone, Progressions, Modes, Substitution, Bridges (tabs in Green)" + Chr(13) +
+                        "2- Two Chords Tracks  :" + Chr(13) +
+                        "- one track per bar: the chord is dragged and dropped to the beginning of the bar." + Chr(13) +
+                        "- a detailed track: the chord is dragged and dropped within a bar."
+                    End If
+                    IsOverTabControl4 = True
+                End If
+                '
+                ' Onglet PianRoll s
+                ' ***************
+                If tabRect.Contains(e.Location) AndAlso (TabControl4.TabPages(i).Name = "TabPage5" Or TabControl4.TabPages(i).Name = "TabPage9" Or
+     TabControl4.TabPages(i).Name = "TabPage10" Or TabControl4.TabPages(i).Name = "TabPage13" Or TabControl4.TabPages(i).Name = "TabPage14" Or
+     TabControl4.TabPages(i).Name = "TabPage15" Or TabControl4.TabPages(i).Name = "TabPage18" Or TabControl4.TabPages(i).Name = "TabPage19") Then
+                    If LangueIHM = "fr" Then
+                        H1.Text = "PianoRolls"
+                        H2.Text = "But : outil d'écriture de notes" + Chr(13) + Chr(13) + "1 - Ecriture de notes : CTRL + Clic." + Chr(13) +
+                                        "2 - Calques MIDI : aide à l'écriture de notes qui se matérialise par des lignes colorisées représentant 
+les Gammes et les Accords conçues dans l'onglet Piste Accords." + Chr(13) +
+                                        "3 - Quantification Mélodiques : déplacement des notes sélectionnées suivant les divisions verticales du PianoRoll : flèches haut et bas.
+Le déplacement vertical tient compte des guides harmoniques." + Chr(13) +
+                                        "4 - Quantification Rythmique : déplacement des notes sélectionnées suivant les divisions horizontales du PianoRoll." + Chr(13) +
+                                        "5 - Intervalles sur souris : indication sur le curseur de la souris des intervalles harmoniques entre 2 notes." + Chr(13) +
+                                        "6 - Analyse des accords : fournit les chiffrages des accords de 3, 4 ou 5 notes sélectionnées." + Chr(13) +
+                                        "7 - Ecoute locale polyphonique : écoute des notes présentes dans une même colonne par Clic dans la colonne." + Chr(13) +
+                                        "8 - Pour plus de détails, utiliser l'autre aide située à l'intérieur du PianoRoll."
+
+                    Else
+                        H1.Text = "PianoRolls"
+                        H2.Text = "Purpose: notes writing tool." + Chr(13) + Chr(13) + "1 - Writing notes : CTRL + Click." + Chr(13) +
+                                        "2 - MIDI Layers: help for writing notes, represented by coloured lines.
+the scales and chords designed in the Chords Track tab." + Chr(13) +
+                                        "3 - Melodic quantization: move selected notes along the vertical divisions of PianoRoll: up and down arrows.
+Vertical displacement takes harmonic guides into account." + Chr(13) +
+                                        "4 - Rhythmic Quantization: moving selected notes along the horizontal divisions of PianoRoll." + Chr(13) +
+                                        "5 - Intervals on mouse: indicates the harmonic intervals between 2 notes using the mouse cursor." + Chr(13) +
+                                        "6 - Chord analysis: provides the chord notation of the 3, 4 or 5-note chords selected." + Chr(13) +
+                                        "7 - Local polyphonic listening: listen to the notes in the same column by clicking in the column." + Chr(13) +
+                                        "8 - For more details, use the other help located inside PianoRoll."
+                    End If
+                    IsOverTabControl4 = True
+                End If
+                ' Onglet Piste Batterie
+                ' *********************
+                If tabRect.Contains(e.Location) AndAlso (TabControl4.TabPages(i).Name = "TabPage11") Then
+                    If LangueIHM = "fr" Then
+                        H1.Text = "Piste Batterie"
+                        H2.Text = "But : création de patterns de batterie et association des patterns à une Piste Batterie" + Chr(13) + Chr(13) +
+                            "La Piste Batterie se compose de 2 parties :" + Chr(13) +
+                            "1 - Création de Patterns : avec 8 patterns possibles de 1 mesure chacun." + Chr(13) +
+                            "2 - Piste Batterie : on peut  associer les patterns à des mesures autant de fois que souhaités et dans n'importe quel ordre." + Chr(13) +
+                            "3 - Pour plus de détails, utiliser l'autre aide située à l'intérieur de la PIste Batterie."
+                    Else
+                        H1.Text = "Drums track"
+                        H2.Text = "Purpose: creation of drum patterns and association of patterns with a Drum Track" + Chr(13) + Chr(13) +
+                            "The Drum Track consists of 2 parts :" + Chr(13) +
+                            "1 - Pattern creation: with 8 possible patterns of 1 bar each." + Chr(13) +
+                            "2 - Drum track: patterns can be associated with bars as many times as required and in any order." + Chr(13) +
+                            "3 - For more details, use the other help located inside the Drum Track."
+                    End If
+                    IsOverTabControl4 = True
+                End If
+            Next i
+        End If
+    End Sub
+    Private Sub TabControl4_MouseDown(sender As Object, e As MouseEventArgs) Handles TabControl4.MouseDown
+
+        If Not EnChargement Then
+            For i As Integer = 0 To TabControl4.TabCount - 1
+                If TabControl4.GetTabRect(i).Contains(e.Location) Then 'test donné par chatgpt pour détecter l'ouverture d'un onglet de tabControl4
+                    ' L'onglet i a été cliqué, même s'il est déjà sélectionné
+                    If (i >= 1 And i <= 8) Then
+                        If PR_Refresh(i - 1) = True Then
+                            Maj_PianoRoll2(i - 1)
+                            '                                                                                                                                                                     MessageBox.Show("Onglet " & i.ToString() & " cliqué.")
+                            PR_Refresh(i - 1) = False
+                            Exit For
+                        End If
+                    End If
+                End If
+            Next
+        End If
+    End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    'Private Sub ComboBox1_MouseLeave(sender As Object, e As EventArgs) Handles ComboBox1.MouseLeave, ComboBox2.MouseLeave, ComboBox10.MouseLeave,
+    '        SynchroTona.MouseLeave, Button29.MouseLeave, Button9.MouseLeave, Button3.MouseLeave, Button5.MouseLeave, GroupBox11.MouseLeave,
+    'Grid2.MouseLeave, Grid3.MouseLeave, Grid1.MouseLeave, Grid4.MouseLeave, ProjetToolStripMenuItem.MouseLeave, AccordsEnTantQueMarqueurToolStripMenuItem.MouseLeave,
+    'GammesEnTantQueMarqueursToolStripMenuItem1.MouseMove, CalquesMIDIToolStripMenuItem.MouseLeave, CheckAide.MouseLeave
+    '    H1.Text = ""
+    '    H2.Text = ""
+    'End Sub
+
+    '   Private Sub TabControl4_Leave(sender As Object, e As MouseEventArgs) Handles TabControl4.Leave
+    '       For i As Integer = 0 To TabControl4.TabCount - 1
+    '           Dim tabRect As Rectangle = TabControl4.GetTabRect(i)
+    '           If tabRect.Contains(e.Location) AndAlso TabControl4.TabPages(i).Name = "TabPage8" AndAlso (TabControl4.TabPages(i).Name = "TabPage5" Or TabControl4.TabPages(i).Name = "TabPage9" Or
+    'TabControl4.TabPages(i).Name = "TabPage10" Or TabControl4.TabPages(i).Name = "TabPage13" Or TabControl4.TabPages(i).Name = "TabPage14" Or
+    'TabControl4.TabPages(i).Name = "TabPage15" Or TabControl4.TabPages(i).Name = "TabPage18" Or TabControl4.TabPages(i).Name = "TabPage19") Then
+    '               H1.Text = ""
+    '               H2.Text = ""
+    '           End If
+    '       Next i
+
+    '   End Sub
+
+    'Private Sub TabControl4_MouseLeave(sender As Object, e As EventArgs) Handles TabControl4.MouseLeave
+    '    ' Réinitialiser l'état si la souris quitte entièrement le TabControl4
+    '    If Not IsOverTabControl4 Then
+    '        H1.Text = ""
+    '        H2.Text = ""
+    '    End If
+    'End Sub
+End Class

@@ -1,6 +1,4 @@
-﻿Imports System.ComponentModel
-
-Public Class Clavier
+﻿Public Class Clavier
 
     Dim Ouvert As Boolean = True
 
@@ -259,70 +257,70 @@ Public Class Clavier
         Dim c As String
         'If Not (OctaveEcoute.Focused) Then
         c = e.KeyCode.ToString
-            '
-            e.SuppressKeyPress = True
+        '
+        e.SuppressKeyPress = True
 
-            Select Case c
-                Case "s", "S" ' C
-                    note = "c"
-                    Lettre_S.BackColor = Color.Tan
-                Case "e", "E" ' C#
-                    note = "c#"
-                    Lettre_E.BackColor = Color.Tan
-                Case "d", "D" ' D
-                    note = "d"
-                    Lettre_D.BackColor = Color.Tan
-                Case "r", "R" ' D#
-                    note = "d#"
-                    Lettre_R.BackColor = Color.Tan
-                Case "f", "F" ' E
-                    note = "e"
-                    Lettre_F.BackColor = Color.Tan
-                Case "g", "G" ' F
-                    note = "f"
-                    Lettre_G.BackColor = Color.Tan
-                Case "y", "Y" ' F#
-                    note = "f#"
-                    Lettre_Y.BackColor = Color.Tan
-                Case "h", "H" ' G
-                    note = "g"
-                    Lettre_H.BackColor = Color.Tan
-                Case "u", "U" ' G#
-                    note = "g#"
-                    Lettre_U.BackColor = Color.Tan
-                Case "j", "J" ' A
-                    note = "a"
-                    Lettre_J.BackColor = Color.Tan
-                Case "i", "I" ' A#
-                    note = "a#"
-                    Lettre_I.BackColor = Color.Tan
-                Case "k", "K" ' B
-                    note = "b"
-                    Lettre_K.BackColor = Color.Tan
-                Case "l", "L" ' B
-                    note = "c"
-                    octave = Convert.ToString(Val(octave) + 1)
-                    Lettre_L.BackColor = Color.Tan
-            End Select
-            '
-            If Trim(note) <> "" Then
-                If Form1.DicPiano(UCase(c)) = False Then
-                    Form1.DicPiano(UCase(c)) = True
-                    note = note + octave
-                    ValeurNote = Convert.ToByte(ListNotesd.IndexOf(note))
-                    canal = Convert.ToByte(CanalEcoute.Value)
-                    Vélo = Convert.ToByte(VéloEcoute.Value)
-                    Form1.JouerNote21(ValeurNote, canal, Vélo)
-                    '
-                    ' Afficher diode rouge sur le piano
-                    ' *********************************
-                    AfficherNote = True
-                    '
-                    j = ValeurNote
-                    Form1.Touche_CouleurPréced(j) = Form1.LabelPiano.Item(j).BackColor 'LabelPianoMidiIn.Item(j).BackColor
-                    Form1.LabelPianoMidiIn.Item(j).BackColor = Color.Red
-                End If
+        Select Case c
+            Case "s", "S" ' C
+                note = "c"
+                Lettre_S.BackColor = Color.Tan
+            Case "e", "E" ' C#
+                note = "c#"
+                Lettre_E.BackColor = Color.Tan
+            Case "d", "D" ' D
+                note = "d"
+                Lettre_D.BackColor = Color.Tan
+            Case "r", "R" ' D#
+                note = "d#"
+                Lettre_R.BackColor = Color.Tan
+            Case "f", "F" ' E
+                note = "e"
+                Lettre_F.BackColor = Color.Tan
+            Case "g", "G" ' F
+                note = "f"
+                Lettre_G.BackColor = Color.Tan
+            Case "y", "Y" ' F#
+                note = "f#"
+                Lettre_Y.BackColor = Color.Tan
+            Case "h", "H" ' G
+                note = "g"
+                Lettre_H.BackColor = Color.Tan
+            Case "u", "U" ' G#
+                note = "g#"
+                Lettre_U.BackColor = Color.Tan
+            Case "j", "J" ' A
+                note = "a"
+                Lettre_J.BackColor = Color.Tan
+            Case "i", "I" ' A#
+                note = "a#"
+                Lettre_I.BackColor = Color.Tan
+            Case "k", "K" ' B
+                note = "b"
+                Lettre_K.BackColor = Color.Tan
+            Case "l", "L" ' B
+                note = "c"
+                octave = Convert.ToString(Val(octave) + 1)
+                Lettre_L.BackColor = Color.Tan
+        End Select
+        '
+        If Trim(note) <> "" Then
+            If Form1.DicPiano(UCase(c)) = False Then
+                Form1.DicPiano(UCase(c)) = True
+                note = note + octave
+                ValeurNote = Convert.ToByte(ListNotesd.IndexOf(note))
+                canal = Convert.ToByte(CanalEcoute.Value)
+                Vélo = Convert.ToByte(VéloEcoute.Value)
+                Form1.JouerNote21(ValeurNote, canal, Vélo)
+                '
+                ' Afficher diode rouge sur le piano
+                ' *********************************
+                AfficherNote = True
+                '
+                j = ValeurNote
+                Form1.Touche_CouleurPréced(j) = Form1.LabelPiano.Item(j).BackColor 'LabelPianoMidiIn.Item(j).BackColor
+                Form1.LabelPianoMidiIn.Item(j).BackColor = Color.Red
             End If
+        End If
         'End If
     End Sub
     Sub Playnote(c As String)
@@ -497,66 +495,66 @@ Public Class Clavier
 
         'If Not (OctaveEcoute.Focused) Then
         c = e.KeyCode.ToString
-            Select Case c
-                Case "s", "S" ' C
-                    note = "c"
-                    Lettre_S.BackColor = Color.White
-                Case "e", "E" ' C#
-                    note = "c#"
-                    Lettre_E.BackColor = Color.White
-                Case "d", "D" ' D
-                    note = "d"
-                    Lettre_D.BackColor = Color.White
-                Case "r", "R" ' D#
-                    note = "d#"
-                    Lettre_R.BackColor = Color.White
-                Case "f", "F" ' E
-                    note = "e"
-                    Lettre_F.BackColor = Color.White
-                Case "g", "G" ' F
-                    note = "f"
-                    Lettre_G.BackColor = Color.White
-                Case "y", "Y" ' F#
-                    note = "f#"
-                    Lettre_Y.BackColor = Color.White
-                Case "h", "H" ' G
-                    note = "g"
-                    Lettre_H.BackColor = Color.White
-                Case "u", "U" ' G#
-                    note = "g#"
-                    Lettre_U.BackColor = Color.White
-                Case "j", "J" ' A
-                    note = "a"
-                    Lettre_J.BackColor = Color.White
-                Case "i", "I" ' A#
-                    note = "a#"
-                    Lettre_I.BackColor = Color.White
-                Case "k", "K" ' B
-                    note = "b"
-                    Lettre_K.BackColor = Color.White
-                Case "l", "L" ' B
-                    note = "c"
-                    octave = Convert.ToString(Val(octave) + 1)
-                    Lettre_L.BackColor = Color.White
-            End Select
+        Select Case c
+            Case "s", "S" ' C
+                note = "c"
+                Lettre_S.BackColor = Color.White
+            Case "e", "E" ' C#
+                note = "c#"
+                Lettre_E.BackColor = Color.White
+            Case "d", "D" ' D
+                note = "d"
+                Lettre_D.BackColor = Color.White
+            Case "r", "R" ' D#
+                note = "d#"
+                Lettre_R.BackColor = Color.White
+            Case "f", "F" ' E
+                note = "e"
+                Lettre_F.BackColor = Color.White
+            Case "g", "G" ' F
+                note = "f"
+                Lettre_G.BackColor = Color.White
+            Case "y", "Y" ' F#
+                note = "f#"
+                Lettre_Y.BackColor = Color.White
+            Case "h", "H" ' G
+                note = "g"
+                Lettre_H.BackColor = Color.White
+            Case "u", "U" ' G#
+                note = "g#"
+                Lettre_U.BackColor = Color.White
+            Case "j", "J" ' A
+                note = "a"
+                Lettre_J.BackColor = Color.White
+            Case "i", "I" ' A#
+                note = "a#"
+                Lettre_I.BackColor = Color.White
+            Case "k", "K" ' B
+                note = "b"
+                Lettre_K.BackColor = Color.White
+            Case "l", "L" ' B
+                note = "c"
+                octave = Convert.ToString(Val(octave) + 1)
+                Lettre_L.BackColor = Color.White
+        End Select
+        '
+        If Trim(note) <> "" Then
+            Form1.DicPiano(UCase(c)) = False
+            note = note + octave
+            ValeurNote = Convert.ToByte(ListNotesd.IndexOf(note))
+            canal = Convert.ToByte(CanalEcoute.Value)
+            Vélo = Convert.ToByte(VéloEcoute.Text)
+            Form1.StoperNote2(ValeurNote, canal, Vélo)
             '
-            If Trim(note) <> "" Then
-                Form1.DicPiano(UCase(c)) = False
-                note = note + octave
-                ValeurNote = Convert.ToByte(ListNotesd.IndexOf(note))
-                canal = Convert.ToByte(CanalEcoute.Value)
-                Vélo = Convert.ToByte(VéloEcoute.Text)
-                Form1.StoperNote2(ValeurNote, canal, Vélo)
-                '
-                ' Effacer diode rouge sur le piano
-                ' *********************************
-                j = ValeurNote
-                If Form1.Touche_CouleurPréced(j) = Color.LightGreen Then
-                    Form1.LabelPianoMidiIn.Item(j).BackColor = Color.White 'LabelPiano(j).BackColor 'Touche_CouleurPréced
-                Else
-                    Form1.LabelPianoMidiIn.Item(j).BackColor = Form1.LabelPiano(j).BackColor 'Touche_CouleurPréced
-                End If
+            ' Effacer diode rouge sur le piano
+            ' *********************************
+            j = ValeurNote
+            If Form1.Touche_CouleurPréced(j) = Color.LightGreen Then
+                Form1.LabelPianoMidiIn.Item(j).BackColor = Color.White 'LabelPiano(j).BackColor 'Touche_CouleurPréced
+            Else
+                Form1.LabelPianoMidiIn.Item(j).BackColor = Form1.LabelPiano(j).BackColor 'Touche_CouleurPréced
             End If
+        End If
         'End If
     End Sub
 
@@ -710,6 +708,6 @@ Public Class Clavier
     End Sub
 
     Private Sub ResetMIDIToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ResetMIDIToolStripMenuItem.Click
-        Form1.MIDIReset()
+
     End Sub
 End Class

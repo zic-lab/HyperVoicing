@@ -273,6 +273,16 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property DRAWING() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("DRAWING", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property emoticon() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("emoticon", resourceCulture)
@@ -389,16 +399,16 @@ Namespace My.Resources
         
         '''<summary>
         '''  Recherche une chaîne localisée semblable à Usuelle;UsualScale;Maj;1;2;3;4;5;6;7;Fin;
-        '''Usuelle;UsualScale;MinH;1;2;b3;4;5;b6;7;Fin;
-        '''Usuelle;UsualScale;MinM;1;2;b3;4;5;6;7;Fin;
-        '''Usuelle;UsualScale;MajH;1;2;3;4;5;b6;7;Fin;
-        '''Usuelle;UsualScale;PentaMin;1;b3;4;5;b7;Fin;
-        '''Usuelle;UsualScale;Blues;1;b3;4;#4;5;b7;Fin;
-        '''Usuelle;UsualScale;Blues2;1;2;b3;3;4;#4;5;6;b7;Fin;
-        '''EuropeEst;Mineur;Hongrois1;1;2;b3;#4;5;#5;7;Fin;
-        '''EuropeEst;MinMaj;Hongrois2;1;b3;3;#4;5;6;b7;Fin;
-        '''EuropeEst;MinMaj;Balkanique;1;b2;b3;4;5;b6;7;Fin;
-        '''EuropeEst;MinMaj;Tzigane;1;b2;3;#4;5; [le reste de la chaîne a été tronqué]&quot;;.
+        '''MinH;UsualScale;MinH;1;2;b3;4;5;b6;7;Fin;
+        '''MinH;UsualScale;Locrien B13;1;b2;b3;4;#4;b6;b7;Fin;
+        '''MinH;UsualScale;Ionien 5#;1;2;3;4;#5;6;7;Fin;
+        '''MinH;UsualScale;Dorien 11#;1;2;b3;b5;5;6;b7;Fin;
+        '''MinH;UsualScale;Mixolydien b9b13;1;2;3;4;5;b6;b7;Fin;
+        '''MinH;UsualScale;Lydien 9#;1;b3;3;b5;5;6;7;Fin;
+        '''MinH;UsualScale;Altéré bb7;1;b2;b3;3;b5;b6;6;Fin;
+        '''MinM;UsualScale;MinM;1;2;b3;4;5;6;7;Fin;
+        '''MinM;UsualScale;Dorien b9;1;b2;b3;4;5;6;b7;Fin;
+        '''MinM;UsualScale;Lydien 5#;1;2;3 [le reste de la chaîne a été tronqué]&quot;;.
         '''</summary>
         Friend ReadOnly Property FichierListeGammes_Cubasev4() As String
             Get
@@ -419,6 +429,16 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property fleche_Bleu_vers_droite() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("fleche-Bleu vers droite", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property fleche_gauche_Bleu() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("fleche_gauche_Bleu", resourceCulture)
@@ -432,6 +452,16 @@ Namespace My.Resources
         Friend ReadOnly Property fleche_gauche_Orange_copie() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("fleche_gauche_Orange_copie", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property fleche_gauche_Rouge_copie() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("fleche_gauche_Rouge_copie", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
@@ -819,6 +849,16 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property splashnew() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("splashnew", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property star_gif() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("star_gif", resourceCulture)
@@ -862,6 +902,16 @@ Namespace My.Resources
         Friend ReadOnly Property Stop24bis() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("Stop24bis", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property TIMER01() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("TIMER01", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property

@@ -41,6 +41,7 @@ Partial Class Form1
         Me.ProjetToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.AccordsEnTantQueMarqueurToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.GammesEnTantQueMarqueursToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.CalquesMIDIToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuExportsMIDI = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem9 = New System.Windows.Forms.ToolStripMenuItem()
         Me.MarqueursToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -88,43 +89,40 @@ Partial Class Form1
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.ServiceController1 = New System.ServiceProcess.ServiceController()
         Me.SplitContainer7 = New System.Windows.Forms.SplitContainer()
-        Me.Button16 = New System.Windows.Forms.Button()
-        Me.CheckBox3 = New System.Windows.Forms.CheckBox()
+        Me.Label29 = New System.Windows.Forms.Label()
+        Me.CheckAide = New System.Windows.Forms.CheckBox()
+        Me.SynchroTona = New System.Windows.Forms.CheckBox()
+        Me.Label98 = New System.Windows.Forms.Label()
+        Me.Label97 = New System.Windows.Forms.Label()
+        Me.Button5 = New System.Windows.Forms.Button()
+        Me.ComboBox10 = New System.Windows.Forms.ComboBox()
+        Me.Button9 = New System.Windows.Forms.Button()
         Me.Label81 = New System.Windows.Forms.Label()
         Me.Label77 = New System.Windows.Forms.Label()
-        Me.Button5 = New System.Windows.Forms.Button()
         Me.Button3 = New System.Windows.Forms.Button()
         Me.PanelBoutons = New System.Windows.Forms.FlowLayoutPanel()
-        Me.ButtTonalités = New System.Windows.Forms.Button()
+        Me.Button38 = New System.Windows.Forms.Button()
+        Me.Button20 = New System.Windows.Forms.Button()
+        Me.Label12 = New System.Windows.Forms.Label()
+        Me.Button28 = New System.Windows.Forms.Button()
+        Me.Label102 = New System.Windows.Forms.Label()
         Me.ButtAccords = New System.Windows.Forms.Button()
         Me.ButtGammes = New System.Windows.Forms.Button()
         Me.Button30 = New System.Windows.Forms.Button()
         Me.CheckBoxTout = New System.Windows.Forms.CheckBox()
         Me.ButtTransit = New System.Windows.Forms.Button()
+        Me.ButtTonalités = New System.Windows.Forms.Button()
         Me.LJauge1 = New System.Windows.Forms.Label()
-        Me.ButtModes = New System.Windows.Forms.Button()
         Me.Jauge = New System.Windows.Forms.Panel()
-        Me.Button24 = New System.Windows.Forms.Button()
-        Me.Button28 = New System.Windows.Forms.Button()
-        Me.Label12 = New System.Windows.Forms.Label()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.Button32 = New System.Windows.Forms.Button()
-        Me.Button38 = New System.Windows.Forms.Button()
         Me.Button26 = New System.Windows.Forms.Button()
         Me.Button36 = New System.Windows.Forms.Button()
         Me.ComboBox1 = New System.Windows.Forms.ComboBox()
         Me.ComboBox2 = New System.Windows.Forms.ComboBox()
-        Me.Button13 = New System.Windows.Forms.Button()
         Me.Label48 = New System.Windows.Forms.Label()
-        Me.Button12 = New System.Windows.Forms.Button()
         Me.Métrique = New System.Windows.Forms.Label()
-        Me.Button11 = New System.Windows.Forms.Button()
         Me.Label5 = New System.Windows.Forms.Label()
-        Me.Button14 = New System.Windows.Forms.Button()
-        Me.Button20 = New System.Windows.Forms.Button()
-        Me.Button15 = New System.Windows.Forms.Button()
-        Me.Button22 = New System.Windows.Forms.Button()
-        Me.Button23 = New System.Windows.Forms.Button()
         Me.Button29 = New System.Windows.Forms.Button()
         Me.SplitContainer6 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
@@ -132,15 +130,14 @@ Partial Class Form1
         Me.SplitContainer13 = New System.Windows.Forms.SplitContainer()
         Me.SplitContainer9 = New System.Windows.Forms.SplitContainer()
         Me.Panel2 = New System.Windows.Forms.Panel()
-        Me.Grid7 = New FlexCell.Grid()
         Me.Panel12 = New System.Windows.Forms.Panel()
         Me.Label76 = New System.Windows.Forms.Label()
         Me.TabControl2 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.Panel8 = New System.Windows.Forms.Panel()
+        Me.Grid7 = New FlexCell.Grid()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.ComboBox23 = New System.Windows.Forms.ComboBox()
-        Me.TabPage21 = New System.Windows.Forms.TabPage()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.Panel4 = New System.Windows.Forms.Panel()
         Me.Label37 = New System.Windows.Forms.Label()
@@ -151,6 +148,7 @@ Partial Class Form1
         Me.ComboBox5 = New System.Windows.Forms.ComboBox()
         Me.ComboBox4 = New System.Windows.Forms.ComboBox()
         Me.ComboBox3 = New System.Windows.Forms.ComboBox()
+        Me.TabPage21 = New System.Windows.Forms.TabPage()
         Me.TabPage16 = New System.Windows.Forms.TabPage()
         Me.SplitContainer10 = New System.Windows.Forms.SplitContainer()
         Me.Label67 = New System.Windows.Forms.Label()
@@ -168,35 +166,44 @@ Partial Class Form1
         Me.Label46 = New System.Windows.Forms.Label()
         Me.Label39 = New System.Windows.Forms.Label()
         Me.TabPage7 = New System.Windows.Forms.TabPage()
-        Me.SplitContainer5 = New System.Windows.Forms.SplitContainer()
-        Me.TextBox2 = New System.Windows.Forms.TextBox()
-        Me.Label92 = New System.Windows.Forms.Label()
-        Me.Label91 = New System.Windows.Forms.Label()
-        Me.Label90 = New System.Windows.Forms.Label()
-        Me.Label15 = New System.Windows.Forms.Label()
-        Me.Label29 = New System.Windows.Forms.Label()
-        Me.ComboBox9 = New System.Windows.Forms.ComboBox()
-        Me.SplitContainer8 = New System.Windows.Forms.SplitContainer()
+        Me.SplitContainer15 = New System.Windows.Forms.SplitContainer()
         Me.Grid5 = New FlexCell.Grid()
-        Me.Label93 = New System.Windows.Forms.Label()
-        Me.Label38 = New System.Windows.Forms.Label()
-        Me.Label34 = New System.Windows.Forms.Label()
-        Me.Label80 = New System.Windows.Forms.Label()
-        Me.Label79 = New System.Windows.Forms.Label()
-        Me.ComboBox13 = New System.Windows.Forms.ComboBox()
-        Me.Label78 = New System.Windows.Forms.Label()
-        Me.Panel9 = New System.Windows.Forms.Panel()
-        Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label21 = New System.Windows.Forms.Label()
-        Me.Label20 = New System.Windows.Forms.Label()
+        Me.Label15 = New System.Windows.Forms.Label()
+        Me.Label34 = New System.Windows.Forms.Label()
+        Me.Label38 = New System.Windows.Forms.Label()
+        Me.Label79 = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
+        Me.Label20 = New System.Windows.Forms.Label()
+        Me.TabPage22 = New System.Windows.Forms.TabPage()
+        Me.GroupBox11 = New System.Windows.Forms.GroupBox()
+        Me.Label112 = New System.Windows.Forms.Label()
+        Me.Panel15 = New System.Windows.Forms.Panel()
+        Me.Label101 = New System.Windows.Forms.Label()
+        Me.Comp = New System.Windows.Forms.NumericUpDown()
+        Me.Label111 = New System.Windows.Forms.Label()
+        Me.Panel13 = New System.Windows.Forms.Panel()
+        Me.QuatreNotes = New System.Windows.Forms.CheckBox()
+        Me.Label109 = New System.Windows.Forms.Label()
+        Me.Label107 = New System.Windows.Forms.Label()
+        Me.UpDown2 = New System.Windows.Forms.NumericUpDown()
+        Me.Label85 = New System.Windows.Forms.Label()
+        Me.ComboBox12 = New System.Windows.Forms.ComboBox()
+        Me.Label110 = New System.Windows.Forms.Label()
+        Me.Panel7 = New System.Windows.Forms.Panel()
+        Me.Label108 = New System.Windows.Forms.Label()
+        Me.BasseMoins12 = New System.Windows.Forms.CheckBox()
+        Me.Label106 = New System.Windows.Forms.Label()
+        Me.ComboBox11 = New System.Windows.Forms.ComboBox()
+        Me.UpDown1 = New System.Windows.Forms.NumericUpDown()
+        Me.Label84 = New System.Windows.Forms.Label()
         Me.TabPage20 = New System.Windows.Forms.TabPage()
         Me.SplitContainer14 = New System.Windows.Forms.SplitContainer()
         Me.ActExp = New System.Windows.Forms.CheckBox()
         Me.Courbexp = New FlexCell.Grid()
-        Me.TabPage17 = New System.Windows.Forms.TabPage()
-        Me.Grid6 = New FlexCell.Grid()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.SplitContainer4 = New System.Windows.Forms.SplitContainer()
         Me.Panel5 = New System.Windows.Forms.Panel()
@@ -222,6 +229,8 @@ Partial Class Form1
         Me.LabVol = New System.Windows.Forms.Label()
         Me.LabPRG = New System.Windows.Forms.Label()
         Me.LabCanal = New System.Windows.Forms.Label()
+        Me.TabPage17 = New System.Windows.Forms.TabPage()
+        Me.Grid6 = New FlexCell.Grid()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.Grid2 = New FlexCell.Grid()
@@ -305,42 +314,36 @@ Partial Class Form1
         Me.Label36 = New System.Windows.Forms.Label()
         Me.TabControl3 = New System.Windows.Forms.TabControl()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
-        Me.InitClavier = New System.Windows.Forms.Button()
-        Me.GroupBox11 = New System.Windows.Forms.GroupBox()
-        Me.Label85 = New System.Windows.Forms.Label()
-        Me.Label84 = New System.Windows.Forms.Label()
-        Me.QuatreNotes = New System.Windows.Forms.CheckBox()
-        Me.BasseMoins12 = New System.Windows.Forms.CheckBox()
-        Me.UpDown2 = New System.Windows.Forms.NumericUpDown()
-        Me.UpDown1 = New System.Windows.Forms.NumericUpDown()
-        Me.ComboBox12 = New System.Windows.Forms.ComboBox()
-        Me.ComboBox11 = New System.Windows.Forms.ComboBox()
+        Me.Label100 = New System.Windows.Forms.Label()
+        Me.Label105 = New System.Windows.Forms.Label()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.Label96 = New System.Windows.Forms.Label()
         Me.Label35 = New System.Windows.Forms.Label()
+        Me.Label95 = New System.Windows.Forms.Label()
+        Me.InitClavier = New System.Windows.Forms.Button()
         Me.GroupBox8 = New System.Windows.Forms.GroupBox()
         Me.NomduSon = New System.Windows.Forms.TextBox()
         Me.ListGS = New System.Windows.Forms.ComboBox()
-        Me.Thru = New System.Windows.Forms.CheckBox()
         Me.Label31 = New System.Windows.Forms.Label()
-        Me.Label13 = New System.Windows.Forms.Label()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
         Me.Label16 = New System.Windows.Forms.Label()
         Me.ComboMidiOut = New System.Windows.Forms.ComboBox()
+        Me.Thru = New System.Windows.Forms.CheckBox()
         Me.ComboMidiIn = New System.Windows.Forms.ComboBox()
         Me.Label45 = New System.Windows.Forms.Label()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.Label104 = New System.Windows.Forms.Label()
+        Me.Label103 = New System.Windows.Forms.Label()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.Label94 = New System.Windows.Forms.Label()
         Me.Label86 = New System.Windows.Forms.Label()
-        Me.RichTextBox2 = New System.Windows.Forms.RichTextBox()
         Me.Label89 = New System.Windows.Forms.Label()
         Me.Label87 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
-        Me.RichTextBox1 = New System.Windows.Forms.RichTextBox()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
         Me.Label88 = New System.Windows.Forms.Label()
         Me.Label42 = New System.Windows.Forms.Label()
         Me.CanalThru = New System.Windows.Forms.NumericUpDown()
-        Me.ComboBox10 = New System.Windows.Forms.ComboBox()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -363,12 +366,13 @@ Partial Class Form1
         Me.SplitContainer3 = New System.Windows.Forms.SplitContainer()
         Me.ListBox1 = New System.Windows.Forms.ListBox()
         Me.Grid4 = New FlexCell.Grid()
-        Me.Panel11 = New System.Windows.Forms.Panel()
         Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
         Me.LoopNumber = New System.Windows.Forms.NumericUpDown()
         Me.FinBoucle = New System.Windows.Forms.Label()
         Me.ComboBox8 = New System.Windows.Forms.ComboBox()
         Me.Label17 = New System.Windows.Forms.Label()
+        Me.Panel11 = New System.Windows.Forms.Panel()
+        Me.Button24 = New System.Windows.Forms.Button()
         Me.ContextMenuStrip1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.Accord1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.Accord11_1 = New System.Windows.Forms.ToolStripMenuItem()
@@ -432,6 +436,8 @@ Partial Class Form1
         Me.Transpo10 = New System.Windows.Forms.ToolStripMenuItem()
         Me.Transpo11 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator6 = New System.Windows.Forms.ToolStripSeparator()
+        Me.TranspMode = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ToolStripSeparator11 = New System.Windows.Forms.ToolStripSeparator()
         Me.Flot_Couper = New System.Windows.Forms.ToolStripMenuItem()
         Me.Flot_Copier = New System.Windows.Forms.ToolStripMenuItem()
         Me.Flot_Coller = New System.Windows.Forms.ToolStripMenuItem()
@@ -498,6 +504,8 @@ Partial Class Form1
         Me.TabPage12 = New System.Windows.Forms.TabPage()
         Me.SaveFileDialog2 = New System.Windows.Forms.SaveFileDialog()
         Me.OpenFileDialog2 = New System.Windows.Forms.OpenFileDialog()
+        Me.TimerDragDrop = New System.Windows.Forms.Timer(Me.components)
+        Me.Label78 = New System.Windows.Forms.Label()
         Me.MenuStrip1.SuspendLayout()
         CType(Me.SplitContainer7, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer7.Panel1.SuspendLayout()
@@ -538,20 +546,25 @@ Partial Class Form1
         Me.SplitContainer10.SuspendLayout()
         Me.Panel14.SuspendLayout()
         Me.TabPage7.SuspendLayout()
-        CType(Me.SplitContainer5, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.SplitContainer5.Panel1.SuspendLayout()
-        Me.SplitContainer5.Panel2.SuspendLayout()
-        Me.SplitContainer5.SuspendLayout()
-        CType(Me.SplitContainer8, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.SplitContainer8.Panel1.SuspendLayout()
-        Me.SplitContainer8.Panel2.SuspendLayout()
-        Me.SplitContainer8.SuspendLayout()
+        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer15.Panel1.SuspendLayout()
+        Me.SplitContainer15.Panel2.SuspendLayout()
+        Me.SplitContainer15.SuspendLayout()
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage22.SuspendLayout()
+        Me.GroupBox11.SuspendLayout()
+        Me.Panel15.SuspendLayout()
+        CType(Me.Comp, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Panel13.SuspendLayout()
+        CType(Me.UpDown2, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Panel7.SuspendLayout()
+        CType(Me.UpDown1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage20.SuspendLayout()
         CType(Me.SplitContainer14, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer14.Panel1.SuspendLayout()
         Me.SplitContainer14.Panel2.SuspendLayout()
         Me.SplitContainer14.SuspendLayout()
-        Me.TabPage17.SuspendLayout()
         Me.TabPage3.SuspendLayout()
         CType(Me.SplitContainer4, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer4.Panel1.SuspendLayout()
@@ -559,6 +572,7 @@ Partial Class Form1
         Me.SplitContainer4.SuspendLayout()
         Me.Panel5.SuspendLayout()
         Me.PanelMIX.SuspendLayout()
+        Me.TabPage17.SuspendLayout()
         Me.Panel18.SuspendLayout()
         Me.Panel6.SuspendLayout()
         CType(Me.EndMeasureNumber, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -584,9 +598,6 @@ Partial Class Form1
         CType(Me.NotesVelocity, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabControl3.SuspendLayout()
         Me.TabPage4.SuspendLayout()
-        Me.GroupBox11.SuspendLayout()
-        CType(Me.UpDown2, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.UpDown1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox8.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
         Me.TabPage6.SuspendLayout()
@@ -619,7 +630,7 @@ Partial Class Form1
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
         Me.MenuStrip1.Padding = New System.Windows.Forms.Padding(4, 2, 0, 2)
-        Me.MenuStrip1.Size = New System.Drawing.Size(1528, 24)
+        Me.MenuStrip1.Size = New System.Drawing.Size(1709, 24)
         Me.MenuStrip1.TabIndex = 0
         Me.MenuStrip1.Text = "MenuStrip1"
         '
@@ -635,7 +646,7 @@ Partial Class Form1
         Me.NouveauToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.Standard, Me.ToolStripSeparator16, Me.Quick_Blues})
         Me.NouveauToolStripMenuItem.Image = CType(resources.GetObject("NouveauToolStripMenuItem.Image"), System.Drawing.Image)
         Me.NouveauToolStripMenuItem.Name = "NouveauToolStripMenuItem"
-        Me.NouveauToolStripMenuItem.Size = New System.Drawing.Size(285, 30)
+        Me.NouveauToolStripMenuItem.Size = New System.Drawing.Size(284, 30)
         Me.NouveauToolStripMenuItem.Text = "Nouveau"
         '
         'Standard
@@ -661,34 +672,34 @@ Partial Class Form1
         'NouveauAvecSignatireToolStripMenuItem
         '
         Me.NouveauAvecSignatireToolStripMenuItem.Name = "NouveauAvecSignatireToolStripMenuItem"
-        Me.NouveauAvecSignatireToolStripMenuItem.Size = New System.Drawing.Size(285, 30)
+        Me.NouveauAvecSignatireToolStripMenuItem.Size = New System.Drawing.Size(284, 30)
         Me.NouveauAvecSignatireToolStripMenuItem.Text = "Nouveau avec Métrique"
         Me.NouveauAvecSignatireToolStripMenuItem.Visible = False
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(282, 6)
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(281, 6)
         '
         'OuvrirToolStripMenuItem
         '
         Me.OuvrirToolStripMenuItem.Image = CType(resources.GetObject("OuvrirToolStripMenuItem.Image"), System.Drawing.Image)
         Me.OuvrirToolStripMenuItem.Name = "OuvrirToolStripMenuItem"
         Me.OuvrirToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.O), System.Windows.Forms.Keys)
-        Me.OuvrirToolStripMenuItem.Size = New System.Drawing.Size(285, 30)
+        Me.OuvrirToolStripMenuItem.Size = New System.Drawing.Size(284, 30)
         Me.OuvrirToolStripMenuItem.Text = "Ouvrir"
         '
         'ToolStripMenuItem2
         '
         Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(282, 6)
+        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(281, 6)
         '
         'EnregistrerToolStripMenuItem
         '
         Me.EnregistrerToolStripMenuItem.Image = CType(resources.GetObject("EnregistrerToolStripMenuItem.Image"), System.Drawing.Image)
         Me.EnregistrerToolStripMenuItem.Name = "EnregistrerToolStripMenuItem"
         Me.EnregistrerToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.S), System.Windows.Forms.Keys)
-        Me.EnregistrerToolStripMenuItem.Size = New System.Drawing.Size(285, 30)
+        Me.EnregistrerToolStripMenuItem.Size = New System.Drawing.Size(284, 30)
         Me.EnregistrerToolStripMenuItem.Text = "Enregistrer"
         '
         'EnregistrerSousToolStripMenuItem
@@ -696,20 +707,20 @@ Partial Class Form1
         Me.EnregistrerSousToolStripMenuItem.Name = "EnregistrerSousToolStripMenuItem"
         Me.EnregistrerSousToolStripMenuItem.ShortcutKeys = CType(((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Shift) _
             Or System.Windows.Forms.Keys.S), System.Windows.Forms.Keys)
-        Me.EnregistrerSousToolStripMenuItem.Size = New System.Drawing.Size(285, 30)
+        Me.EnregistrerSousToolStripMenuItem.Size = New System.Drawing.Size(284, 30)
         Me.EnregistrerSousToolStripMenuItem.Text = "Enregistrer sous"
         '
         'ToolStripSeparator2
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(282, 6)
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(281, 6)
         '
         'ToolStripMenuItem13
         '
-        Me.ToolStripMenuItem13.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ProjetToolStripMenuItem, Me.AccordsEnTantQueMarqueurToolStripMenuItem, Me.GammesEnTantQueMarqueursToolStripMenuItem1})
+        Me.ToolStripMenuItem13.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ProjetToolStripMenuItem, Me.AccordsEnTantQueMarqueurToolStripMenuItem, Me.GammesEnTantQueMarqueursToolStripMenuItem1, Me.CalquesMIDIToolStripMenuItem})
         Me.ToolStripMenuItem13.Image = Global.HyperVoicing.My.Resources.Resources.MISC31
         Me.ToolStripMenuItem13.Name = "ToolStripMenuItem13"
-        Me.ToolStripMenuItem13.Size = New System.Drawing.Size(285, 30)
+        Me.ToolStripMenuItem13.Size = New System.Drawing.Size(284, 30)
         Me.ToolStripMenuItem13.Text = "Midifile Exports"
         '
         'ProjetToolStripMenuItem
@@ -733,11 +744,18 @@ Partial Class Form1
         Me.GammesEnTantQueMarqueursToolStripMenuItem1.Size = New System.Drawing.Size(244, 22)
         Me.GammesEnTantQueMarqueursToolStripMenuItem1.Text = "Gammes en tant que marqueurs"
         '
+        'CalquesMIDIToolStripMenuItem
+        '
+        Me.CalquesMIDIToolStripMenuItem.Image = Global.HyperVoicing.My.Resources.Resources.fleche_gauche_Rouge_copie
+        Me.CalquesMIDIToolStripMenuItem.Name = "CalquesMIDIToolStripMenuItem"
+        Me.CalquesMIDIToolStripMenuItem.Size = New System.Drawing.Size(244, 22)
+        Me.CalquesMIDIToolStripMenuItem.Text = "Guide Harmonique"
+        '
         'MenuExportsMIDI
         '
         Me.MenuExportsMIDI.Image = Global.HyperVoicing.My.Resources.Resources.fleche_gauche_Orange_copie
         Me.MenuExportsMIDI.Name = "MenuExportsMIDI"
-        Me.MenuExportsMIDI.Size = New System.Drawing.Size(285, 30)
+        Me.MenuExportsMIDI.Size = New System.Drawing.Size(284, 30)
         Me.MenuExportsMIDI.Text = "Export Projet en Fichier MIDI"
         Me.MenuExportsMIDI.Visible = False
         '
@@ -746,7 +764,7 @@ Partial Class Form1
         Me.ToolStripMenuItem9.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MarqueursToolStripMenuItem, Me.ToolStripSeparator9, Me.AccordsCommeMarqueursToolStripMenuItem, Me.ToolStripMenuItem11, Me.GammesEnTantQueMarqueursToolStripMenuItem})
         Me.ToolStripMenuItem9.Image = Global.HyperVoicing.My.Resources.Resources.fleche_gauche_Bleu
         Me.ToolStripMenuItem9.Name = "ToolStripMenuItem9"
-        Me.ToolStripMenuItem9.Size = New System.Drawing.Size(285, 30)
+        Me.ToolStripMenuItem9.Size = New System.Drawing.Size(284, 30)
         Me.ToolStripMenuItem9.Text = "Export Marqueurs en Fichier MIDI avec"
         Me.ToolStripMenuItem9.Visible = False
         '
@@ -787,19 +805,19 @@ Partial Class Form1
         'ToolStripSeparator10
         '
         Me.ToolStripSeparator10.Name = "ToolStripSeparator10"
-        Me.ToolStripSeparator10.Size = New System.Drawing.Size(282, 6)
+        Me.ToolStripSeparator10.Size = New System.Drawing.Size(281, 6)
         '
         'ToolStripMenuItem12
         '
         Me.ToolStripMenuItem12.Image = Global.HyperVoicing.My.Resources.Resources.PRINT
         Me.ToolStripMenuItem12.Name = "ToolStripMenuItem12"
-        Me.ToolStripMenuItem12.Size = New System.Drawing.Size(285, 30)
+        Me.ToolStripMenuItem12.Size = New System.Drawing.Size(284, 30)
         Me.ToolStripMenuItem12.Text = "Imprimer"
         '
         'ToolStripSeparator17
         '
         Me.ToolStripSeparator17.Name = "ToolStripSeparator17"
-        Me.ToolStripSeparator17.Size = New System.Drawing.Size(282, 6)
+        Me.ToolStripSeparator17.Size = New System.Drawing.Size(281, 6)
         '
         'LanguesToolStripMenuItem
         '
@@ -807,7 +825,7 @@ Partial Class Form1
         Me.LanguesToolStripMenuItem.Image = Global.HyperVoicing.My.Resources.Resources.globe_earth24x24
         Me.LanguesToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None
         Me.LanguesToolStripMenuItem.Name = "LanguesToolStripMenuItem"
-        Me.LanguesToolStripMenuItem.Size = New System.Drawing.Size(285, 30)
+        Me.LanguesToolStripMenuItem.Size = New System.Drawing.Size(284, 30)
         Me.LanguesToolStripMenuItem.Text = "Languages"
         '
         'EnglishToolStripMenuItem
@@ -827,13 +845,13 @@ Partial Class Form1
         'ToolStripSeparator3
         '
         Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
-        Me.ToolStripSeparator3.Size = New System.Drawing.Size(282, 6)
+        Me.ToolStripSeparator3.Size = New System.Drawing.Size(281, 6)
         '
         'QuitterToolStripMenuItem
         '
         Me.QuitterToolStripMenuItem.Name = "QuitterToolStripMenuItem"
         Me.QuitterToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Q), System.Windows.Forms.Keys)
-        Me.QuitterToolStripMenuItem.Size = New System.Drawing.Size(285, 30)
+        Me.QuitterToolStripMenuItem.Size = New System.Drawing.Size(284, 30)
         Me.QuitterToolStripMenuItem.Text = "Quitter"
         '
         'EditionToolStripMenuItem
@@ -849,28 +867,29 @@ Partial Class Form1
         Me.AnnulerToolStripMenuItem.Image = CType(resources.GetObject("AnnulerToolStripMenuItem.Image"), System.Drawing.Image)
         Me.AnnulerToolStripMenuItem.Name = "AnnulerToolStripMenuItem"
         Me.AnnulerToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Z), System.Windows.Forms.Keys)
-        Me.AnnulerToolStripMenuItem.Size = New System.Drawing.Size(184, 26)
+        Me.AnnulerToolStripMenuItem.Size = New System.Drawing.Size(163, 22)
         Me.AnnulerToolStripMenuItem.Text = "Annuler"
         '
         'Retablir
         '
         Me.Retablir.Enabled = False
+        Me.Retablir.Image = CType(resources.GetObject("Retablir.Image"), System.Drawing.Image)
         Me.Retablir.Name = "Retablir"
         Me.Retablir.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.Y), System.Windows.Forms.Keys)
-        Me.Retablir.Size = New System.Drawing.Size(184, 26)
+        Me.Retablir.Size = New System.Drawing.Size(163, 22)
         Me.Retablir.Text = "Rétablir"
         '
         'ToolStripMenuItem4
         '
         Me.ToolStripMenuItem4.Name = "ToolStripMenuItem4"
-        Me.ToolStripMenuItem4.Size = New System.Drawing.Size(181, 6)
+        Me.ToolStripMenuItem4.Size = New System.Drawing.Size(160, 6)
         '
         'CouperToolStripMenuItem
         '
         Me.CouperToolStripMenuItem.Image = CType(resources.GetObject("CouperToolStripMenuItem.Image"), System.Drawing.Image)
         Me.CouperToolStripMenuItem.Name = "CouperToolStripMenuItem"
         Me.CouperToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.X), System.Windows.Forms.Keys)
-        Me.CouperToolStripMenuItem.Size = New System.Drawing.Size(184, 26)
+        Me.CouperToolStripMenuItem.Size = New System.Drawing.Size(163, 22)
         Me.CouperToolStripMenuItem.Text = "Couper"
         '
         'CopierToolStripMenuItem
@@ -878,7 +897,7 @@ Partial Class Form1
         Me.CopierToolStripMenuItem.Image = CType(resources.GetObject("CopierToolStripMenuItem.Image"), System.Drawing.Image)
         Me.CopierToolStripMenuItem.Name = "CopierToolStripMenuItem"
         Me.CopierToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.C), System.Windows.Forms.Keys)
-        Me.CopierToolStripMenuItem.Size = New System.Drawing.Size(184, 26)
+        Me.CopierToolStripMenuItem.Size = New System.Drawing.Size(163, 22)
         Me.CopierToolStripMenuItem.Text = "Copier"
         '
         'CollerToolStripMenuItem
@@ -886,69 +905,67 @@ Partial Class Form1
         Me.CollerToolStripMenuItem.Image = CType(resources.GetObject("CollerToolStripMenuItem.Image"), System.Drawing.Image)
         Me.CollerToolStripMenuItem.Name = "CollerToolStripMenuItem"
         Me.CollerToolStripMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Control Or System.Windows.Forms.Keys.V), System.Windows.Forms.Keys)
-        Me.CollerToolStripMenuItem.Size = New System.Drawing.Size(184, 26)
+        Me.CollerToolStripMenuItem.Size = New System.Drawing.Size(163, 22)
         Me.CollerToolStripMenuItem.Text = "Coller"
         '
         'ToolStripMenuItem5
         '
         Me.ToolStripMenuItem5.Name = "ToolStripMenuItem5"
-        Me.ToolStripMenuItem5.Size = New System.Drawing.Size(181, 6)
+        Me.ToolStripMenuItem5.Size = New System.Drawing.Size(160, 6)
         '
         'EffacerToolStripMenuItem
         '
         Me.EffacerToolStripMenuItem.Image = CType(resources.GetObject("EffacerToolStripMenuItem.Image"), System.Drawing.Image)
         Me.EffacerToolStripMenuItem.Name = "EffacerToolStripMenuItem"
         Me.EffacerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete
-        Me.EffacerToolStripMenuItem.Size = New System.Drawing.Size(184, 26)
+        Me.EffacerToolStripMenuItem.Size = New System.Drawing.Size(163, 22)
         Me.EffacerToolStripMenuItem.Text = "Effacer"
         '
         'ToolStripSeparator8
         '
         Me.ToolStripSeparator8.Name = "ToolStripSeparator8"
-        Me.ToolStripSeparator8.Size = New System.Drawing.Size(181, 6)
+        Me.ToolStripSeparator8.Size = New System.Drawing.Size(160, 6)
         '
         'MIDIResetToolStripMenuItem
         '
         Me.MIDIResetToolStripMenuItem.Image = CType(resources.GetObject("MIDIResetToolStripMenuItem.Image"), System.Drawing.Image)
         Me.MIDIResetToolStripMenuItem.Name = "MIDIResetToolStripMenuItem"
         Me.MIDIResetToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12
-        Me.MIDIResetToolStripMenuItem.Size = New System.Drawing.Size(184, 26)
+        Me.MIDIResetToolStripMenuItem.Size = New System.Drawing.Size(163, 22)
         Me.MIDIResetToolStripMenuItem.Text = "MIDI Reset"
         '
         'ToolStripSeparator14
         '
         Me.ToolStripSeparator14.Name = "ToolStripSeparator14"
-        Me.ToolStripSeparator14.Size = New System.Drawing.Size(181, 6)
+        Me.ToolStripSeparator14.Size = New System.Drawing.Size(160, 6)
         '
         'ClavierMenuItem
         '
         Me.ClavierMenuItem.Image = CType(resources.GetObject("ClavierMenuItem.Image"), System.Drawing.Image)
         Me.ClavierMenuItem.Name = "ClavierMenuItem"
         Me.ClavierMenuItem.ShortcutKeys = CType((System.Windows.Forms.Keys.Alt Or System.Windows.Forms.Keys.K), System.Windows.Forms.Keys)
-        Me.ClavierMenuItem.Size = New System.Drawing.Size(184, 26)
+        Me.ClavierMenuItem.Size = New System.Drawing.Size(163, 22)
         Me.ClavierMenuItem.Text = "Clavier"
         '
         'StopToolStripMenuItem
         '
         Me.StopToolStripMenuItem.Name = "StopToolStripMenuItem"
-        Me.StopToolStripMenuItem.Size = New System.Drawing.Size(184, 26)
+        Me.StopToolStripMenuItem.Size = New System.Drawing.Size(163, 22)
         Me.StopToolStripMenuItem.Text = "Stop"
         Me.StopToolStripMenuItem.Visible = False
         '
         'ToolStripMenuItem8
         '
         Me.ToolStripMenuItem8.Name = "ToolStripMenuItem8"
-        Me.ToolStripMenuItem8.Size = New System.Drawing.Size(181, 6)
-        Me.ToolStripMenuItem8.Visible = False
+        Me.ToolStripMenuItem8.Size = New System.Drawing.Size(160, 6)
         '
         'TransportMenuItem
         '
         Me.TransportMenuItem.Image = CType(resources.GetObject("TransportMenuItem.Image"), System.Drawing.Image)
         Me.TransportMenuItem.Name = "TransportMenuItem"
         Me.TransportMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2
-        Me.TransportMenuItem.Size = New System.Drawing.Size(184, 26)
+        Me.TransportMenuItem.Size = New System.Drawing.Size(163, 22)
         Me.TransportMenuItem.Text = "Transport bar"
-        Me.TransportMenuItem.Visible = False
         '
         'ToolStripMenuItem1
         '
@@ -1018,19 +1035,19 @@ Partial Class Form1
         'SimpleToolStripMenuItem
         '
         Me.SimpleToolStripMenuItem.Name = "SimpleToolStripMenuItem"
-        Me.SimpleToolStripMenuItem.Size = New System.Drawing.Size(125, 22)
+        Me.SimpleToolStripMenuItem.Size = New System.Drawing.Size(124, 22)
         Me.SimpleToolStripMenuItem.Text = "Simple"
         '
         'ExtensionToolStripMenuItem
         '
         Me.ExtensionToolStripMenuItem.Name = "ExtensionToolStripMenuItem"
-        Me.ExtensionToolStripMenuItem.Size = New System.Drawing.Size(125, 22)
+        Me.ExtensionToolStripMenuItem.Size = New System.Drawing.Size(124, 22)
         Me.ExtensionToolStripMenuItem.Text = "Extension"
         '
         'AdminToolStripMenuItem
         '
         Me.AdminToolStripMenuItem.Name = "AdminToolStripMenuItem"
-        Me.AdminToolStripMenuItem.Size = New System.Drawing.Size(125, 22)
+        Me.AdminToolStripMenuItem.Size = New System.Drawing.Size(124, 22)
         Me.AdminToolStripMenuItem.Text = "Admin"
         '
         'OpenFileDialog1
@@ -1046,37 +1063,29 @@ Partial Class Form1
         '
         'SplitContainer7.Panel1
         '
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button16)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.CheckBox3)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.Label29)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.CheckAide)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.SynchroTona)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.Label98)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.Label97)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.Button5)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.ComboBox10)
+        Me.SplitContainer7.Panel1.Controls.Add(Me.Button9)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Label81)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Label77)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button5)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Button3)
         Me.SplitContainer7.Panel1.Controls.Add(Me.PanelBoutons)
         Me.SplitContainer7.Panel1.Controls.Add(Me.LJauge1)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.ButtModes)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Jauge)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button24)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button28)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Label12)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Label8)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Button32)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button38)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Button26)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Button36)
         Me.SplitContainer7.Panel1.Controls.Add(Me.ComboBox1)
         Me.SplitContainer7.Panel1.Controls.Add(Me.ComboBox2)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button13)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Label48)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button12)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Métrique)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button11)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Label5)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button14)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button20)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button15)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button22)
-        Me.SplitContainer7.Panel1.Controls.Add(Me.Button23)
         Me.SplitContainer7.Panel1.Controls.Add(Me.Button29)
         '
         'SplitContainer7.Panel2
@@ -1086,27 +1095,90 @@ Partial Class Form1
         Me.SplitContainer7.SplitterDistance = 44
         Me.SplitContainer7.TabIndex = 4
         '
-        'Button16
+        'Label29
         '
-        Me.Button16.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button16.Image = Global.HyperVoicing.My.Resources.Resources.COPY_png
-        Me.Button16.Location = New System.Drawing.Point(474, 4)
-        Me.Button16.Name = "Button16"
-        Me.Button16.Size = New System.Drawing.Size(33, 32)
-        Me.Button16.TabIndex = 269
-        Me.Button16.TabStop = False
-        Me.Button16.UseVisualStyleBackColor = True
+        Me.Label29.AutoSize = True
+        Me.Label29.Location = New System.Drawing.Point(909, 9)
+        Me.Label29.Name = "Label29"
+        Me.Label29.Size = New System.Drawing.Size(51, 13)
+        Me.Label29.TabIndex = 276
+        Me.Label29.Text = "Label29"
         '
-        'CheckBox3
+        'CheckAide
         '
-        Me.CheckBox3.AutoSize = True
-        Me.CheckBox3.Location = New System.Drawing.Point(1206, 14)
-        Me.CheckBox3.Name = "CheckBox3"
-        Me.CheckBox3.Size = New System.Drawing.Size(91, 17)
-        Me.CheckBox3.TabIndex = 268
-        Me.CheckBox3.Text = "CheckBox3"
-        Me.CheckBox3.UseVisualStyleBackColor = True
-        Me.CheckBox3.Visible = False
+        Me.CheckAide.AutoSize = True
+        Me.CheckAide.BackColor = System.Drawing.Color.Gold
+        Me.CheckAide.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.CheckAide.ForeColor = System.Drawing.Color.Black
+        Me.CheckAide.Location = New System.Drawing.Point(603, 12)
+        Me.CheckAide.Name = "CheckAide"
+        Me.CheckAide.Size = New System.Drawing.Size(100, 17)
+        Me.CheckAide.TabIndex = 275
+        Me.CheckAide.Text = "Activer l'aide"
+        Me.CheckAide.UseVisualStyleBackColor = False
+        '
+        'SynchroTona
+        '
+        Me.SynchroTona.AutoSize = True
+        Me.SynchroTona.Checked = True
+        Me.SynchroTona.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.SynchroTona.Location = New System.Drawing.Point(456, 12)
+        Me.SynchroTona.Name = "SynchroTona"
+        Me.SynchroTona.Size = New System.Drawing.Size(132, 17)
+        Me.SynchroTona.TabIndex = 271
+        Me.SynchroTona.Text = "Synchro Signature"
+        Me.SynchroTona.UseVisualStyleBackColor = True
+        '
+        'Label98
+        '
+        Me.Label98.AutoSize = True
+        Me.Label98.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label98.Location = New System.Drawing.Point(192, 34)
+        Me.Label98.Name = "Label98"
+        Me.Label98.Size = New System.Drawing.Size(51, 13)
+        Me.Label98.TabIndex = 273
+        Me.Label98.Text = "Métrique"
+        '
+        'Label97
+        '
+        Me.Label97.AutoSize = True
+        Me.Label97.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label97.Location = New System.Drawing.Point(97, 34)
+        Me.Label97.Name = "Label97"
+        Me.Label97.Size = New System.Drawing.Size(87, 13)
+        Me.Label97.TabIndex = 272
+        Me.Label97.Text = "Relative mineure"
+        '
+        'Button5
+        '
+        Me.Button5.Image = Global.HyperVoicing.My.Resources.Resources.Accords16x16
+        Me.Button5.Location = New System.Drawing.Point(410, 4)
+        Me.Button5.Name = "Button5"
+        Me.Button5.Size = New System.Drawing.Size(32, 32)
+        Me.Button5.TabIndex = 264
+        Me.Button5.Text = "3"
+        Me.Button5.UseVisualStyleBackColor = True
+        '
+        'ComboBox10
+        '
+        Me.ComboBox10.BackColor = System.Drawing.Color.Orange
+        Me.ComboBox10.Font = New System.Drawing.Font("Verdana", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox10.FormattingEnabled = True
+        Me.ComboBox10.Location = New System.Drawing.Point(245, 5)
+        Me.ComboBox10.Name = "ComboBox10"
+        Me.ComboBox10.Size = New System.Drawing.Size(46, 24)
+        Me.ComboBox10.TabIndex = 222
+        Me.ComboBox10.TabStop = False
+        Me.ComboBox10.Text = "c2"
+        '
+        'Button9
+        '
+        Me.Button9.Image = Global.HyperVoicing.My.Resources.Resources.Culture2
+        Me.Button9.Location = New System.Drawing.Point(346, 4)
+        Me.Button9.Name = "Button9"
+        Me.Button9.Size = New System.Drawing.Size(32, 32)
+        Me.Button9.TabIndex = 270
+        Me.Button9.UseVisualStyleBackColor = True
         '
         'Label81
         '
@@ -1118,6 +1190,7 @@ Partial Class Form1
         Me.Label81.Size = New System.Drawing.Size(33, 12)
         Me.Label81.TabIndex = 266
         Me.Label81.Text = "Harmo"
+        Me.Label81.Visible = False
         '
         'Label77
         '
@@ -1129,23 +1202,14 @@ Partial Class Form1
         Me.Label77.Size = New System.Drawing.Size(33, 12)
         Me.Label77.TabIndex = 265
         Me.Label77.Text = "Défaut"
-        '
-        'Button5
-        '
-        Me.Button5.Image = Global.HyperVoicing.My.Resources.Resources.Accords16x16
-        Me.Button5.Location = New System.Drawing.Point(744, 6)
-        Me.Button5.Name = "Button5"
-        Me.Button5.Size = New System.Drawing.Size(24, 24)
-        Me.Button5.TabIndex = 264
-        Me.Button5.Text = "3"
-        Me.Button5.UseVisualStyleBackColor = True
+        Me.Label77.Visible = False
         '
         'Button3
         '
         Me.Button3.Image = Global.HyperVoicing.My.Resources.Resources.UNGROUP_png1
-        Me.Button3.Location = New System.Drawing.Point(702, 5)
+        Me.Button3.Location = New System.Drawing.Point(378, 4)
         Me.Button3.Name = "Button3"
-        Me.Button3.Size = New System.Drawing.Size(26, 23)
+        Me.Button3.Size = New System.Drawing.Size(32, 32)
         Me.Button3.TabIndex = 263
         Me.Button3.Text = "2"
         Me.Button3.UseVisualStyleBackColor = True
@@ -1153,33 +1217,80 @@ Partial Class Form1
         'PanelBoutons
         '
         Me.PanelBoutons.AutoSize = True
-        Me.PanelBoutons.Controls.Add(Me.ButtTonalités)
+        Me.PanelBoutons.Controls.Add(Me.Button38)
+        Me.PanelBoutons.Controls.Add(Me.Button20)
+        Me.PanelBoutons.Controls.Add(Me.Label12)
+        Me.PanelBoutons.Controls.Add(Me.Button28)
+        Me.PanelBoutons.Controls.Add(Me.Label102)
         Me.PanelBoutons.Controls.Add(Me.ButtAccords)
         Me.PanelBoutons.Controls.Add(Me.ButtGammes)
         Me.PanelBoutons.Controls.Add(Me.Button30)
         Me.PanelBoutons.Controls.Add(Me.CheckBoxTout)
         Me.PanelBoutons.Controls.Add(Me.ButtTransit)
+        Me.PanelBoutons.Controls.Add(Me.ButtTonalités)
         Me.PanelBoutons.Location = New System.Drawing.Point(1286, 11)
         Me.PanelBoutons.Name = "PanelBoutons"
-        Me.PanelBoutons.Size = New System.Drawing.Size(445, 45)
+        Me.PanelBoutons.Size = New System.Drawing.Size(839, 45)
         Me.PanelBoutons.TabIndex = 244
         Me.PanelBoutons.Visible = False
         '
-        'ButtTonalités
+        'Button38
         '
-        Me.ButtTonalités.BackColor = System.Drawing.Color.Khaki
-        Me.ButtTonalités.Location = New System.Drawing.Point(3, 3)
-        Me.ButtTonalités.Name = "ButtTonalités"
-        Me.ButtTonalités.Size = New System.Drawing.Size(60, 23)
-        Me.ButtTonalités.TabIndex = 243
-        Me.ButtTonalités.TabStop = False
-        Me.ButtTonalités.Text = "Tonalités"
-        Me.ButtTonalités.UseVisualStyleBackColor = False
+        Me.Button38.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.Button38.Image = CType(resources.GetObject("Button38.Image"), System.Drawing.Image)
+        Me.Button38.Location = New System.Drawing.Point(3, 3)
+        Me.Button38.Name = "Button38"
+        Me.Button38.Size = New System.Drawing.Size(32, 32)
+        Me.Button38.TabIndex = 255
+        Me.Button38.UseVisualStyleBackColor = True
+        Me.Button38.Visible = False
+        '
+        'Button20
+        '
+        Me.Button20.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.Button20.Image = CType(resources.GetObject("Button20.Image"), System.Drawing.Image)
+        Me.Button20.Location = New System.Drawing.Point(41, 3)
+        Me.Button20.Name = "Button20"
+        Me.Button20.Size = New System.Drawing.Size(24, 24)
+        Me.Button20.TabIndex = 240
+        Me.Button20.UseVisualStyleBackColor = True
+        Me.Button20.Visible = False
+        '
+        'Label12
+        '
+        Me.Label12.AutoSize = True
+        Me.Label12.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label12.Location = New System.Drawing.Point(71, 0)
+        Me.Label12.Name = "Label12"
+        Me.Label12.Size = New System.Drawing.Size(34, 12)
+        Me.Label12.TabIndex = 258
+        Me.Label12.Text = "Extend"
+        Me.Label12.Visible = False
+        '
+        'Button28
+        '
+        Me.Button28.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.Button28.Image = CType(resources.GetObject("Button28.Image"), System.Drawing.Image)
+        Me.Button28.Location = New System.Drawing.Point(111, 3)
+        Me.Button28.Name = "Button28"
+        Me.Button28.Size = New System.Drawing.Size(32, 32)
+        Me.Button28.TabIndex = 86
+        Me.Button28.UseVisualStyleBackColor = True
+        Me.Button28.Visible = False
+        '
+        'Label102
+        '
+        Me.Label102.AutoSize = True
+        Me.Label102.Location = New System.Drawing.Point(149, 0)
+        Me.Label102.Name = "Label102"
+        Me.Label102.Size = New System.Drawing.Size(58, 13)
+        Me.Label102.TabIndex = 276
+        Me.Label102.Text = "Label102"
         '
         'ButtAccords
         '
         Me.ButtAccords.BackColor = System.Drawing.Color.LightSkyBlue
-        Me.ButtAccords.Location = New System.Drawing.Point(69, 3)
+        Me.ButtAccords.Location = New System.Drawing.Point(213, 3)
         Me.ButtAccords.Name = "ButtAccords"
         Me.ButtAccords.Size = New System.Drawing.Size(60, 23)
         Me.ButtAccords.TabIndex = 242
@@ -1190,7 +1301,7 @@ Partial Class Form1
         'ButtGammes
         '
         Me.ButtGammes.BackColor = System.Drawing.Color.LightSeaGreen
-        Me.ButtGammes.Location = New System.Drawing.Point(135, 3)
+        Me.ButtGammes.Location = New System.Drawing.Point(279, 3)
         Me.ButtGammes.Name = "ButtGammes"
         Me.ButtGammes.Size = New System.Drawing.Size(60, 23)
         Me.ButtGammes.TabIndex = 245
@@ -1204,7 +1315,7 @@ Partial Class Form1
         Me.Button30.FlatAppearance.BorderColor = System.Drawing.Color.Red
         Me.Button30.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button30.ForeColor = System.Drawing.Color.Black
-        Me.Button30.Location = New System.Drawing.Point(201, 3)
+        Me.Button30.Location = New System.Drawing.Point(345, 3)
         Me.Button30.Name = "Button30"
         Me.Button30.Size = New System.Drawing.Size(50, 20)
         Me.Button30.TabIndex = 247
@@ -1217,7 +1328,7 @@ Partial Class Form1
         Me.CheckBoxTout.AutoSize = True
         Me.CheckBoxTout.BackColor = System.Drawing.Color.White
         Me.CheckBoxTout.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CheckBoxTout.Location = New System.Drawing.Point(257, 3)
+        Me.CheckBoxTout.Location = New System.Drawing.Point(401, 3)
         Me.CheckBoxTout.Name = "CheckBoxTout"
         Me.CheckBoxTout.Size = New System.Drawing.Size(42, 16)
         Me.CheckBoxTout.TabIndex = 249
@@ -1228,7 +1339,7 @@ Partial Class Form1
         'ButtTransit
         '
         Me.ButtTransit.BackColor = System.Drawing.Color.PowderBlue
-        Me.ButtTransit.Location = New System.Drawing.Point(305, 3)
+        Me.ButtTransit.Location = New System.Drawing.Point(449, 3)
         Me.ButtTransit.Name = "ButtTransit"
         Me.ButtTransit.Size = New System.Drawing.Size(60, 23)
         Me.ButtTransit.TabIndex = 250
@@ -1236,12 +1347,23 @@ Partial Class Form1
         Me.ButtTransit.UseVisualStyleBackColor = False
         Me.ButtTransit.Visible = False
         '
+        'ButtTonalités
+        '
+        Me.ButtTonalités.BackColor = System.Drawing.Color.Khaki
+        Me.ButtTonalités.Location = New System.Drawing.Point(515, 3)
+        Me.ButtTonalités.Name = "ButtTonalités"
+        Me.ButtTonalités.Size = New System.Drawing.Size(60, 23)
+        Me.ButtTonalités.TabIndex = 277
+        Me.ButtTonalités.TabStop = False
+        Me.ButtTonalités.Text = "Tonalités"
+        Me.ButtTonalités.UseVisualStyleBackColor = False
+        '
         'LJauge1
         '
         Me.LJauge1.AutoSize = True
         Me.LJauge1.BackColor = System.Drawing.Color.Lavender
         Me.LJauge1.ForeColor = System.Drawing.Color.Red
-        Me.LJauge1.Location = New System.Drawing.Point(1140, 13)
+        Me.LJauge1.Location = New System.Drawing.Point(1304, 0)
         Me.LJauge1.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.LJauge1.Name = "LJauge1"
         Me.LJauge1.Size = New System.Drawing.Size(47, 13)
@@ -1249,91 +1371,37 @@ Partial Class Form1
         Me.LJauge1.Text = "LJauge"
         Me.LJauge1.Visible = False
         '
-        'ButtModes
-        '
-        Me.ButtModes.BackColor = System.Drawing.Color.Beige
-        Me.ButtModes.Location = New System.Drawing.Point(1036, 21)
-        Me.ButtModes.Name = "ButtModes"
-        Me.ButtModes.Size = New System.Drawing.Size(94, 23)
-        Me.ButtModes.TabIndex = 244
-        Me.ButtModes.TabStop = False
-        Me.ButtModes.Text = "Modes Grecs"
-        Me.ButtModes.UseVisualStyleBackColor = False
-        Me.ButtModes.Visible = False
-        '
         'Jauge
         '
         Me.Jauge.BackColor = System.Drawing.Color.Crimson
-        Me.Jauge.Location = New System.Drawing.Point(962, 5)
+        Me.Jauge.Location = New System.Drawing.Point(1105, 17)
         Me.Jauge.Name = "Jauge"
-        Me.Jauge.Size = New System.Drawing.Size(150, 15)
+        Me.Jauge.Size = New System.Drawing.Size(148, 12)
         Me.Jauge.TabIndex = 259
         Me.Jauge.Visible = False
-        '
-        'Button24
-        '
-        Me.Button24.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button24.Image = CType(resources.GetObject("Button24.Image"), System.Drawing.Image)
-        Me.Button24.Location = New System.Drawing.Point(885, 4)
-        Me.Button24.Name = "Button24"
-        Me.Button24.Size = New System.Drawing.Size(32, 32)
-        Me.Button24.TabIndex = 84
-        Me.Button24.UseVisualStyleBackColor = True
-        Me.Button24.Visible = False
-        '
-        'Button28
-        '
-        Me.Button28.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button28.Image = CType(resources.GetObject("Button28.Image"), System.Drawing.Image)
-        Me.Button28.Location = New System.Drawing.Point(923, -2)
-        Me.Button28.Name = "Button28"
-        Me.Button28.Size = New System.Drawing.Size(32, 32)
-        Me.Button28.TabIndex = 86
-        Me.Button28.UseVisualStyleBackColor = True
-        Me.Button28.Visible = False
-        '
-        'Label12
-        '
-        Me.Label12.AutoSize = True
-        Me.Label12.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label12.Location = New System.Drawing.Point(894, 27)
-        Me.Label12.Name = "Label12"
-        Me.Label12.Size = New System.Drawing.Size(34, 12)
-        Me.Label12.TabIndex = 258
-        Me.Label12.Text = "Extend"
-        Me.Label12.Visible = False
         '
         'Label8
         '
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.Location = New System.Drawing.Point(698, 27)
+        Me.Label8.Location = New System.Drawing.Point(547, 32)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(35, 12)
         Me.Label8.TabIndex = 257
         Me.Label8.Text = "EXtend"
+        Me.Label8.Visible = False
         '
         'Button32
         '
         Me.Button32.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.Button32.Image = CType(resources.GetObject("Button32.Image"), System.Drawing.Image)
-        Me.Button32.Location = New System.Drawing.Point(597, 4)
+        Me.Button32.Location = New System.Drawing.Point(970, 4)
         Me.Button32.Name = "Button32"
         Me.Button32.Size = New System.Drawing.Size(32, 32)
         Me.Button32.TabIndex = 256
         Me.Button32.TabStop = False
         Me.Button32.UseVisualStyleBackColor = True
-        '
-        'Button38
-        '
-        Me.Button38.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button38.Image = CType(resources.GetObject("Button38.Image"), System.Drawing.Image)
-        Me.Button38.Location = New System.Drawing.Point(809, 5)
-        Me.Button38.Name = "Button38"
-        Me.Button38.Size = New System.Drawing.Size(32, 32)
-        Me.Button38.TabIndex = 255
-        Me.Button38.UseVisualStyleBackColor = True
-        Me.Button38.Visible = False
+        Me.Button32.Visible = False
         '
         'Button26
         '
@@ -1370,6 +1438,7 @@ Partial Class Form1
         'ComboBox2
         '
         Me.ComboBox2.Font = New System.Drawing.Font("Corbel", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox2.ForeColor = System.Drawing.Color.DodgerBlue
         Me.ComboBox2.FormattingEnabled = True
         Me.ComboBox2.Location = New System.Drawing.Point(109, 4)
         Me.ComboBox2.Name = "ComboBox2"
@@ -1377,135 +1446,46 @@ Partial Class Form1
         Me.ComboBox2.TabIndex = 46
         Me.ComboBox2.TabStop = False
         '
-        'Button13
-        '
-        Me.Button13.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button13.Image = CType(resources.GetObject("Button13.Image"), System.Drawing.Image)
-        Me.Button13.Location = New System.Drawing.Point(362, 4)
-        Me.Button13.Name = "Button13"
-        Me.Button13.Size = New System.Drawing.Size(32, 32)
-        Me.Button13.TabIndex = 78
-        Me.Button13.TabStop = False
-        Me.Button13.UseVisualStyleBackColor = True
-        '
         'Label48
         '
         Me.Label48.AutoSize = True
         Me.Label48.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label48.Location = New System.Drawing.Point(79, 32)
+        Me.Label48.Location = New System.Drawing.Point(29, 33)
         Me.Label48.Name = "Label48"
-        Me.Label48.Size = New System.Drawing.Size(45, 13)
+        Me.Label48.Size = New System.Drawing.Size(42, 13)
         Me.Label48.TabIndex = 72
-        Me.Label48.Text = "Tonalité"
+        Me.Label48.Text = "Armure"
         Me.Label48.UseWaitCursor = True
-        '
-        'Button12
-        '
-        Me.Button12.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button12.Image = CType(resources.GetObject("Button12.Image"), System.Drawing.Image)
-        Me.Button12.Location = New System.Drawing.Point(330, 4)
-        Me.Button12.Name = "Button12"
-        Me.Button12.Size = New System.Drawing.Size(32, 32)
-        Me.Button12.TabIndex = 77
-        Me.Button12.TabStop = False
-        Me.Button12.UseVisualStyleBackColor = True
         '
         'Métrique
         '
-        Me.Métrique.BackColor = System.Drawing.Color.Tan
+        Me.Métrique.BackColor = System.Drawing.Color.Gold
         Me.Métrique.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Métrique.Font = New System.Drawing.Font("Corbel", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Métrique.Location = New System.Drawing.Point(212, 5)
+        Me.Métrique.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Métrique.Location = New System.Drawing.Point(202, 4)
         Me.Métrique.Name = "Métrique"
-        Me.Métrique.Size = New System.Drawing.Size(74, 25)
+        Me.Métrique.Size = New System.Drawing.Size(40, 26)
         Me.Métrique.TabIndex = 87
-        Me.Métrique.Text = "Label37"
+        Me.Métrique.Text = "4/4"
         Me.Métrique.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Button11
-        '
-        Me.Button11.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button11.Image = CType(resources.GetObject("Button11.Image"), System.Drawing.Image)
-        Me.Button11.Location = New System.Drawing.Point(297, 4)
-        Me.Button11.Name = "Button11"
-        Me.Button11.Size = New System.Drawing.Size(32, 32)
-        Me.Button11.TabIndex = 76
-        Me.Button11.TabStop = False
-        Me.Button11.UseVisualStyleBackColor = True
         '
         'Label5
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label5.ForeColor = System.Drawing.Color.Black
-        Me.Label5.Location = New System.Drawing.Point(222, 32)
+        Me.Label5.Location = New System.Drawing.Point(249, 32)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(51, 13)
+        Me.Label5.Size = New System.Drawing.Size(39, 13)
         Me.Label5.TabIndex = 56
-        Me.Label5.Text = "Métrique"
+        Me.Label5.Text = "Racine"
         Me.Label5.UseWaitCursor = True
-        '
-        'Button14
-        '
-        Me.Button14.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button14.Image = CType(resources.GetObject("Button14.Image"), System.Drawing.Image)
-        Me.Button14.Location = New System.Drawing.Point(408, 4)
-        Me.Button14.Name = "Button14"
-        Me.Button14.Size = New System.Drawing.Size(33, 32)
-        Me.Button14.TabIndex = 79
-        Me.Button14.TabStop = False
-        Me.Button14.UseVisualStyleBackColor = True
-        '
-        'Button20
-        '
-        Me.Button20.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button20.Image = CType(resources.GetObject("Button20.Image"), System.Drawing.Image)
-        Me.Button20.Location = New System.Drawing.Point(961, 5)
-        Me.Button20.Name = "Button20"
-        Me.Button20.Size = New System.Drawing.Size(24, 24)
-        Me.Button20.TabIndex = 240
-        Me.Button20.UseVisualStyleBackColor = True
-        Me.Button20.Visible = False
-        '
-        'Button15
-        '
-        Me.Button15.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button15.Image = CType(resources.GetObject("Button15.Image"), System.Drawing.Image)
-        Me.Button15.Location = New System.Drawing.Point(442, 4)
-        Me.Button15.Name = "Button15"
-        Me.Button15.Size = New System.Drawing.Size(33, 32)
-        Me.Button15.TabIndex = 80
-        Me.Button15.TabStop = False
-        Me.Button15.UseVisualStyleBackColor = True
-        '
-        'Button22
-        '
-        Me.Button22.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button22.Image = CType(resources.GetObject("Button22.Image"), System.Drawing.Image)
-        Me.Button22.Location = New System.Drawing.Point(510, 4)
-        Me.Button22.Name = "Button22"
-        Me.Button22.Size = New System.Drawing.Size(33, 32)
-        Me.Button22.TabIndex = 82
-        Me.Button22.TabStop = False
-        Me.Button22.UseVisualStyleBackColor = True
-        '
-        'Button23
-        '
-        Me.Button23.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.Button23.Image = Global.HyperVoicing.My.Resources.Resources.NOTEBOOK
-        Me.Button23.Location = New System.Drawing.Point(660, 5)
-        Me.Button23.Name = "Button23"
-        Me.Button23.Size = New System.Drawing.Size(27, 24)
-        Me.Button23.TabIndex = 89
-        Me.Button23.TabStop = False
-        Me.Button23.Text = "1"
-        Me.Button23.UseVisualStyleBackColor = True
         '
         'Button29
         '
         Me.Button29.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.Button29.Image = CType(resources.GetObject("Button29.Image"), System.Drawing.Image)
-        Me.Button29.Location = New System.Drawing.Point(564, 4)
+        Me.Button29.Location = New System.Drawing.Point(304, 4)
         Me.Button29.Name = "Button29"
         Me.Button29.Size = New System.Drawing.Size(32, 32)
         Me.Button29.TabIndex = 88
@@ -1620,6 +1600,7 @@ Partial Class Form1
         '
         'SplitContainer9.Panel2
         '
+        Me.SplitContainer9.Panel2.Controls.Add(Me.Label78)
         Me.SplitContainer9.Panel2.Controls.Add(Me.Button2)
         Me.SplitContainer9.Panel2.Controls.Add(Me.Button1)
         Me.SplitContainer9.Panel2.Controls.Add(Me.Grid2)
@@ -1629,7 +1610,6 @@ Partial Class Form1
         '
         'Panel2
         '
-        Me.Panel2.Controls.Add(Me.Grid7)
         Me.Panel2.Controls.Add(Me.Panel12)
         Me.Panel2.Controls.Add(Me.TabControl2)
         Me.Panel2.Dock = System.Windows.Forms.DockStyle.Fill
@@ -1637,17 +1617,6 @@ Partial Class Form1
         Me.Panel2.Name = "Panel2"
         Me.Panel2.Size = New System.Drawing.Size(926, 297)
         Me.Panel2.TabIndex = 17
-        '
-        'Grid7
-        '
-        Me.Grid7.CheckedImage = Nothing
-        Me.Grid7.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Grid7.GridColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Grid7.Location = New System.Drawing.Point(856, 139)
-        Me.Grid7.Name = "Grid7"
-        Me.Grid7.Size = New System.Drawing.Size(240, 160)
-        Me.Grid7.TabIndex = 48
-        Me.Grid7.UncheckedImage = Nothing
         '
         'Panel12
         '
@@ -1675,13 +1644,14 @@ Partial Class Form1
         '
         Me.TabControl2.Appearance = System.Windows.Forms.TabAppearance.Buttons
         Me.TabControl2.Controls.Add(Me.TabPage1)
-        Me.TabControl2.Controls.Add(Me.TabPage21)
         Me.TabControl2.Controls.Add(Me.TabPage2)
+        Me.TabControl2.Controls.Add(Me.TabPage21)
         Me.TabControl2.Controls.Add(Me.TabPage16)
         Me.TabControl2.Controls.Add(Me.TabPage7)
+        Me.TabControl2.Controls.Add(Me.TabPage22)
         Me.TabControl2.Controls.Add(Me.TabPage20)
-        Me.TabControl2.Controls.Add(Me.TabPage17)
         Me.TabControl2.Controls.Add(Me.TabPage3)
+        Me.TabControl2.Controls.Add(Me.TabPage17)
         Me.TabControl2.Dock = System.Windows.Forms.DockStyle.Left
         Me.TabControl2.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TabControl2.HotTrack = True
@@ -1707,6 +1677,7 @@ Partial Class Form1
         'Panel8
         '
         Me.Panel8.BackColor = System.Drawing.Color.Linen
+        Me.Panel8.Controls.Add(Me.Grid7)
         Me.Panel8.Controls.Add(Me.TextBox1)
         Me.Panel8.Controls.Add(Me.ComboBox23)
         Me.Panel8.Dock = System.Windows.Forms.DockStyle.Fill
@@ -1715,13 +1686,24 @@ Partial Class Form1
         Me.Panel8.Size = New System.Drawing.Size(539, 262)
         Me.Panel8.TabIndex = 45
         '
+        'Grid7
+        '
+        Me.Grid7.CheckedImage = Nothing
+        Me.Grid7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Grid7.GridColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Grid7.Location = New System.Drawing.Point(854, 111)
+        Me.Grid7.Name = "Grid7"
+        Me.Grid7.Size = New System.Drawing.Size(240, 160)
+        Me.Grid7.TabIndex = 48
+        Me.Grid7.UncheckedImage = Nothing
+        '
         'TextBox1
         '
         Me.TextBox1.BackColor = System.Drawing.Color.White
         Me.TextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.TextBox1.Font = New System.Drawing.Font("MS Reference Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextBox1.ForeColor = System.Drawing.Color.Black
-        Me.TextBox1.Location = New System.Drawing.Point(412, 7)
+        Me.TextBox1.Location = New System.Drawing.Point(418, 5)
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(119, 22)
         Me.TextBox1.TabIndex = 46
@@ -1735,18 +1717,9 @@ Partial Class Form1
         Me.ComboBox23.FormattingEnabled = True
         Me.ComboBox23.Location = New System.Drawing.Point(4, 7)
         Me.ComboBox23.Name = "ComboBox23"
-        Me.ComboBox23.Size = New System.Drawing.Size(260, 23)
+        Me.ComboBox23.Size = New System.Drawing.Size(90, 23)
         Me.ComboBox23.TabIndex = 44
         Me.ComboBox23.TabStop = False
-        '
-        'TabPage21
-        '
-        Me.TabPage21.Location = New System.Drawing.Point(4, 25)
-        Me.TabPage21.Name = "TabPage21"
-        Me.TabPage21.Size = New System.Drawing.Size(545, 268)
-        Me.TabPage21.TabIndex = 8
-        Me.TabPage21.Text = "Modes"
-        Me.TabPage21.UseVisualStyleBackColor = True
         '
         'TabPage2
         '
@@ -1811,10 +1784,10 @@ Partial Class Form1
         'Label28
         '
         Me.Label28.AutoSize = True
-        Me.Label28.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label28.Font = New System.Drawing.Font("Papyrus", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label28.Location = New System.Drawing.Point(7, 133)
         Me.Label28.Name = "Label28"
-        Me.Label28.Size = New System.Drawing.Size(64, 18)
+        Me.Label28.Size = New System.Drawing.Size(66, 24)
         Me.Label28.TabIndex = 56
         Me.Label28.Text = "Anatole"
         '
@@ -1864,6 +1837,15 @@ Partial Class Form1
         Me.ComboBox3.Size = New System.Drawing.Size(176, 23)
         Me.ComboBox3.TabIndex = 48
         Me.ComboBox3.TabStop = False
+        '
+        'TabPage21
+        '
+        Me.TabPage21.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage21.Name = "TabPage21"
+        Me.TabPage21.Size = New System.Drawing.Size(545, 268)
+        Me.TabPage21.TabIndex = 8
+        Me.TabPage21.Text = "Modes"
+        Me.TabPage21.UseVisualStyleBackColor = True
         '
         'TabPage16
         '
@@ -2075,147 +2057,41 @@ Partial Class Form1
         'TabPage7
         '
         Me.TabPage7.BackColor = System.Drawing.SystemColors.Window
-        Me.TabPage7.Controls.Add(Me.SplitContainer5)
+        Me.TabPage7.Controls.Add(Me.SplitContainer15)
         Me.TabPage7.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TabPage7.Location = New System.Drawing.Point(4, 25)
         Me.TabPage7.Name = "TabPage7"
         Me.TabPage7.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage7.Size = New System.Drawing.Size(545, 268)
         Me.TabPage7.TabIndex = 3
-        Me.TabPage7.Text = "Modulation"
+        Me.TabPage7.Text = "Modulations"
         '
-        'SplitContainer5
+        'SplitContainer15
         '
-        Me.SplitContainer5.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer5.Location = New System.Drawing.Point(3, 3)
-        Me.SplitContainer5.Name = "SplitContainer5"
-        Me.SplitContainer5.Orientation = System.Windows.Forms.Orientation.Horizontal
+        Me.SplitContainer15.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer15.Location = New System.Drawing.Point(3, 3)
+        Me.SplitContainer15.Name = "SplitContainer15"
+        Me.SplitContainer15.Orientation = System.Windows.Forms.Orientation.Horizontal
         '
-        'SplitContainer5.Panel1
+        'SplitContainer15.Panel1
         '
-        Me.SplitContainer5.Panel1.Controls.Add(Me.TextBox2)
-        Me.SplitContainer5.Panel1.Controls.Add(Me.Label92)
-        Me.SplitContainer5.Panel1.Controls.Add(Me.Label91)
-        Me.SplitContainer5.Panel1.Controls.Add(Me.Label90)
-        Me.SplitContainer5.Panel1.Controls.Add(Me.Label15)
-        Me.SplitContainer5.Panel1.Controls.Add(Me.Label29)
-        Me.SplitContainer5.Panel1.Controls.Add(Me.ComboBox9)
+        Me.SplitContainer15.Panel1.Controls.Add(Me.Grid5)
         '
-        'SplitContainer5.Panel2
+        'SplitContainer15.Panel2
         '
-        Me.SplitContainer5.Panel2.Controls.Add(Me.SplitContainer8)
-        Me.SplitContainer5.Size = New System.Drawing.Size(539, 262)
-        Me.SplitContainer5.SplitterDistance = 31
-        Me.SplitContainer5.TabIndex = 47
-        '
-        'TextBox2
-        '
-        Me.TextBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.TextBox2.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox2.Location = New System.Drawing.Point(305, 1)
-        Me.TextBox2.Multiline = True
-        Me.TextBox2.Name = "TextBox2"
-        Me.TextBox2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.TextBox2.Size = New System.Drawing.Size(234, 35)
-        Me.TextBox2.TabIndex = 62
-        Me.TextBox2.Visible = False
-        '
-        'Label92
-        '
-        Me.Label92.AutoSize = True
-        Me.Label92.BackColor = System.Drawing.Color.White
-        Me.Label92.Font = New System.Drawing.Font("MS Reference Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label92.Location = New System.Drawing.Point(230, 21)
-        Me.Label92.Name = "Label92"
-        Me.Label92.Size = New System.Drawing.Size(69, 12)
-        Me.Label92.TabIndex = 60
-        Me.Label92.Text = "Accord pivot"
-        '
-        'Label91
-        '
-        Me.Label91.AutoSize = True
-        Me.Label91.BackColor = System.Drawing.Color.White
-        Me.Label91.Font = New System.Drawing.Font("MS Reference Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label91.Location = New System.Drawing.Point(157, 21)
-        Me.Label91.Name = "Label91"
-        Me.Label91.Size = New System.Drawing.Size(67, 12)
-        Me.Label91.TabIndex = 59
-        Me.Label91.Text = "Mode départ"
-        '
-        'Label90
-        '
-        Me.Label90.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label90.Font = New System.Drawing.Font("MS Reference Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label90.Location = New System.Drawing.Point(230, 1)
-        Me.Label90.Name = "Label90"
-        Me.Label90.Size = New System.Drawing.Size(58, 20)
-        Me.Label90.TabIndex = 53
-        Me.Label90.Text = "C "
-        Me.Label90.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Label15
-        '
-        Me.Label15.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label15.Font = New System.Drawing.Font("MS Reference Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label15.Location = New System.Drawing.Point(159, 1)
-        Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(64, 20)
-        Me.Label15.TabIndex = 52
-        Me.Label15.Text = "C Maj"
-        Me.Label15.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Label29
-        '
-        Me.Label29.AutoSize = True
-        Me.Label29.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label29.Location = New System.Drawing.Point(118, -1)
-        Me.Label29.Name = "Label29"
-        Me.Label29.Size = New System.Drawing.Size(0, 13)
-        Me.Label29.TabIndex = 51
-        '
-        'ComboBox9
-        '
-        Me.ComboBox9.BackColor = System.Drawing.Color.Tan
-        Me.ComboBox9.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ComboBox9.ForeColor = System.Drawing.Color.Black
-        Me.ComboBox9.FormattingEnabled = True
-        Me.ComboBox9.Location = New System.Drawing.Point(4, 1)
-        Me.ComboBox9.Name = "ComboBox9"
-        Me.ComboBox9.Size = New System.Drawing.Size(118, 21)
-        Me.ComboBox9.TabIndex = 45
-        Me.ComboBox9.TabStop = False
-        '
-        'SplitContainer8
-        '
-        Me.SplitContainer8.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainer8.IsSplitterFixed = True
-        Me.SplitContainer8.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainer8.Name = "SplitContainer8"
-        Me.SplitContainer8.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainer8.Panel1
-        '
-        Me.SplitContainer8.Panel1.Controls.Add(Me.Grid5)
-        '
-        'SplitContainer8.Panel2
-        '
-        Me.SplitContainer8.Panel2.BackColor = System.Drawing.Color.Linen
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label93)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label38)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label34)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label80)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label79)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.ComboBox13)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label78)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Panel9)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Panel1)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label21)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label20)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label7)
-        Me.SplitContainer8.Panel2.Controls.Add(Me.Label4)
-        Me.SplitContainer8.Size = New System.Drawing.Size(539, 227)
-        Me.SplitContainer8.SplitterDistance = 116
-        Me.SplitContainer8.TabIndex = 0
+        Me.SplitContainer15.Panel2.Controls.Add(Me.PictureBox2)
+        Me.SplitContainer15.Panel2.Controls.Add(Me.PictureBox1)
+        Me.SplitContainer15.Panel2.Controls.Add(Me.Label21)
+        Me.SplitContainer15.Panel2.Controls.Add(Me.Label15)
+        Me.SplitContainer15.Panel2.Controls.Add(Me.Label34)
+        Me.SplitContainer15.Panel2.Controls.Add(Me.Label38)
+        Me.SplitContainer15.Panel2.Controls.Add(Me.Label79)
+        Me.SplitContainer15.Panel2.Controls.Add(Me.Label7)
+        Me.SplitContainer15.Panel2.Controls.Add(Me.Label4)
+        Me.SplitContainer15.Panel2.Controls.Add(Me.Label20)
+        Me.SplitContainer15.Size = New System.Drawing.Size(539, 262)
+        Me.SplitContainer15.SplitterDistance = 160
+        Me.SplitContainer15.TabIndex = 48
         '
         'Grid5
         '
@@ -2226,134 +2102,89 @@ Partial Class Form1
         Me.Grid5.GridColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer))
         Me.Grid5.Location = New System.Drawing.Point(0, 0)
         Me.Grid5.Name = "Grid5"
-        Me.Grid5.Size = New System.Drawing.Size(539, 116)
-        Me.Grid5.TabIndex = 0
+        Me.Grid5.Size = New System.Drawing.Size(539, 160)
+        Me.Grid5.TabIndex = 53
         Me.Grid5.TabStop = False
         Me.Grid5.UncheckedImage = Nothing
         '
-        'Label93
+        'PictureBox2
         '
-        Me.Label93.AutoSize = True
-        Me.Label93.BackColor = System.Drawing.Color.Linen
-        Me.Label93.Font = New System.Drawing.Font("MS Reference Sans Serif", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label93.Location = New System.Drawing.Point(231, 93)
-        Me.Label93.Name = "Label93"
-        Me.Label93.Size = New System.Drawing.Size(52, 12)
-        Me.Label93.TabIndex = 61
-        Me.Label93.Text = "Facultatif"
+        Me.PictureBox2.BackColor = System.Drawing.Color.Transparent
+        Me.PictureBox2.Image = Global.HyperVoicing.My.Resources.Resources.fleche_Bleu_vers_droite
+        Me.PictureBox2.Location = New System.Drawing.Point(166, 0)
+        Me.PictureBox2.Name = "PictureBox2"
+        Me.PictureBox2.Size = New System.Drawing.Size(31, 24)
+        Me.PictureBox2.TabIndex = 65
+        Me.PictureBox2.TabStop = False
         '
-        'Label38
+        'PictureBox1
         '
-        Me.Label38.AutoSize = True
-        Me.Label38.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label38.Location = New System.Drawing.Point(229, 47)
-        Me.Label38.Name = "Label38"
-        Me.Label38.Size = New System.Drawing.Size(53, 13)
-        Me.Label38.TabIndex = 60
-        Me.Label38.Text = "2e Accord"
-        '
-        'Label34
-        '
-        Me.Label34.BackColor = System.Drawing.Color.BurlyWood
-        Me.Label34.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label34.Location = New System.Drawing.Point(203, 60)
-        Me.Label34.Name = "Label34"
-        Me.Label34.Size = New System.Drawing.Size(102, 33)
-        Me.Label34.TabIndex = 59
-        Me.Label34.Text = "Label34"
-        Me.Label34.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        Me.Label34.Visible = False
-        '
-        'Label80
-        '
-        Me.Label80.AutoSize = True
-        Me.Label80.BackColor = System.Drawing.Color.Moccasin
-        Me.Label80.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label80.Location = New System.Drawing.Point(219, 1)
-        Me.Label80.Name = "Label80"
-        Me.Label80.Size = New System.Drawing.Size(89, 13)
-        Me.Label80.TabIndex = 58
-        Me.Label80.Text = "Nouvelle tonalité"
-        '
-        'Label79
-        '
-        Me.Label79.BackColor = System.Drawing.Color.Moccasin
-        Me.Label79.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label79.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label79.Location = New System.Drawing.Point(4, 10)
-        Me.Label79.Name = "Label79"
-        Me.Label79.Size = New System.Drawing.Size(530, 26)
-        Me.Label79.TabIndex = 57
-        Me.Label79.Text = "Label79"
-        Me.Label79.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'ComboBox13
-        '
-        Me.ComboBox13.BackColor = System.Drawing.Color.Moccasin
-        Me.ComboBox13.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.ComboBox13.ForeColor = System.Drawing.Color.Black
-        Me.ComboBox13.FormattingEnabled = True
-        Me.ComboBox13.Location = New System.Drawing.Point(310, 36)
-        Me.ComboBox13.Name = "ComboBox13"
-        Me.ComboBox13.Size = New System.Drawing.Size(224, 21)
-        Me.ComboBox13.TabIndex = 53
-        Me.ComboBox13.TabStop = False
-        '
-        'Label78
-        '
-        Me.Label78.AutoSize = True
-        Me.Label78.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label78.Location = New System.Drawing.Point(390, 45)
-        Me.Label78.Name = "Label78"
-        Me.Label78.Size = New System.Drawing.Size(48, 13)
-        Me.Label78.TabIndex = 56
-        Me.Label78.Text = "Cadence"
-        '
-        'Panel9
-        '
-        Me.Panel9.BackColor = System.Drawing.Color.Goldenrod
-        Me.Panel9.Location = New System.Drawing.Point(148, 70)
-        Me.Panel9.Name = "Panel9"
-        Me.Panel9.Size = New System.Drawing.Size(29, 7)
-        Me.Panel9.TabIndex = 5
-        '
-        'Panel1
-        '
-        Me.Panel1.BackColor = System.Drawing.Color.Goldenrod
-        Me.Panel1.Location = New System.Drawing.Point(159, 59)
-        Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(7, 29)
-        Me.Panel1.TabIndex = 4
+        Me.PictureBox1.BackColor = System.Drawing.Color.Transparent
+        Me.PictureBox1.Image = Global.HyperVoicing.My.Resources.Resources.fleche_Bleu_vers_droite
+        Me.PictureBox1.Location = New System.Drawing.Point(353, 0)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(31, 24)
+        Me.PictureBox1.TabIndex = 64
+        Me.PictureBox1.TabStop = False
         '
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label21.Location = New System.Drawing.Point(31, 44)
+        Me.Label21.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label21.Location = New System.Drawing.Point(312, 72)
         Me.Label21.Name = "Label21"
-        Me.Label21.Size = New System.Drawing.Size(65, 13)
-        Me.Label21.TabIndex = 3
-        Me.Label21.Text = "Accord pivot"
+        Me.Label21.Size = New System.Drawing.Size(120, 19)
+        Me.Label21.TabIndex = 63
+        Me.Label21.Text = "Cadence Parfaite"
         '
-        'Label20
+        'Label15
         '
-        Me.Label20.BackColor = System.Drawing.Color.AntiqueWhite
-        Me.Label20.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label20.Location = New System.Drawing.Point(418, 59)
-        Me.Label20.Name = "Label20"
-        Me.Label20.Size = New System.Drawing.Size(114, 33)
-        Me.Label20.TabIndex = 2
-        Me.Label20.Text = "Label20"
-        Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        Me.Label20.Visible = False
+        Me.Label15.AutoSize = True
+        Me.Label15.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label15.Location = New System.Drawing.Point(43, 69)
+        Me.Label15.Name = "Label15"
+        Me.Label15.Size = New System.Drawing.Size(89, 19)
+        Me.Label15.TabIndex = 62
+        Me.Label15.Text = "Accord Pivot"
+        '
+        'Label34
+        '
+        Me.Label34.AutoSize = True
+        Me.Label34.Font = New System.Drawing.Font("Arial", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label34.Location = New System.Drawing.Point(198, 1)
+        Me.Label34.Name = "Label34"
+        Me.Label34.Size = New System.Drawing.Size(20, 19)
+        Me.Label34.TabIndex = 57
+        Me.Label34.Text = "V"
+        '
+        'Label38
+        '
+        Me.Label38.AutoSize = True
+        Me.Label38.Font = New System.Drawing.Font("Arial", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label38.Location = New System.Drawing.Point(386, 1)
+        Me.Label38.Name = "Label38"
+        Me.Label38.Size = New System.Drawing.Size(13, 19)
+        Me.Label38.TabIndex = 58
+        Me.Label38.Text = "I"
+        '
+        'Label79
+        '
+        Me.Label79.AutoSize = True
+        Me.Label79.Font = New System.Drawing.Font("Arial Narrow", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label79.Location = New System.Drawing.Point(12, 1)
+        Me.Label79.Name = "Label79"
+        Me.Label79.Size = New System.Drawing.Size(33, 20)
+        Me.Label79.TabIndex = 61
+        Me.Label79.Text = "x / x"
         '
         'Label7
         '
-        Me.Label7.BackColor = System.Drawing.Color.AntiqueWhite
+        Me.Label7.BackColor = System.Drawing.Color.YellowGreen
         Me.Label7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label7.Location = New System.Drawing.Point(310, 59)
+        Me.Label7.Font = New System.Drawing.Font("Arial Narrow", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label7.Location = New System.Drawing.Point(209, 7)
         Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(102, 33)
+        Me.Label7.Size = New System.Drawing.Size(136, 60)
         Me.Label7.TabIndex = 1
         Me.Label7.Text = "Label7"
         Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -2361,15 +2192,303 @@ Partial Class Form1
         '
         'Label4
         '
-        Me.Label4.BackColor = System.Drawing.Color.Peru
+        Me.Label4.BackColor = System.Drawing.Color.Tomato
         Me.Label4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label4.Location = New System.Drawing.Point(4, 59)
+        Me.Label4.Font = New System.Drawing.Font("Arial Narrow", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label4.Location = New System.Drawing.Point(23, 7)
         Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(135, 33)
-        Me.Label4.TabIndex = 0
+        Me.Label4.Size = New System.Drawing.Size(136, 60)
+        Me.Label4.TabIndex = 60
         Me.Label4.Text = "Label4"
         Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         Me.Label4.Visible = False
+        '
+        'Label20
+        '
+        Me.Label20.BackColor = System.Drawing.Color.SkyBlue
+        Me.Label20.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Label20.Font = New System.Drawing.Font("Arial Narrow", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label20.Location = New System.Drawing.Point(393, 7)
+        Me.Label20.Name = "Label20"
+        Me.Label20.Size = New System.Drawing.Size(136, 60)
+        Me.Label20.TabIndex = 2
+        Me.Label20.Text = "Label20"
+        Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.Label20.Visible = False
+        '
+        'TabPage22
+        '
+        Me.TabPage22.Controls.Add(Me.GroupBox11)
+        Me.TabPage22.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage22.Name = "TabPage22"
+        Me.TabPage22.Size = New System.Drawing.Size(545, 268)
+        Me.TabPage22.TabIndex = 9
+        Me.TabPage22.Text = "Variations"
+        Me.TabPage22.UseVisualStyleBackColor = True
+        '
+        'GroupBox11
+        '
+        Me.GroupBox11.BackColor = System.Drawing.Color.OldLace
+        Me.GroupBox11.Controls.Add(Me.Label112)
+        Me.GroupBox11.Controls.Add(Me.Panel15)
+        Me.GroupBox11.Controls.Add(Me.Label111)
+        Me.GroupBox11.Controls.Add(Me.Panel13)
+        Me.GroupBox11.Controls.Add(Me.Label110)
+        Me.GroupBox11.Controls.Add(Me.Panel7)
+        Me.GroupBox11.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GroupBox11.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GroupBox11.ForeColor = System.Drawing.Color.Black
+        Me.GroupBox11.Location = New System.Drawing.Point(0, 0)
+        Me.GroupBox11.Name = "GroupBox11"
+        Me.GroupBox11.Size = New System.Drawing.Size(545, 268)
+        Me.GroupBox11.TabIndex = 229
+        Me.GroupBox11.TabStop = False
+        Me.GroupBox11.Text = "Variations sur les Accords"
+        '
+        'Label112
+        '
+        Me.Label112.AutoSize = True
+        Me.Label112.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label112.Location = New System.Drawing.Point(24, 118)
+        Me.Label112.Name = "Label112"
+        Me.Label112.Size = New System.Drawing.Size(96, 12)
+        Me.Label112.TabIndex = 240
+        Me.Label112.Text = "Legato / Staccato"
+        '
+        'Panel15
+        '
+        Me.Panel15.BackColor = System.Drawing.Color.LightSkyBlue
+        Me.Panel15.Controls.Add(Me.Label101)
+        Me.Panel15.Controls.Add(Me.Comp)
+        Me.Panel15.Location = New System.Drawing.Point(26, 132)
+        Me.Panel15.Name = "Panel15"
+        Me.Panel15.Size = New System.Drawing.Size(491, 35)
+        Me.Panel15.TabIndex = 239
+        '
+        'Label101
+        '
+        Me.Label101.AutoSize = True
+        Me.Label101.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label101.ForeColor = System.Drawing.Color.Black
+        Me.Label101.Location = New System.Drawing.Point(11, 21)
+        Me.Label101.Name = "Label101"
+        Me.Label101.Size = New System.Drawing.Size(53, 12)
+        Me.Label101.TabIndex = 218
+        Me.Label101.Text = "Leg/Stac."
+        '
+        'Comp
+        '
+        Me.Comp.BackColor = System.Drawing.Color.OldLace
+        Me.Comp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Comp.Font = New System.Drawing.Font("Calibri Light", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Comp.ForeColor = System.Drawing.Color.Black
+        Me.Comp.Location = New System.Drawing.Point(16, 1)
+        Me.Comp.Maximum = New Decimal(New Integer() {5, 0, 0, 0})
+        Me.Comp.Minimum = New Decimal(New Integer() {5, 0, 0, -2147483648})
+        Me.Comp.Name = "Comp"
+        Me.Comp.Size = New System.Drawing.Size(33, 21)
+        Me.Comp.TabIndex = 217
+        '
+        'Label111
+        '
+        Me.Label111.AutoSize = True
+        Me.Label111.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label111.Location = New System.Drawing.Point(24, 69)
+        Me.Label111.Name = "Label111"
+        Me.Label111.Size = New System.Drawing.Size(131, 12)
+        Me.Label111.TabIndex = 238
+        Me.Label111.Text = "Harmonie à Quatre Notes"
+        '
+        'Panel13
+        '
+        Me.Panel13.BackColor = System.Drawing.Color.Gold
+        Me.Panel13.Controls.Add(Me.QuatreNotes)
+        Me.Panel13.Controls.Add(Me.Label109)
+        Me.Panel13.Controls.Add(Me.Label107)
+        Me.Panel13.Controls.Add(Me.UpDown2)
+        Me.Panel13.Controls.Add(Me.Label85)
+        Me.Panel13.Controls.Add(Me.ComboBox12)
+        Me.Panel13.Location = New System.Drawing.Point(26, 82)
+        Me.Panel13.Name = "Panel13"
+        Me.Panel13.Size = New System.Drawing.Size(491, 35)
+        Me.Panel13.TabIndex = 237
+        '
+        'QuatreNotes
+        '
+        Me.QuatreNotes.AutoSize = True
+        Me.QuatreNotes.BackColor = System.Drawing.Color.Transparent
+        Me.QuatreNotes.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.QuatreNotes.ForeColor = System.Drawing.Color.Black
+        Me.QuatreNotes.Location = New System.Drawing.Point(15, 4)
+        Me.QuatreNotes.Name = "QuatreNotes"
+        Me.QuatreNotes.Size = New System.Drawing.Size(61, 16)
+        Me.QuatreNotes.TabIndex = 213
+        Me.QuatreNotes.Text = "4Notes"
+        Me.QuatreNotes.UseVisualStyleBackColor = False
+        '
+        'Label109
+        '
+        Me.Label109.AutoSize = True
+        Me.Label109.BackColor = System.Drawing.Color.Transparent
+        Me.Label109.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label109.ForeColor = System.Drawing.Color.Black
+        Me.Label109.Location = New System.Drawing.Point(292, 21)
+        Me.Label109.Name = "Label109"
+        Me.Label109.Size = New System.Drawing.Size(56, 13)
+        Me.Label109.TabIndex = 218
+        Me.Label109.Text = "N° Mesure"
+        '
+        'Label107
+        '
+        Me.Label107.AutoSize = True
+        Me.Label107.BackColor = System.Drawing.Color.Transparent
+        Me.Label107.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label107.ForeColor = System.Drawing.Color.Black
+        Me.Label107.Location = New System.Drawing.Point(138, 20)
+        Me.Label107.Name = "Label107"
+        Me.Label107.Size = New System.Drawing.Size(40, 13)
+        Me.Label107.TabIndex = 216
+        Me.Label107.Text = "N° Voix"
+        '
+        'UpDown2
+        '
+        Me.UpDown2.BackColor = System.Drawing.Color.OldLace
+        Me.UpDown2.Enabled = False
+        Me.UpDown2.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.UpDown2.ForeColor = System.Drawing.Color.Black
+        Me.UpDown2.Location = New System.Drawing.Point(294, 1)
+        Me.UpDown2.Maximum = New Decimal(New Integer() {48, 0, 0, 0})
+        Me.UpDown2.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.UpDown2.Name = "UpDown2"
+        Me.UpDown2.Size = New System.Drawing.Size(45, 21)
+        Me.UpDown2.TabIndex = 212
+        Me.UpDown2.Value = New Decimal(New Integer() {1, 0, 0, 0})
+        '
+        'Label85
+        '
+        Me.Label85.AutoSize = True
+        Me.Label85.BackColor = System.Drawing.Color.Transparent
+        Me.Label85.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label85.ForeColor = System.Drawing.Color.Black
+        Me.Label85.Location = New System.Drawing.Point(218, 10)
+        Me.Label85.Name = "Label85"
+        Me.Label85.Size = New System.Drawing.Size(58, 12)
+        Me.Label85.TabIndex = 214
+        Me.Label85.Text = "A partir de"
+        '
+        'ComboBox12
+        '
+        Me.ComboBox12.BackColor = System.Drawing.Color.OldLace
+        Me.ComboBox12.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox12.Enabled = False
+        Me.ComboBox12.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox12.ForeColor = System.Drawing.Color.Black
+        Me.ComboBox12.FormattingEnabled = True
+        Me.ComboBox12.Items.AddRange(New Object() {"V1", "V2", "V3"})
+        Me.ComboBox12.Location = New System.Drawing.Point(132, 2)
+        Me.ComboBox12.Name = "ComboBox12"
+        Me.ComboBox12.Size = New System.Drawing.Size(59, 20)
+        Me.ComboBox12.TabIndex = 211
+        Me.ComboBox12.TabStop = False
+        '
+        'Label110
+        '
+        Me.Label110.AutoSize = True
+        Me.Label110.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label110.Location = New System.Drawing.Point(24, 14)
+        Me.Label110.Name = "Label110"
+        Me.Label110.Size = New System.Drawing.Size(122, 12)
+        Me.Label110.TabIndex = 236
+        Me.Label110.Text = "Génération d'une Basse"
+        '
+        'Panel7
+        '
+        Me.Panel7.BackColor = System.Drawing.Color.YellowGreen
+        Me.Panel7.Controls.Add(Me.Label108)
+        Me.Panel7.Controls.Add(Me.BasseMoins12)
+        Me.Panel7.Controls.Add(Me.Label106)
+        Me.Panel7.Controls.Add(Me.ComboBox11)
+        Me.Panel7.Controls.Add(Me.UpDown1)
+        Me.Panel7.Controls.Add(Me.Label84)
+        Me.Panel7.Location = New System.Drawing.Point(26, 31)
+        Me.Panel7.Name = "Panel7"
+        Me.Panel7.Size = New System.Drawing.Size(491, 35)
+        Me.Panel7.TabIndex = 235
+        '
+        'Label108
+        '
+        Me.Label108.AutoSize = True
+        Me.Label108.BackColor = System.Drawing.Color.Transparent
+        Me.Label108.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label108.ForeColor = System.Drawing.Color.Black
+        Me.Label108.Location = New System.Drawing.Point(290, 21)
+        Me.Label108.Name = "Label108"
+        Me.Label108.Size = New System.Drawing.Size(56, 13)
+        Me.Label108.TabIndex = 217
+        Me.Label108.Text = "N° Mesure"
+        '
+        'BasseMoins12
+        '
+        Me.BasseMoins12.AutoSize = True
+        Me.BasseMoins12.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BasseMoins12.ForeColor = System.Drawing.Color.Black
+        Me.BasseMoins12.Location = New System.Drawing.Point(16, 4)
+        Me.BasseMoins12.Name = "BasseMoins12"
+        Me.BasseMoins12.Size = New System.Drawing.Size(74, 16)
+        Me.BasseMoins12.TabIndex = 205
+        Me.BasseMoins12.Text = "Basse-12"
+        Me.BasseMoins12.UseVisualStyleBackColor = True
+        '
+        'Label106
+        '
+        Me.Label106.AutoSize = True
+        Me.Label106.BackColor = System.Drawing.Color.Transparent
+        Me.Label106.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label106.ForeColor = System.Drawing.Color.Black
+        Me.Label106.Location = New System.Drawing.Point(138, 22)
+        Me.Label106.Name = "Label106"
+        Me.Label106.Size = New System.Drawing.Size(40, 13)
+        Me.Label106.TabIndex = 215
+        Me.Label106.Text = "N° Voix"
+        '
+        'ComboBox11
+        '
+        Me.ComboBox11.BackColor = System.Drawing.Color.OldLace
+        Me.ComboBox11.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox11.Enabled = False
+        Me.ComboBox11.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ComboBox11.ForeColor = System.Drawing.Color.Black
+        Me.ComboBox11.FormattingEnabled = True
+        Me.ComboBox11.Items.AddRange(New Object() {"V1", "V2", "V3"})
+        Me.ComboBox11.Location = New System.Drawing.Point(132, 2)
+        Me.ComboBox11.Name = "ComboBox11"
+        Me.ComboBox11.Size = New System.Drawing.Size(59, 20)
+        Me.ComboBox11.TabIndex = 201
+        Me.ComboBox11.TabStop = False
+        '
+        'UpDown1
+        '
+        Me.UpDown1.BackColor = System.Drawing.Color.OldLace
+        Me.UpDown1.Enabled = False
+        Me.UpDown1.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.UpDown1.ForeColor = System.Drawing.Color.Black
+        Me.UpDown1.Location = New System.Drawing.Point(295, 1)
+        Me.UpDown1.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.UpDown1.Name = "UpDown1"
+        Me.UpDown1.Size = New System.Drawing.Size(45, 21)
+        Me.UpDown1.TabIndex = 203
+        Me.UpDown1.Value = New Decimal(New Integer() {1, 0, 0, 0})
+        '
+        'Label84
+        '
+        Me.Label84.AutoSize = True
+        Me.Label84.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label84.ForeColor = System.Drawing.Color.Black
+        Me.Label84.Location = New System.Drawing.Point(221, 8)
+        Me.Label84.Name = "Label84"
+        Me.Label84.Size = New System.Drawing.Size(58, 12)
+        Me.Label84.TabIndex = 207
+        Me.Label84.Text = "A partir de"
         '
         'TabPage20
         '
@@ -2403,7 +2522,9 @@ Partial Class Form1
         '
         Me.ActExp.AllowDrop = True
         Me.ActExp.AutoSize = True
-        Me.ActExp.Location = New System.Drawing.Point(15, 15)
+        Me.ActExp.Checked = True
+        Me.ActExp.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.ActExp.Location = New System.Drawing.Point(15, 10)
         Me.ActExp.Name = "ActExp"
         Me.ActExp.Size = New System.Drawing.Size(82, 17)
         Me.ActExp.TabIndex = 0
@@ -2422,32 +2543,6 @@ Partial Class Form1
         Me.Courbexp.TabIndex = 2
         Me.Courbexp.UncheckedImage = Nothing
         '
-        'TabPage17
-        '
-        Me.TabPage17.Controls.Add(Me.Grid6)
-        Me.TabPage17.Location = New System.Drawing.Point(4, 25)
-        Me.TabPage17.Name = "TabPage17"
-        Me.TabPage17.Size = New System.Drawing.Size(545, 268)
-        Me.TabPage17.TabIndex = 5
-        Me.TabPage17.Text = "Vue notes"
-        Me.TabPage17.UseVisualStyleBackColor = True
-        '
-        'Grid6
-        '
-        Me.Grid6.BackColorSel = System.Drawing.SystemColors.GradientInactiveCaption
-        Me.Grid6.CheckedImage = Nothing
-        Me.Grid6.Cols = 30
-        Me.Grid6.DefaultRowHeight = CType(24, Short)
-        Me.Grid6.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Grid6.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Grid6.GridColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer))
-        Me.Grid6.Location = New System.Drawing.Point(0, 0)
-        Me.Grid6.Name = "Grid6"
-        Me.Grid6.Size = New System.Drawing.Size(545, 268)
-        Me.Grid6.TabIndex = 0
-        Me.Grid6.TabStop = False
-        Me.Grid6.UncheckedImage = Nothing
-        '
         'TabPage3
         '
         Me.TabPage3.Controls.Add(Me.SplitContainer4)
@@ -2455,7 +2550,7 @@ Partial Class Form1
         Me.TabPage3.Name = "TabPage3"
         Me.TabPage3.Size = New System.Drawing.Size(545, 268)
         Me.TabPage3.TabIndex = 6
-        Me.TabPage3.Text = "Voicing Orchestral"
+        Me.TabPage3.Text = "Stack"
         Me.TabPage3.UseVisualStyleBackColor = True
         '
         'SplitContainer4
@@ -2759,6 +2854,32 @@ Partial Class Form1
         Me.LabCanal.TabIndex = 24
         Me.LabCanal.Text = "Channel"
         '
+        'TabPage17
+        '
+        Me.TabPage17.Controls.Add(Me.Grid6)
+        Me.TabPage17.Location = New System.Drawing.Point(4, 25)
+        Me.TabPage17.Name = "TabPage17"
+        Me.TabPage17.Size = New System.Drawing.Size(545, 268)
+        Me.TabPage17.TabIndex = 5
+        Me.TabPage17.Text = "Vue notes"
+        Me.TabPage17.UseVisualStyleBackColor = True
+        '
+        'Grid6
+        '
+        Me.Grid6.BackColorSel = System.Drawing.SystemColors.GradientInactiveCaption
+        Me.Grid6.CheckedImage = Nothing
+        Me.Grid6.Cols = 30
+        Me.Grid6.DefaultRowHeight = CType(24, Short)
+        Me.Grid6.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Grid6.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Grid6.GridColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer))
+        Me.Grid6.Location = New System.Drawing.Point(0, 0)
+        Me.Grid6.Name = "Grid6"
+        Me.Grid6.Size = New System.Drawing.Size(545, 268)
+        Me.Grid6.TabIndex = 0
+        Me.Grid6.TabStop = False
+        Me.Grid6.UncheckedImage = Nothing
+        '
         'Button2
         '
         Me.Button2.BackColor = System.Drawing.SystemColors.Menu
@@ -2766,7 +2887,7 @@ Partial Class Form1
         Me.Button2.FlatAppearance.BorderSize = 0
         Me.Button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Button2.Image = CType(resources.GetObject("Button2.Image"), System.Drawing.Image)
-        Me.Button2.Location = New System.Drawing.Point(2, 1)
+        Me.Button2.Location = New System.Drawing.Point(2, 10)
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(30, 35)
         Me.Button2.TabIndex = 3
@@ -2778,7 +2899,7 @@ Partial Class Form1
         Me.Button1.FlatAppearance.BorderSize = 0
         Me.Button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Button1.Image = CType(resources.GetObject("Button1.Image"), System.Drawing.Image)
-        Me.Button1.Location = New System.Drawing.Point(30, 1)
+        Me.Button1.Location = New System.Drawing.Point(30, 10)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(30, 35)
         Me.Button1.TabIndex = 2
@@ -2837,7 +2958,7 @@ Partial Class Form1
         Me.TagsGamme.BackColor = System.Drawing.Color.OldLace
         Me.TagsGamme.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.TagsGamme.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TagsGamme.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TagsGamme.Font = New System.Drawing.Font("Papyrus", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TagsGamme.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
         Me.TagsGamme.Location = New System.Drawing.Point(0, 0)
         Me.TagsGamme.Margin = New System.Windows.Forms.Padding(2, 0, 2, 0)
@@ -2951,7 +3072,7 @@ Partial Class Form1
         Me.PlayMidi.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.PlayMidi.DialogResult = System.Windows.Forms.DialogResult.Yes
         Me.PlayMidi.Image = CType(resources.GetObject("PlayMidi.Image"), System.Drawing.Image)
-        Me.PlayMidi.Location = New System.Drawing.Point(166, 2)
+        Me.PlayMidi.Location = New System.Drawing.Point(730, 2)
         Me.PlayMidi.Name = "PlayMidi"
         Me.PlayMidi.Size = New System.Drawing.Size(34, 26)
         Me.PlayMidi.TabIndex = 179
@@ -3063,7 +3184,7 @@ Partial Class Form1
         '
         Me.Button10.Enabled = False
         Me.Button10.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Button10.Location = New System.Drawing.Point(579, 21)
+        Me.Button10.Location = New System.Drawing.Point(1, 1)
         Me.Button10.Name = "Button10"
         Me.Button10.Size = New System.Drawing.Size(63, 18)
         Me.Button10.TabIndex = 216
@@ -3202,7 +3323,7 @@ Partial Class Form1
         'SplitContainer2.Panel2
         '
         Me.SplitContainer2.Panel2.AutoScrollMargin = New System.Drawing.Size(3, 3)
-        Me.SplitContainer2.Panel2.BackColor = System.Drawing.Color.DarkKhaki
+        Me.SplitContainer2.Panel2.BackColor = System.Drawing.Color.OldLace
         Me.SplitContainer2.Panel2.Controls.Add(Me.Panel10)
         Me.SplitContainer2.Panel2.Controls.Add(Me.GroupBox1)
         Me.SplitContainer2.Panel2.ForeColor = System.Drawing.Color.DarkRed
@@ -3244,7 +3365,7 @@ Partial Class Form1
         '
         Me.Label83.BackColor = System.Drawing.Color.OldLace
         Me.Label83.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Label83.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label83.Font = New System.Drawing.Font("Papyrus", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label83.ForeColor = System.Drawing.SystemColors.ActiveCaptionText
         Me.Label83.Location = New System.Drawing.Point(0, 0)
         Me.Label83.Name = "Label83"
@@ -3305,7 +3426,7 @@ Partial Class Form1
         '
         'Panel10
         '
-        Me.Panel10.BackColor = System.Drawing.Color.Transparent
+        Me.Panel10.BackColor = System.Drawing.Color.DarkKhaki
         Me.Panel10.Controls.Add(Me.Vol)
         Me.Panel10.Controls.Add(Me.Reverb)
         Me.Panel10.Controls.Add(Me.PlaybackVelocity)
@@ -3332,7 +3453,7 @@ Partial Class Form1
         Me.Panel10.ForeColor = System.Drawing.Color.Maroon
         Me.Panel10.Location = New System.Drawing.Point(0, 0)
         Me.Panel10.Name = "Panel10"
-        Me.Panel10.Size = New System.Drawing.Size(228, 489)
+        Me.Panel10.Size = New System.Drawing.Size(228, 502)
         Me.Panel10.TabIndex = 226
         '
         'Vol
@@ -3812,243 +3933,178 @@ Partial Class Form1
         '
         Me.TabControl3.Controls.Add(Me.TabPage4)
         Me.TabControl3.Controls.Add(Me.TabPage6)
-        Me.TabControl3.Location = New System.Drawing.Point(2, 27)
+        Me.TabControl3.Location = New System.Drawing.Point(8, 22)
         Me.TabControl3.Name = "TabControl3"
         Me.TabControl3.SelectedIndex = 0
-        Me.TabControl3.Size = New System.Drawing.Size(242, 450)
+        Me.TabControl3.Size = New System.Drawing.Size(230, 403)
         Me.TabControl3.TabIndex = 225
         '
         'TabPage4
         '
         Me.TabPage4.BackColor = System.Drawing.Color.DarkKhaki
-        Me.TabPage4.Controls.Add(Me.InitClavier)
-        Me.TabPage4.Controls.Add(Me.GroupBox11)
+        Me.TabPage4.Controls.Add(Me.Label100)
+        Me.TabPage4.Controls.Add(Me.Label105)
+        Me.TabPage4.Controls.Add(Me.Label13)
+        Me.TabPage4.Controls.Add(Me.Label96)
         Me.TabPage4.Controls.Add(Me.Label35)
+        Me.TabPage4.Controls.Add(Me.Label95)
+        Me.TabPage4.Controls.Add(Me.InitClavier)
         Me.TabPage4.Controls.Add(Me.GroupBox8)
         Me.TabPage4.Controls.Add(Me.Label31)
-        Me.TabPage4.Controls.Add(Me.Label13)
         Me.TabPage4.Controls.Add(Me.GroupBox5)
         Me.TabPage4.Location = New System.Drawing.Point(4, 22)
         Me.TabPage4.Name = "TabPage4"
         Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(234, 424)
+        Me.TabPage4.Size = New System.Drawing.Size(222, 377)
         Me.TabPage4.TabIndex = 0
         Me.TabPage4.Text = "MIDI"
+        '
+        'Label100
+        '
+        Me.Label100.AutoSize = True
+        Me.Label100.Font = New System.Drawing.Font("Papyrus", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label100.ForeColor = System.Drawing.Color.Maroon
+        Me.Label100.Location = New System.Drawing.Point(113, 339)
+        Me.Label100.Name = "Label100"
+        Me.Label100.Size = New System.Drawing.Size(99, 18)
+        Me.Label100.TabIndex = 233
+        Me.Label100.Text = "All rights reserved"
+        '
+        'Label105
+        '
+        Me.Label105.AutoSize = True
+        Me.Label105.Font = New System.Drawing.Font("Papyrus", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label105.ForeColor = System.Drawing.Color.Maroon
+        Me.Label105.Location = New System.Drawing.Point(0, 339)
+        Me.Label105.Name = "Label105"
+        Me.Label105.Size = New System.Drawing.Size(110, 18)
+        Me.Label105.TabIndex = 232
+        Me.Label105.Text = "Tous droits réservés"
+        '
+        'Label13
+        '
+        Me.Label13.AutoSize = True
+        Me.Label13.Font = New System.Drawing.Font("Papyrus", 18.0!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Italic), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label13.ForeColor = System.Drawing.Color.Maroon
+        Me.Label13.Location = New System.Drawing.Point(21, 294)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(178, 38)
+        Me.Label13.TabIndex = 231
+        Me.Label13.Text = "HyperVoicing"
+        '
+        'Label96
+        '
+        Me.Label96.AutoSize = True
+        Me.Label96.Font = New System.Drawing.Font("Papyrus", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label96.ForeColor = System.Drawing.Color.Maroon
+        Me.Label96.Location = New System.Drawing.Point(115, 357)
+        Me.Label96.Name = "Label96"
+        Me.Label96.Size = New System.Drawing.Size(34, 18)
+        Me.Label96.TabIndex = 50
+        Me.Label96.Text = "Date"
+        '
+        'Label35
+        '
+        Me.Label35.BackColor = System.Drawing.Color.OldLace
+        Me.Label35.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Label35.Font = New System.Drawing.Font("Arial", 15.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label35.ForeColor = System.Drawing.Color.Olive
+        Me.Label35.Location = New System.Drawing.Point(3, 117)
+        Me.Label35.Name = "Label35"
+        Me.Label35.Size = New System.Drawing.Size(213, 76)
+        Me.Label35.TabIndex = 222
+        Me.Label35.Text = "---"
+        Me.Label35.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label95
+        '
+        Me.Label95.AutoSize = True
+        Me.Label95.Font = New System.Drawing.Font("Papyrus", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label95.ForeColor = System.Drawing.Color.Maroon
+        Me.Label95.Location = New System.Drawing.Point(2, 357)
+        Me.Label95.Name = "Label95"
+        Me.Label95.Size = New System.Drawing.Size(49, 18)
+        Me.Label95.TabIndex = 49
+        Me.Label95.Text = "Version "
         '
         'InitClavier
         '
         Me.InitClavier.BackColor = System.Drawing.Color.Beige
         Me.InitClavier.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.InitClavier.Location = New System.Drawing.Point(4, 311)
+        Me.InitClavier.Location = New System.Drawing.Point(193, 322)
         Me.InitClavier.Name = "InitClavier"
-        Me.InitClavier.Size = New System.Drawing.Size(225, 21)
+        Me.InitClavier.Size = New System.Drawing.Size(24, 21)
         Me.InitClavier.TabIndex = 230
         Me.InitClavier.TabStop = False
         Me.InitClavier.UseVisualStyleBackColor = False
-        '
-        'GroupBox11
-        '
-        Me.GroupBox11.Controls.Add(Me.Label85)
-        Me.GroupBox11.Controls.Add(Me.Label84)
-        Me.GroupBox11.Controls.Add(Me.QuatreNotes)
-        Me.GroupBox11.Controls.Add(Me.BasseMoins12)
-        Me.GroupBox11.Controls.Add(Me.UpDown2)
-        Me.GroupBox11.Controls.Add(Me.UpDown1)
-        Me.GroupBox11.Controls.Add(Me.ComboBox12)
-        Me.GroupBox11.Controls.Add(Me.ComboBox11)
-        Me.GroupBox11.Font = New System.Drawing.Font("Calibri", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GroupBox11.ForeColor = System.Drawing.Color.Maroon
-        Me.GroupBox11.Location = New System.Drawing.Point(4, 136)
-        Me.GroupBox11.Name = "GroupBox11"
-        Me.GroupBox11.Size = New System.Drawing.Size(222, 97)
-        Me.GroupBox11.TabIndex = 229
-        Me.GroupBox11.TabStop = False
-        Me.GroupBox11.Text = "VARIATIONS"
-        '
-        'Label85
-        '
-        Me.Label85.AutoSize = True
-        Me.Label85.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label85.Location = New System.Drawing.Point(137, 64)
-        Me.Label85.Name = "Label85"
-        Me.Label85.Size = New System.Drawing.Size(30, 12)
-        Me.Label85.TabIndex = 208
-        Me.Label85.Text = "From"
-        '
-        'Label84
-        '
-        Me.Label84.AutoSize = True
-        Me.Label84.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label84.Location = New System.Drawing.Point(118, 29)
-        Me.Label84.Name = "Label84"
-        Me.Label84.Size = New System.Drawing.Size(59, 12)
-        Me.Label84.TabIndex = 207
-        Me.Label84.Text = "A partir de"
-        '
-        'QuatreNotes
-        '
-        Me.QuatreNotes.AutoSize = True
-        Me.QuatreNotes.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.QuatreNotes.Location = New System.Drawing.Point(6, 64)
-        Me.QuatreNotes.Name = "QuatreNotes"
-        Me.QuatreNotes.Size = New System.Drawing.Size(59, 16)
-        Me.QuatreNotes.TabIndex = 206
-        Me.QuatreNotes.Text = "4Notes"
-        Me.QuatreNotes.UseVisualStyleBackColor = True
-        '
-        'BasseMoins12
-        '
-        Me.BasseMoins12.AutoSize = True
-        Me.BasseMoins12.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.BasseMoins12.Location = New System.Drawing.Point(4, 28)
-        Me.BasseMoins12.Name = "BasseMoins12"
-        Me.BasseMoins12.Size = New System.Drawing.Size(69, 16)
-        Me.BasseMoins12.TabIndex = 205
-        Me.BasseMoins12.Text = "Basse-12"
-        Me.BasseMoins12.UseVisualStyleBackColor = True
-        '
-        'UpDown2
-        '
-        Me.UpDown2.Font = New System.Drawing.Font("Calibri", 8.0!, System.Drawing.FontStyle.Bold)
-        Me.UpDown2.Location = New System.Drawing.Point(181, 62)
-        Me.UpDown2.Maximum = New Decimal(New Integer() {48, 0, 0, 0})
-        Me.UpDown2.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
-        Me.UpDown2.Name = "UpDown2"
-        Me.UpDown2.Size = New System.Drawing.Size(33, 21)
-        Me.UpDown2.TabIndex = 204
-        Me.UpDown2.Value = New Decimal(New Integer() {1, 0, 0, 0})
-        '
-        'UpDown1
-        '
-        Me.UpDown1.Font = New System.Drawing.Font("Calibri", 8.0!, System.Drawing.FontStyle.Bold)
-        Me.UpDown1.Location = New System.Drawing.Point(181, 25)
-        Me.UpDown1.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
-        Me.UpDown1.Name = "UpDown1"
-        Me.UpDown1.Size = New System.Drawing.Size(33, 21)
-        Me.UpDown1.TabIndex = 203
-        Me.UpDown1.Value = New Decimal(New Integer() {1, 0, 0, 0})
-        '
-        'ComboBox12
-        '
-        Me.ComboBox12.Enabled = False
-        Me.ComboBox12.FormattingEnabled = True
-        Me.ComboBox12.Items.AddRange(New Object() {"V1", "V2", "V3"})
-        Me.ComboBox12.Location = New System.Drawing.Point(79, 62)
-        Me.ComboBox12.Name = "ComboBox12"
-        Me.ComboBox12.Size = New System.Drawing.Size(35, 22)
-        Me.ComboBox12.TabIndex = 202
-        Me.ComboBox12.TabStop = False
-        '
-        'ComboBox11
-        '
-        Me.ComboBox11.Enabled = False
-        Me.ComboBox11.Font = New System.Drawing.Font("Calibri Light", 8.0!)
-        Me.ComboBox11.FormattingEnabled = True
-        Me.ComboBox11.Items.AddRange(New Object() {"V1", "V2", "V3"})
-        Me.ComboBox11.Location = New System.Drawing.Point(79, 25)
-        Me.ComboBox11.Name = "ComboBox11"
-        Me.ComboBox11.Size = New System.Drawing.Size(35, 21)
-        Me.ComboBox11.TabIndex = 201
-        Me.ComboBox11.TabStop = False
-        '
-        'Label35
-        '
-        Me.Label35.BackColor = System.Drawing.Color.DarkOliveGreen
-        Me.Label35.Font = New System.Drawing.Font("Arial", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label35.ForeColor = System.Drawing.Color.Yellow
-        Me.Label35.Location = New System.Drawing.Point(5, 236)
-        Me.Label35.Name = "Label35"
-        Me.Label35.Size = New System.Drawing.Size(222, 33)
-        Me.Label35.TabIndex = 222
-        Me.Label35.Text = "---"
-        Me.Label35.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.InitClavier.Visible = False
         '
         'GroupBox8
         '
+        Me.GroupBox8.BackColor = System.Drawing.Color.DarkKhaki
         Me.GroupBox8.Controls.Add(Me.NomduSon)
         Me.GroupBox8.Controls.Add(Me.ListGS)
-        Me.GroupBox8.Controls.Add(Me.Thru)
         Me.GroupBox8.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox8.ForeColor = System.Drawing.Color.DarkRed
-        Me.GroupBox8.Location = New System.Drawing.Point(3, 54)
+        Me.GroupBox8.Location = New System.Drawing.Point(3, 59)
         Me.GroupBox8.Name = "GroupBox8"
-        Me.GroupBox8.Size = New System.Drawing.Size(225, 81)
+        Me.GroupBox8.Size = New System.Drawing.Size(216, 47)
         Me.GroupBox8.TabIndex = 227
         Me.GroupBox8.TabStop = False
-        Me.GroupBox8.Text = "INSTRUMENT MIDI"
+        Me.GroupBox8.Text = "INSTRUMENTS GS/GM"
         '
         'NomduSon
         '
         Me.NomduSon.BackColor = System.Drawing.Color.Cornsilk
         Me.NomduSon.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.NomduSon.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NomduSon.Location = New System.Drawing.Point(5, 51)
+        Me.NomduSon.Location = New System.Drawing.Point(168, 49)
         Me.NomduSon.Name = "NomduSon"
         Me.NomduSon.Size = New System.Drawing.Size(215, 21)
         Me.NomduSon.TabIndex = 261
+        Me.NomduSon.Visible = False
         '
         'ListGS
         '
-        Me.ListGS.BackColor = System.Drawing.Color.LightGoldenrodYellow
+        Me.ListGS.BackColor = System.Drawing.Color.OldLace
         Me.ListGS.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListGS.FormattingEnabled = True
-        Me.ListGS.Location = New System.Drawing.Point(5, 24)
+        Me.ListGS.Location = New System.Drawing.Point(3, 18)
         Me.ListGS.Name = "ListGS"
-        Me.ListGS.Size = New System.Drawing.Size(215, 21)
+        Me.ListGS.Size = New System.Drawing.Size(211, 21)
         Me.ListGS.TabIndex = 203
         Me.ListGS.TabStop = False
         '
-        'Thru
-        '
-        Me.Thru.AutoSize = True
-        Me.Thru.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Thru.Location = New System.Drawing.Point(178, 8)
-        Me.Thru.Name = "Thru"
-        Me.Thru.Size = New System.Drawing.Size(47, 16)
-        Me.Thru.TabIndex = 197
-        Me.Thru.Text = "Thru"
-        Me.Thru.UseVisualStyleBackColor = True
-        Me.Thru.Visible = False
-        '
         'Label31
         '
-        Me.Label31.BackColor = System.Drawing.Color.DarkOliveGreen
+        Me.Label31.BackColor = System.Drawing.Color.OldLace
         Me.Label31.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Label31.Font = New System.Drawing.Font("Arial", 18.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label31.ForeColor = System.Drawing.Color.Yellow
-        Me.Label31.Location = New System.Drawing.Point(5, 271)
+        Me.Label31.Font = New System.Drawing.Font("Arial", 21.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label31.ForeColor = System.Drawing.Color.Maroon
+        Me.Label31.Location = New System.Drawing.Point(3, 192)
         Me.Label31.Name = "Label31"
-        Me.Label31.Size = New System.Drawing.Size(222, 37)
+        Me.Label31.Size = New System.Drawing.Size(213, 78)
         Me.Label31.TabIndex = 228
         Me.Label31.Text = "1"
         Me.Label31.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'Label13
-        '
-        Me.Label13.AutoSize = True
-        Me.Label13.Font = New System.Drawing.Font("Calibri", 20.25!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label13.Location = New System.Drawing.Point(43, 340)
-        Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(159, 33)
-        Me.Label13.TabIndex = 228
-        Me.Label13.Text = "HyperVoicing"
         '
         'GroupBox5
         '
         Me.GroupBox5.BackColor = System.Drawing.Color.DarkKhaki
         Me.GroupBox5.Controls.Add(Me.Label16)
         Me.GroupBox5.Controls.Add(Me.ComboMidiOut)
+        Me.GroupBox5.Controls.Add(Me.Thru)
         Me.GroupBox5.Controls.Add(Me.ComboMidiIn)
         Me.GroupBox5.Controls.Add(Me.Label45)
         Me.GroupBox5.Cursor = System.Windows.Forms.Cursors.Arrow
         Me.GroupBox5.Font = New System.Drawing.Font("Calibri", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox5.ForeColor = System.Drawing.Color.DarkRed
-        Me.GroupBox5.Location = New System.Drawing.Point(3, -1)
+        Me.GroupBox5.Location = New System.Drawing.Point(3, 6)
         Me.GroupBox5.Name = "GroupBox5"
-        Me.GroupBox5.Size = New System.Drawing.Size(225, 53)
+        Me.GroupBox5.Size = New System.Drawing.Size(216, 47)
         Me.GroupBox5.TabIndex = 217
         Me.GroupBox5.TabStop = False
-        Me.GroupBox5.Text = "PORTS MIDI"
+        Me.GroupBox5.Text = "MIDI OUT"
         '
         'Label16
         '
@@ -4063,13 +4119,26 @@ Partial Class Form1
         '
         'ComboMidiOut
         '
+        Me.ComboMidiOut.BackColor = System.Drawing.Color.OldLace
         Me.ComboMidiOut.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboMidiOut.FormattingEnabled = True
-        Me.ComboMidiOut.Location = New System.Drawing.Point(5, 25)
+        Me.ComboMidiOut.Location = New System.Drawing.Point(3, 18)
         Me.ComboMidiOut.Name = "ComboMidiOut"
-        Me.ComboMidiOut.Size = New System.Drawing.Size(215, 21)
+        Me.ComboMidiOut.Size = New System.Drawing.Size(211, 21)
         Me.ComboMidiOut.TabIndex = 190
         Me.ComboMidiOut.TabStop = False
+        '
+        'Thru
+        '
+        Me.Thru.AutoSize = True
+        Me.Thru.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Thru.Location = New System.Drawing.Point(131, -8)
+        Me.Thru.Name = "Thru"
+        Me.Thru.Size = New System.Drawing.Size(47, 16)
+        Me.Thru.TabIndex = 197
+        Me.Thru.Text = "Thru"
+        Me.Thru.UseVisualStyleBackColor = True
+        Me.Thru.Visible = False
         '
         'ComboMidiIn
         '
@@ -4087,31 +4156,49 @@ Partial Class Form1
         '
         Me.Label45.AutoSize = True
         Me.Label45.Font = New System.Drawing.Font("Verdana", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label45.Location = New System.Drawing.Point(170, 12)
+        Me.Label45.Location = New System.Drawing.Point(171, -5)
         Me.Label45.Name = "Label45"
         Me.Label45.Size = New System.Drawing.Size(48, 12)
         Me.Label45.TabIndex = 192
         Me.Label45.Text = "Midi Out"
+        Me.Label45.Visible = False
         '
         'TabPage6
         '
         Me.TabPage6.BackColor = System.Drawing.Color.DarkKhaki
+        Me.TabPage6.Controls.Add(Me.Label104)
+        Me.TabPage6.Controls.Add(Me.Label103)
         Me.TabPage6.Controls.Add(Me.CheckBox1)
         Me.TabPage6.Controls.Add(Me.Label94)
         Me.TabPage6.Controls.Add(Me.Label86)
-        Me.TabPage6.Controls.Add(Me.RichTextBox2)
         Me.TabPage6.Controls.Add(Me.Label89)
         Me.TabPage6.Controls.Add(Me.Label87)
         Me.TabPage6.Controls.Add(Me.Label3)
-        Me.TabPage6.Controls.Add(Me.RichTextBox1)
         Me.TabPage6.Controls.Add(Me.GroupBox2)
         Me.TabPage6.Controls.Add(Me.GroupBox7)
         Me.TabPage6.Controls.Add(Me.GammePlusAccord)
         Me.TabPage6.Location = New System.Drawing.Point(4, 22)
         Me.TabPage6.Name = "TabPage6"
-        Me.TabPage6.Size = New System.Drawing.Size(234, 424)
+        Me.TabPage6.Size = New System.Drawing.Size(222, 377)
         Me.TabPage6.TabIndex = 2
-        Me.TabPage6.Text = "Paramètres"
+        Me.TabPage6.Text = "Système"
+        '
+        'Label104
+        '
+        Me.Label104.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Label104.Location = New System.Drawing.Point(36, 352)
+        Me.Label104.Name = "Label104"
+        Me.Label104.Size = New System.Drawing.Size(201, 29)
+        Me.Label104.TabIndex = 225
+        Me.Label104.Visible = False
+        '
+        'Label103
+        '
+        Me.Label103.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Label103.Location = New System.Drawing.Point(10, 274)
+        Me.Label103.Name = "Label103"
+        Me.Label103.Size = New System.Drawing.Size(198, 90)
+        Me.Label103.TabIndex = 224
         '
         'CheckBox1
         '
@@ -4131,7 +4218,7 @@ Partial Class Form1
         Me.Label94.ForeColor = System.Drawing.Color.Khaki
         Me.Label94.Location = New System.Drawing.Point(7, 8)
         Me.Label94.Name = "Label94"
-        Me.Label94.Size = New System.Drawing.Size(215, 19)
+        Me.Label94.Size = New System.Drawing.Size(212, 19)
         Me.Label94.TabIndex = 222
         Me.Label94.Text = "Acivation Canal Midi / Couleur  note"
         Me.Label94.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
@@ -4140,20 +4227,12 @@ Partial Class Form1
         'Label86
         '
         Me.Label86.AutoSize = True
-        Me.Label86.Location = New System.Drawing.Point(8, 248)
+        Me.Label86.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label86.Location = New System.Drawing.Point(9, 254)
         Me.Label86.Name = "Label86"
-        Me.Label86.Size = New System.Drawing.Size(149, 13)
+        Me.Label86.Size = New System.Drawing.Size(168, 13)
         Me.Label86.TabIndex = 209
         Me.Label86.Text = "Chemin du fichier ouvert"
-        '
-        'RichTextBox2
-        '
-        Me.RichTextBox2.Enabled = False
-        Me.RichTextBox2.Location = New System.Drawing.Point(7, 260)
-        Me.RichTextBox2.Name = "RichTextBox2"
-        Me.RichTextBox2.Size = New System.Drawing.Size(212, 62)
-        Me.RichTextBox2.TabIndex = 208
-        Me.RichTextBox2.Text = ""
         '
         'Label89
         '
@@ -4163,15 +4242,18 @@ Partial Class Form1
         Me.Label89.Size = New System.Drawing.Size(45, 13)
         Me.Label89.TabIndex = 221
         Me.Label89.Text = "Racine"
+        Me.Label89.Visible = False
         '
         'Label87
         '
         Me.Label87.AutoSize = True
-        Me.Label87.Location = New System.Drawing.Point(8, 325)
+        Me.Label87.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label87.Location = New System.Drawing.Point(1, 328)
         Me.Label87.Name = "Label87"
-        Me.Label87.Size = New System.Drawing.Size(30, 13)
+        Me.Label87.Size = New System.Drawing.Size(34, 13)
         Me.Label87.TabIndex = 207
         Me.Label87.Text = "Info"
+        Me.Label87.Visible = False
         '
         'Label3
         '
@@ -4184,25 +4266,16 @@ Partial Class Form1
         Me.Label3.Text = "Ecoute des accords (ctrl+clic)"
         Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'RichTextBox1
-        '
-        Me.RichTextBox1.Enabled = False
-        Me.RichTextBox1.Location = New System.Drawing.Point(7, 338)
-        Me.RichTextBox1.Name = "RichTextBox1"
-        Me.RichTextBox1.Size = New System.Drawing.Size(212, 26)
-        Me.RichTextBox1.TabIndex = 205
-        Me.RichTextBox1.Text = ""
-        '
         'GroupBox2
         '
         Me.GroupBox2.Controls.Add(Me.Label88)
         Me.GroupBox2.Controls.Add(Me.Label42)
         Me.GroupBox2.Controls.Add(Me.CanalThru)
-        Me.GroupBox2.Controls.Add(Me.ComboBox10)
+        Me.GroupBox2.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox2.ForeColor = System.Drawing.Color.Maroon
         Me.GroupBox2.Location = New System.Drawing.Point(5, 58)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(215, 53)
+        Me.GroupBox2.Size = New System.Drawing.Size(211, 53)
         Me.GroupBox2.TabIndex = 202
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Ecoute"
@@ -4210,11 +4283,12 @@ Partial Class Form1
         'Label88
         '
         Me.Label88.AutoSize = True
-        Me.Label88.Location = New System.Drawing.Point(21, 37)
+        Me.Label88.Location = New System.Drawing.Point(21, 39)
         Me.Label88.Name = "Label88"
-        Me.Label88.Size = New System.Drawing.Size(40, 13)
+        Me.Label88.Size = New System.Drawing.Size(43, 13)
         Me.Label88.TabIndex = 223
         Me.Label88.Text = "Canal"
+        Me.Label88.Visible = False
         '
         'Label42
         '
@@ -4229,7 +4303,7 @@ Partial Class Form1
         'CanalThru
         '
         Me.CanalThru.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.CanalThru.Location = New System.Drawing.Point(12, 16)
+        Me.CanalThru.Location = New System.Drawing.Point(12, 20)
         Me.CanalThru.Maximum = New Decimal(New Integer() {16, 0, 0, 0})
         Me.CanalThru.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.CanalThru.Name = "CanalThru"
@@ -4237,16 +4311,6 @@ Partial Class Form1
         Me.CanalThru.TabIndex = 201
         Me.CanalThru.TabStop = False
         Me.CanalThru.Value = New Decimal(New Integer() {1, 0, 0, 0})
-        '
-        'ComboBox10
-        '
-        Me.ComboBox10.FormattingEnabled = True
-        Me.ComboBox10.Location = New System.Drawing.Point(116, 16)
-        Me.ComboBox10.Name = "ComboBox10"
-        Me.ComboBox10.Size = New System.Drawing.Size(75, 21)
-        Me.ComboBox10.TabIndex = 222
-        Me.ComboBox10.TabStop = False
-        Me.ComboBox10.Text = "c2"
         '
         'GroupBox7
         '
@@ -4259,13 +4323,14 @@ Partial Class Form1
         Me.GroupBox7.Controls.Add(Me.PlayC)
         Me.GroupBox7.Controls.Add(Me.ComboBox7)
         Me.GroupBox7.Controls.Add(Me.Label14)
+        Me.GroupBox7.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox7.ForeColor = System.Drawing.Color.Maroon
-        Me.GroupBox7.Location = New System.Drawing.Point(7, 122)
+        Me.GroupBox7.Location = New System.Drawing.Point(6, 122)
         Me.GroupBox7.Name = "GroupBox7"
-        Me.GroupBox7.Size = New System.Drawing.Size(215, 116)
+        Me.GroupBox7.Size = New System.Drawing.Size(210, 116)
         Me.GroupBox7.TabIndex = 0
         Me.GroupBox7.TabStop = False
-        Me.GroupBox7.Text = "Ecoute accord + notes"
+        Me.GroupBox7.Text = "Ecoute accord + gamme"
         '
         'Label2
         '
@@ -4293,11 +4358,11 @@ Partial Class Form1
         '
         Me.Label18.AutoSize = True
         Me.Label18.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label18.Location = New System.Drawing.Point(132, 88)
+        Me.Label18.Location = New System.Drawing.Point(122, 88)
         Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(39, 13)
+        Me.Label18.Size = New System.Drawing.Size(40, 13)
         Me.Label18.TabIndex = 218
-        Me.Label18.Text = "PlayN"
+        Me.Label18.Text = "PlayG"
         '
         'Label24
         '
@@ -4322,7 +4387,7 @@ Partial Class Form1
         'PlayN
         '
         Me.PlayN.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.PlayN.Location = New System.Drawing.Point(132, 63)
+        Me.PlayN.Location = New System.Drawing.Point(122, 63)
         Me.PlayN.Maximum = New Decimal(New Integer() {127, 0, 0, 0})
         Me.PlayN.Name = "PlayN"
         Me.PlayN.Size = New System.Drawing.Size(75, 21)
@@ -4355,7 +4420,7 @@ Partial Class Form1
         Me.Label14.AutoSize = True
         Me.Label14.Location = New System.Drawing.Point(8, 41)
         Me.Label14.Name = "Label14"
-        Me.Label14.Size = New System.Drawing.Size(45, 13)
+        Me.Label14.Size = New System.Drawing.Size(51, 13)
         Me.Label14.TabIndex = 2
         Me.Label14.Text = "Tempo"
         '
@@ -4364,7 +4429,7 @@ Partial Class Form1
         Me.GammePlusAccord.AutoSize = True
         Me.GammePlusAccord.Checked = True
         Me.GammePlusAccord.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.GammePlusAccord.Location = New System.Drawing.Point(32, 350)
+        Me.GammePlusAccord.Location = New System.Drawing.Point(72, 394)
         Me.GammePlusAccord.Name = "GammePlusAccord"
         Me.GammePlusAccord.Size = New System.Drawing.Size(127, 17)
         Me.GammePlusAccord.TabIndex = 0
@@ -4387,10 +4452,10 @@ Partial Class Form1
         'Label_Reglages
         '
         Me.Label_Reglages.AutoSize = True
-        Me.Label_Reglages.Font = New System.Drawing.Font("Calibri", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label_Reglages.Location = New System.Drawing.Point(97, 4)
+        Me.Label_Reglages.Font = New System.Drawing.Font("Papyrus", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label_Reglages.Location = New System.Drawing.Point(84, -1)
         Me.Label_Reglages.Name = "Label_Reglages"
-        Me.Label_Reglages.Size = New System.Drawing.Size(68, 19)
+        Me.Label_Reglages.Size = New System.Drawing.Size(80, 24)
         Me.Label_Reglages.TabIndex = 223
         Me.Label_Reglages.Text = "Réglages"
         '
@@ -4475,8 +4540,8 @@ Partial Class Form1
         '
         'SplitContainer3.Panel2
         '
-        Me.SplitContainer3.Panel2.Controls.Add(Me.Panel11)
         Me.SplitContainer3.Panel2.Controls.Add(Me.TableLayoutPanel2)
+        Me.SplitContainer3.Panel2.Controls.Add(Me.Panel11)
         Me.SplitContainer3.Size = New System.Drawing.Size(1488, 140)
         Me.SplitContainer3.SplitterDistance = 444
         Me.SplitContainer3.TabIndex = 3
@@ -4509,15 +4574,6 @@ Partial Class Form1
         Me.Grid4.TabStop = False
         Me.Grid4.UncheckedImage = Nothing
         '
-        'Panel11
-        '
-        Me.Panel11.AutoScroll = True
-        Me.Panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.Panel11.Location = New System.Drawing.Point(37, 10)
-        Me.Panel11.Name = "Panel11"
-        Me.Panel11.Size = New System.Drawing.Size(500, 108)
-        Me.Panel11.TabIndex = 2
-        '
         'TableLayoutPanel2
         '
         Me.TableLayoutPanel2.ColumnCount = 2
@@ -4527,7 +4583,7 @@ Partial Class Form1
         Me.TableLayoutPanel2.Controls.Add(Me.FinBoucle, 1, 1)
         Me.TableLayoutPanel2.Controls.Add(Me.ComboBox8, 0, 0)
         Me.TableLayoutPanel2.Controls.Add(Me.Label17, 0, 1)
-        Me.TableLayoutPanel2.Location = New System.Drawing.Point(631, 71)
+        Me.TableLayoutPanel2.Location = New System.Drawing.Point(702, 10)
         Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
         Me.TableLayoutPanel2.RowCount = 3
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
@@ -4535,6 +4591,7 @@ Partial Class Form1
         Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
         Me.TableLayoutPanel2.Size = New System.Drawing.Size(130, 51)
         Me.TableLayoutPanel2.TabIndex = 232
+        Me.TableLayoutPanel2.Visible = False
         '
         'LoopNumber
         '
@@ -4543,6 +4600,7 @@ Partial Class Form1
         Me.LoopNumber.Name = "LoopNumber"
         Me.LoopNumber.Size = New System.Drawing.Size(34, 21)
         Me.LoopNumber.TabIndex = 258
+        Me.LoopNumber.Visible = False
         '
         'FinBoucle
         '
@@ -4576,6 +4634,27 @@ Partial Class Form1
         Me.Label17.Size = New System.Drawing.Size(34, 13)
         Me.Label17.TabIndex = 230
         Me.Label17.Text = "Comp"
+        '
+        'Panel11
+        '
+        Me.Panel11.AutoScroll = True
+        Me.Panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel11.Location = New System.Drawing.Point(37, 10)
+        Me.Panel11.Name = "Panel11"
+        Me.Panel11.Size = New System.Drawing.Size(500, 108)
+        Me.Panel11.TabIndex = 2
+        '
+        'Button24
+        '
+        Me.Button24.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.Button24.Image = CType(resources.GetObject("Button24.Image"), System.Drawing.Image)
+        Me.Button24.Location = New System.Drawing.Point(1480, 10)
+        Me.Button24.Name = "Button24"
+        Me.Button24.Size = New System.Drawing.Size(32, 32)
+        Me.Button24.TabIndex = 84
+        Me.Button24.Text = "                                                               "
+        Me.Button24.UseVisualStyleBackColor = True
+        Me.Button24.Visible = False
         '
         'ContextMenuStrip1
         '
@@ -4834,9 +4913,9 @@ Partial Class Form1
         '
         Me.ContextMenuStrip3.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ContextMenuStrip3.ImageScalingSize = New System.Drawing.Size(20, 20)
-        Me.ContextMenuStrip3.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ContextMenu3Accord, Me.ToolStripSeparator7, Me.Transpo, Me.ToolStripSeparator6, Me.Flot_Couper, Me.Flot_Copier, Me.Flot_Coller, Me.ToolStripMenuItem10, Me.AnnulerToolStripMenuItem1})
+        Me.ContextMenuStrip3.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ContextMenu3Accord, Me.ToolStripSeparator7, Me.Transpo, Me.ToolStripSeparator6, Me.TranspMode, Me.ToolStripSeparator11, Me.Flot_Couper, Me.Flot_Copier, Me.Flot_Coller, Me.ToolStripMenuItem10, Me.AnnulerToolStripMenuItem1})
         Me.ContextMenuStrip3.Name = "ContextMenuStrip3"
-        Me.ContextMenuStrip3.Size = New System.Drawing.Size(123, 178)
+        Me.ContextMenuStrip3.Size = New System.Drawing.Size(359, 210)
         '
         'ContextMenu3Accord
         '
@@ -4844,7 +4923,7 @@ Partial Class Form1
         Me.ContextMenu3Accord.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ContextMenu3Accord.Image = CType(resources.GetObject("ContextMenu3Accord.Image"), System.Drawing.Image)
         Me.ContextMenu3Accord.Name = "ContextMenu3Accord"
-        Me.ContextMenu3Accord.Size = New System.Drawing.Size(122, 26)
+        Me.ContextMenu3Accord.Size = New System.Drawing.Size(358, 26)
         Me.ContextMenu3Accord.Text = "Accord"
         '
         'Accord11
@@ -4906,7 +4985,7 @@ Partial Class Form1
         'ToolStripSeparator7
         '
         Me.ToolStripSeparator7.Name = "ToolStripSeparator7"
-        Me.ToolStripSeparator7.Size = New System.Drawing.Size(119, 6)
+        Me.ToolStripSeparator7.Size = New System.Drawing.Size(355, 6)
         '
         'Transpo
         '
@@ -4914,8 +4993,8 @@ Partial Class Form1
         Me.Transpo.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Transpo.Image = CType(resources.GetObject("Transpo.Image"), System.Drawing.Image)
         Me.Transpo.Name = "Transpo"
-        Me.Transpo.Size = New System.Drawing.Size(122, 26)
-        Me.Transpo.Text = "Transp"
+        Me.Transpo.Size = New System.Drawing.Size(358, 26)
+        Me.Transpo.Text = "Transp. Chromatique                                        "
         '
         'Transpo1
         '
@@ -4997,39 +5076,51 @@ Partial Class Form1
         'ToolStripSeparator6
         '
         Me.ToolStripSeparator6.Name = "ToolStripSeparator6"
-        Me.ToolStripSeparator6.Size = New System.Drawing.Size(119, 6)
+        Me.ToolStripSeparator6.Size = New System.Drawing.Size(355, 6)
+        '
+        'TranspMode
+        '
+        Me.TranspMode.Image = Global.HyperVoicing.My.Resources.Resources.DRAWING
+        Me.TranspMode.Name = "TranspMode"
+        Me.TranspMode.Size = New System.Drawing.Size(358, 26)
+        Me.TranspMode.Text = "Transp. Modale"
+        '
+        'ToolStripSeparator11
+        '
+        Me.ToolStripSeparator11.Name = "ToolStripSeparator11"
+        Me.ToolStripSeparator11.Size = New System.Drawing.Size(355, 6)
         '
         'Flot_Couper
         '
         Me.Flot_Couper.Image = CType(resources.GetObject("Flot_Couper.Image"), System.Drawing.Image)
         Me.Flot_Couper.Name = "Flot_Couper"
-        Me.Flot_Couper.Size = New System.Drawing.Size(122, 26)
+        Me.Flot_Couper.Size = New System.Drawing.Size(358, 26)
         Me.Flot_Couper.Text = "Couper"
         '
         'Flot_Copier
         '
         Me.Flot_Copier.Image = CType(resources.GetObject("Flot_Copier.Image"), System.Drawing.Image)
         Me.Flot_Copier.Name = "Flot_Copier"
-        Me.Flot_Copier.Size = New System.Drawing.Size(122, 26)
+        Me.Flot_Copier.Size = New System.Drawing.Size(358, 26)
         Me.Flot_Copier.Text = "Copîer"
         '
         'Flot_Coller
         '
         Me.Flot_Coller.Image = CType(resources.GetObject("Flot_Coller.Image"), System.Drawing.Image)
         Me.Flot_Coller.Name = "Flot_Coller"
-        Me.Flot_Coller.Size = New System.Drawing.Size(122, 26)
+        Me.Flot_Coller.Size = New System.Drawing.Size(358, 26)
         Me.Flot_Coller.Text = "Coller"
         '
         'ToolStripMenuItem10
         '
         Me.ToolStripMenuItem10.Name = "ToolStripMenuItem10"
-        Me.ToolStripMenuItem10.Size = New System.Drawing.Size(119, 6)
+        Me.ToolStripMenuItem10.Size = New System.Drawing.Size(355, 6)
         Me.ToolStripMenuItem10.Visible = False
         '
         'AnnulerToolStripMenuItem1
         '
         Me.AnnulerToolStripMenuItem1.Name = "AnnulerToolStripMenuItem1"
-        Me.AnnulerToolStripMenuItem1.Size = New System.Drawing.Size(122, 26)
+        Me.AnnulerToolStripMenuItem1.Size = New System.Drawing.Size(358, 26)
         Me.AnnulerToolStripMenuItem1.Text = "Annuler"
         Me.AnnulerToolStripMenuItem1.Visible = False
         '
@@ -5223,13 +5314,13 @@ Partial Class Form1
         Me.ContextMenuStrip5.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.ContextMenuStrip5.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TranspositionToolStripMenuItem})
         Me.ContextMenuStrip5.Name = "ContextMenuStrip5"
-        Me.ContextMenuStrip5.Size = New System.Drawing.Size(145, 26)
+        Me.ContextMenuStrip5.Size = New System.Drawing.Size(146, 26)
         '
         'TranspositionToolStripMenuItem
         '
         Me.TranspositionToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.Transp1, Me.Transp2, Me.Transp3, Me.Transp4, Me.Transp5, Me.Transp6, Me.Transp7, Me.Transp8, Me.Transp9, Me.Transp10, Me.Transp11})
         Me.TranspositionToolStripMenuItem.Name = "TranspositionToolStripMenuItem"
-        Me.TranspositionToolStripMenuItem.Size = New System.Drawing.Size(144, 22)
+        Me.TranspositionToolStripMenuItem.Size = New System.Drawing.Size(145, 22)
         Me.TranspositionToolStripMenuItem.Text = "Transposition"
         '
         'Transp1
@@ -5327,19 +5418,21 @@ Partial Class Form1
         Me.TabControl4.Location = New System.Drawing.Point(0, 24)
         Me.TabControl4.Name = "TabControl4"
         Me.TabControl4.SelectedIndex = 0
-        Me.TabControl4.Size = New System.Drawing.Size(1528, 673)
+        Me.TabControl4.Size = New System.Drawing.Size(1709, 679)
         Me.TabControl4.TabIndex = 5
         '
         'TabPage8
         '
         Me.TabPage8.Controls.Add(Me.Button4)
         Me.TabPage8.Controls.Add(Me.SplitContainer7)
+        Me.TabPage8.Controls.Add(Me.Button24)
+        Me.TabPage8.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TabPage8.Location = New System.Drawing.Point(4, 25)
         Me.TabPage8.Name = "TabPage8"
         Me.TabPage8.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage8.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage8.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage8.TabIndex = 0
-        Me.TabPage8.Text = "1-HyperVoicing"
+        Me.TabPage8.Text = "1-Piste Accords"
         Me.TabPage8.UseVisualStyleBackColor = True
         '
         'Button4
@@ -5356,7 +5449,7 @@ Partial Class Form1
         '
         Me.TabPage5.Location = New System.Drawing.Point(4, 25)
         Me.TabPage5.Name = "TabPage5"
-        Me.TabPage5.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage5.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage5.TabIndex = 1
         Me.TabPage5.Text = "2-PianoRoll"
         Me.TabPage5.UseVisualStyleBackColor = True
@@ -5365,7 +5458,7 @@ Partial Class Form1
         '
         Me.TabPage9.Location = New System.Drawing.Point(4, 25)
         Me.TabPage9.Name = "TabPage9"
-        Me.TabPage9.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage9.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage9.TabIndex = 2
         Me.TabPage9.Text = "3-PianoRoll"
         Me.TabPage9.UseVisualStyleBackColor = True
@@ -5374,7 +5467,7 @@ Partial Class Form1
         '
         Me.TabPage10.Location = New System.Drawing.Point(4, 25)
         Me.TabPage10.Name = "TabPage10"
-        Me.TabPage10.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage10.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage10.TabIndex = 3
         Me.TabPage10.Text = "4-PianoRoll"
         Me.TabPage10.UseVisualStyleBackColor = True
@@ -5383,7 +5476,7 @@ Partial Class Form1
         '
         Me.TabPage13.Location = New System.Drawing.Point(4, 25)
         Me.TabPage13.Name = "TabPage13"
-        Me.TabPage13.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage13.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage13.TabIndex = 6
         Me.TabPage13.Text = "5-PianoRoll"
         Me.TabPage13.UseVisualStyleBackColor = True
@@ -5392,7 +5485,7 @@ Partial Class Form1
         '
         Me.TabPage14.Location = New System.Drawing.Point(4, 25)
         Me.TabPage14.Name = "TabPage14"
-        Me.TabPage14.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage14.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage14.TabIndex = 7
         Me.TabPage14.Text = "6-PianoRoll"
         Me.TabPage14.UseVisualStyleBackColor = True
@@ -5401,7 +5494,7 @@ Partial Class Form1
         '
         Me.TabPage15.Location = New System.Drawing.Point(4, 25)
         Me.TabPage15.Name = "TabPage15"
-        Me.TabPage15.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage15.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage15.TabIndex = 8
         Me.TabPage15.Text = "7-PianoRoll"
         Me.TabPage15.UseVisualStyleBackColor = True
@@ -5410,7 +5503,7 @@ Partial Class Form1
         '
         Me.TabPage18.Location = New System.Drawing.Point(4, 25)
         Me.TabPage18.Name = "TabPage18"
-        Me.TabPage18.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage18.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage18.TabIndex = 9
         Me.TabPage18.Text = "8-PianoRoll"
         Me.TabPage18.UseVisualStyleBackColor = True
@@ -5419,7 +5512,7 @@ Partial Class Form1
         '
         Me.TabPage19.Location = New System.Drawing.Point(4, 25)
         Me.TabPage19.Name = "TabPage19"
-        Me.TabPage19.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage19.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage19.TabIndex = 10
         Me.TabPage19.Text = "9-PianoRoll"
         Me.TabPage19.UseVisualStyleBackColor = True
@@ -5429,16 +5522,16 @@ Partial Class Form1
         Me.TabPage11.BackColor = System.Drawing.SystemColors.ControlDarkDark
         Me.TabPage11.Location = New System.Drawing.Point(4, 25)
         Me.TabPage11.Name = "TabPage11"
-        Me.TabPage11.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage11.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage11.TabIndex = 4
-        Me.TabPage11.Text = "10-DrumEdit"
+        Me.TabPage11.Text = "10-Piste Batterie"
         '
         'TabPage12
         '
         Me.TabPage12.BackColor = System.Drawing.SystemColors.Control
         Me.TabPage12.Location = New System.Drawing.Point(4, 25)
         Me.TabPage12.Name = "TabPage12"
-        Me.TabPage12.Size = New System.Drawing.Size(1520, 644)
+        Me.TabPage12.Size = New System.Drawing.Size(1701, 650)
         Me.TabPage12.TabIndex = 5
         Me.TabPage12.Text = "MIX"
         Me.TabPage12.UseVisualStyleBackColor = True
@@ -5447,12 +5540,24 @@ Partial Class Form1
         '
         Me.OpenFileDialog2.FileName = "OpenFileDialog2"
         '
+        'TimerDragDrop
+        '
+        '
+        'Label78
+        '
+        Me.Label78.Font = New System.Drawing.Font("Papyrus", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label78.Location = New System.Drawing.Point(2, 0)
+        Me.Label78.Name = "Label78"
+        Me.Label78.Size = New System.Drawing.Size(88, 16)
+        Me.Label78.TabIndex = 49
+        Me.Label78.Text = "Piste Accords"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
-        Me.ClientSize = New System.Drawing.Size(1528, 697)
+        Me.ClientSize = New System.Drawing.Size(1709, 703)
         Me.Controls.Add(Me.TabControl4)
         Me.Controls.Add(Me.MenuStrip1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -5508,23 +5613,31 @@ Partial Class Form1
         Me.SplitContainer10.ResumeLayout(False)
         Me.Panel14.ResumeLayout(False)
         Me.TabPage7.ResumeLayout(False)
-        Me.SplitContainer5.Panel1.ResumeLayout(False)
-        Me.SplitContainer5.Panel1.PerformLayout()
-        Me.SplitContainer5.Panel2.ResumeLayout(False)
-        CType(Me.SplitContainer5, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.SplitContainer5.ResumeLayout(False)
-        Me.SplitContainer8.Panel1.ResumeLayout(False)
-        Me.SplitContainer8.Panel2.ResumeLayout(False)
-        Me.SplitContainer8.Panel2.PerformLayout()
-        CType(Me.SplitContainer8, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.SplitContainer8.ResumeLayout(False)
+        Me.SplitContainer15.Panel1.ResumeLayout(False)
+        Me.SplitContainer15.Panel2.ResumeLayout(False)
+        Me.SplitContainer15.Panel2.PerformLayout()
+        CType(Me.SplitContainer15, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer15.ResumeLayout(False)
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TabPage22.ResumeLayout(False)
+        Me.GroupBox11.ResumeLayout(False)
+        Me.GroupBox11.PerformLayout()
+        Me.Panel15.ResumeLayout(False)
+        Me.Panel15.PerformLayout()
+        CType(Me.Comp, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.Panel13.ResumeLayout(False)
+        Me.Panel13.PerformLayout()
+        CType(Me.UpDown2, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.Panel7.ResumeLayout(False)
+        Me.Panel7.PerformLayout()
+        CType(Me.UpDown1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage20.ResumeLayout(False)
         Me.SplitContainer14.Panel1.ResumeLayout(False)
         Me.SplitContainer14.Panel1.PerformLayout()
         Me.SplitContainer14.Panel2.ResumeLayout(False)
         CType(Me.SplitContainer14, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer14.ResumeLayout(False)
-        Me.TabPage17.ResumeLayout(False)
         Me.TabPage3.ResumeLayout(False)
         Me.SplitContainer4.Panel1.ResumeLayout(False)
         Me.SplitContainer4.Panel2.ResumeLayout(False)
@@ -5534,6 +5647,7 @@ Partial Class Form1
         Me.Panel5.PerformLayout()
         Me.PanelMIX.ResumeLayout(False)
         Me.PanelMIX.PerformLayout()
+        Me.TabPage17.ResumeLayout(False)
         Me.Panel18.ResumeLayout(False)
         Me.Panel6.ResumeLayout(False)
         Me.Panel6.PerformLayout()
@@ -5565,10 +5679,6 @@ Partial Class Form1
         Me.TabControl3.ResumeLayout(False)
         Me.TabPage4.ResumeLayout(False)
         Me.TabPage4.PerformLayout()
-        Me.GroupBox11.ResumeLayout(False)
-        Me.GroupBox11.PerformLayout()
-        CType(Me.UpDown2, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.UpDown1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox8.ResumeLayout(False)
         Me.GroupBox8.PerformLayout()
         Me.GroupBox5.ResumeLayout(False)
@@ -5730,12 +5840,6 @@ Partial Class Form1
     Friend WithEvents Label35 As System.Windows.Forms.Label
     Friend WithEvents Label36 As System.Windows.Forms.Label
     Friend WithEvents CanalThru As System.Windows.Forms.NumericUpDown
-    Friend WithEvents Button22 As System.Windows.Forms.Button
-    Friend WithEvents Button15 As System.Windows.Forms.Button
-    Friend WithEvents Button14 As System.Windows.Forms.Button
-    Friend WithEvents Button13 As System.Windows.Forms.Button
-    Friend WithEvents Button12 As System.Windows.Forms.Button
-    Friend WithEvents Button11 As System.Windows.Forms.Button
     Friend WithEvents ToolTip1 As System.Windows.Forms.ToolTip
     Friend WithEvents Button24 As System.Windows.Forms.Button
     Friend WithEvents Button28 As System.Windows.Forms.Button
@@ -5755,7 +5859,6 @@ Partial Class Form1
     Friend WithEvents Transp9 As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents Transp10 As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents Transp11 As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents Button23 As System.Windows.Forms.Button
     Friend WithEvents Accord11 As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents Accord12 As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents Accord13 As System.Windows.Forms.ToolStripMenuItem
@@ -5860,9 +5963,7 @@ Partial Class Form1
     Friend WithEvents Button20 As Button
     Friend WithEvents TempoPar2 As CheckBox
     Friend WithEvents PanelBoutons As FlowLayoutPanel
-    Friend WithEvents ButtTonalités As Button
     Friend WithEvents ButtAccords As Button
-    Friend WithEvents ButtModes As Button
     Friend WithEvents ButtGammes As Button
     Friend WithEvents TabControl3 As TabControl
     Friend WithEvents TabPage4 As TabPage
@@ -5903,7 +6004,6 @@ Partial Class Form1
     Friend WithEvents StopToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem3 As ToolStripMenuItem
     Friend WithEvents TabPage7 As TabPage
-    Friend WithEvents ComboBox9 As Windows.Forms.ComboBox
     Friend WithEvents CheckBoxTout As CheckBox
     Friend WithEvents Grid4 As Grid
     Friend WithEvents FenêtresToolStripMenuItem As ToolStripMenuItem
@@ -5931,7 +6031,6 @@ Partial Class Form1
     Friend WithEvents TransportMenuItem As ToolStripMenuItem
     Friend WithEvents LoopNumber As NumericUpDown
     Friend WithEvents Label31 As Label
-    Friend WithEvents Label13 As Label
     Friend WithEvents ComboBox10 As Windows.Forms.ComboBox
     Friend WithEvents Label89 As Label
     Friend WithEvents TabPage13 As TabPage
@@ -5947,15 +6046,6 @@ Partial Class Form1
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents ListBox1 As ListBox
-    Friend WithEvents SplitContainer5 As SplitContainer
-    Friend WithEvents SplitContainer8 As SplitContainer
-    Friend WithEvents Label21 As Label
-    Friend WithEvents Label20 As Label
-    Friend WithEvents Label7 As Label
-    Friend WithEvents Label4 As Label
-    Friend WithEvents Panel9 As Panel
-    Friend WithEvents Label29 As Label
-    Friend WithEvents ComboBox13 As Windows.Forms.ComboBox
     Friend WithEvents TabPage16 As TabPage
     Friend WithEvents SplitContainer10 As SplitContainer
     Friend WithEvents Label67 As Label
@@ -5975,25 +6065,15 @@ Partial Class Form1
     Friend WithEvents Label75 As Label
     Friend WithEvents Label74 As Label
     Friend WithEvents Label37 As Label
-    Friend WithEvents RichTextBox1 As RichTextBox
     Friend WithEvents Flot_Coller As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem10 As ToolStripSeparator
     Friend WithEvents AnnulerToolStripMenuItem1 As ToolStripMenuItem
-    Friend WithEvents GroupBox11 As GroupBox
-    Friend WithEvents ComboBox12 As Windows.Forms.ComboBox
-    Friend WithEvents ComboBox11 As Windows.Forms.ComboBox
     Friend WithEvents TabPage17 As TabPage
     Friend WithEvents Grid6 As Grid
-    Friend WithEvents Grid5 As Grid
-    Friend WithEvents Label78 As Label
-    Friend WithEvents Label80 As Label
-    Friend WithEvents Label79 As Label
     Friend WithEvents Lab1 As Label
     Friend WithEvents Lab2 As Label
     Friend WithEvents Label3 As Label
     Friend WithEvents InitClavier As Button
-    Friend WithEvents Label38 As Label
-    Friend WithEvents Label34 As Label
     Friend WithEvents Button3 As Button
     Friend WithEvents Panel12 As Panel
     Friend WithEvents Label76 As Label
@@ -6006,20 +6086,11 @@ Partial Class Form1
     Friend WithEvents SplitContainer11 As SplitContainer
     Friend WithEvents Grid1 As Grid
     Friend WithEvents Label83 As Label
-    Friend WithEvents UpDown1 As NumericUpDown
-    Friend WithEvents QuatreNotes As CheckBox
-    Friend WithEvents BasseMoins12 As CheckBox
-    Friend WithEvents UpDown2 As NumericUpDown
-    Friend WithEvents Label85 As Label
-    Friend WithEvents Label84 As Label
-    Friend WithEvents RichTextBox2 As RichTextBox
     Friend WithEvents Label86 As Label
     Friend WithEvents TabPage3 As TabPage
     Friend WithEvents Label88 As Label
     Friend WithEvents ToolStripLicence As ToolStripMenuItem
     Friend WithEvents AideToolStripMenuItem As ToolStripSeparator
-    Friend WithEvents Panel2 As Panel
-    Friend WithEvents Panel1 As Panel
     Friend WithEvents TabPage20 As TabPage
     Friend WithEvents SplitContainer4 As SplitContainer
     Friend WithEvents Panel5 As Panel
@@ -6053,11 +6124,6 @@ Partial Class Form1
     Friend WithEvents TabPage18 As TabPage
     Friend WithEvents TabPage19 As TabPage
     Friend WithEvents TextBox1 As TextBox
-    Friend WithEvents Label15 As Label
-    Friend WithEvents Label90 As Label
-    Friend WithEvents Label91 As Label
-    Friend WithEvents Label92 As Label
-    Friend WithEvents Label93 As Label
     Friend WithEvents ToolStripSeparator17 As ToolStripSeparator
     Friend WithEvents ToolStripMenuItem9 As ToolStripMenuItem
     Friend WithEvents MarqueursToolStripMenuItem As ToolStripMenuItem
@@ -6068,16 +6134,68 @@ Partial Class Form1
     Friend WithEvents Retablir As ToolStripMenuItem
     Friend WithEvents CheckBox1 As CheckBox
     Friend WithEvents Label94 As Label
-    Friend WithEvents CheckBox3 As CheckBox
     Friend WithEvents TabPage21 As TabPage
     Friend WithEvents Grid7 As Grid
     Friend WithEvents LabCanal As Label
-    Friend WithEvents TextBox2 As TextBox
     Friend WithEvents ToolStripMenuItem12 As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator10 As ToolStripSeparator
     Friend WithEvents ToolStripMenuItem13 As ToolStripMenuItem
     Friend WithEvents ProjetToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents AccordsEnTantQueMarqueurToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents GammesEnTantQueMarqueursToolStripMenuItem1 As ToolStripMenuItem
-    Friend WithEvents Button16 As Button
+    Friend WithEvents Button9 As Button
+    Friend WithEvents SynchroTona As CheckBox
+    Friend WithEvents Label95 As Label
+    Friend WithEvents Label96 As Label
+    Friend WithEvents Label97 As Label
+    Friend WithEvents Label98 As Label
+    Friend WithEvents TimerDragDrop As Timer
+    Friend WithEvents CalquesMIDIToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents CheckAide As CheckBox
+    Friend WithEvents Label102 As Label
+    Friend WithEvents Label104 As Label
+    Friend WithEvents Label103 As Label
+    Friend WithEvents Label13 As Label
+    Friend WithEvents Label105 As Label
+    Friend WithEvents ButtTonalités As Button
+    Friend WithEvents GroupBox11 As GroupBox
+    Friend WithEvents Label85 As Label
+    Friend WithEvents QuatreNotes As CheckBox
+    Friend WithEvents UpDown2 As NumericUpDown
+    Friend WithEvents ComboBox12 As Windows.Forms.ComboBox
+    Friend WithEvents Label84 As Label
+    Friend WithEvents BasseMoins12 As CheckBox
+    Friend WithEvents UpDown1 As NumericUpDown
+    Friend WithEvents ComboBox11 As Windows.Forms.ComboBox
+    Friend WithEvents Label100 As Label
+    Friend WithEvents TabPage22 As TabPage
+    Friend WithEvents Label108 As Label
+    Friend WithEvents Label107 As Label
+    Friend WithEvents Label106 As Label
+    Friend WithEvents Label109 As Label
+    Friend WithEvents Label110 As Label
+    Friend WithEvents Panel7 As Panel
+    Friend WithEvents Label112 As Label
+    Friend WithEvents Panel15 As Panel
+    Friend WithEvents Label101 As Label
+    Friend WithEvents Comp As NumericUpDown
+    Friend WithEvents Label111 As Label
+    Friend WithEvents Panel13 As Panel
+    Friend WithEvents ToolStripSeparator11 As ToolStripSeparator
+    Friend WithEvents TranspMode As ToolStripMenuItem
+    Friend WithEvents Label38 As Label
+    Friend WithEvents Label7 As Label
+    Friend WithEvents Label34 As Label
+    Friend WithEvents Label20 As Label
+    Friend WithEvents SplitContainer15 As SplitContainer
+    Friend WithEvents Grid5 As Grid
+    Friend WithEvents Label79 As Label
+    Friend WithEvents Label4 As Label
+    Friend WithEvents Panel2 As Panel
+    Friend WithEvents Label21 As Label
+    Friend WithEvents Label15 As Label
+    Friend WithEvents PictureBox1 As PictureBox
+    Friend WithEvents PictureBox2 As PictureBox
+    Friend WithEvents Label29 As Label
+    Friend WithEvents Label78 As Label
 End Class

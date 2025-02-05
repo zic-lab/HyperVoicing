@@ -419,18 +419,18 @@
 
         Try
             tbl1 = Gamme.Split() ' tbl(0) Tonique de la gamme ; tbl(1)=Chiffrage de la gamme
+            If tbl1.Count < 3 Then
+                a = Trim(tbl1(1))
+            Else
+                a = Trim(tbl1(1)) + " " + Trim(tbl1(2))
+            End If
             Dim indTonique As String = Det_IndexTonique(Trim(tbl1(0)))
 
-            ' RUSTINE 2 : tranformation de Blues en Blues1 pour rendre compatible les anciens fichiers Microsoft wave Table Synth
-            ''If Trim(tbl1(1)) = "Blues" Then
-            'tbl1(1) = "Blues1"
-            'End If
-
-            Dim info As String = DicoGammesBase(Trim(tbl1(1)))
+            Dim info As String = DicoGammesBase(a)
 
             tbl2 = info.Split(";")
             i = 3
-
+            a = ""
             While tbl2(i) <> "Fin"
                 j = DIntv(tbl2(i)) 'lecture index de la note de l'accord
                 b = mTabnotes(indTonique + j)

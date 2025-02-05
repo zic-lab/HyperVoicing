@@ -124,8 +124,8 @@
   <data name="Play_Inverse22px" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Play Inverse22px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="loupeMoins" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\loupeMoins.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="fleche_gauche_Bleu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fleche-gauche-Bleu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DELETE" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DELETE.BMP;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -145,11 +145,14 @@
   <data name="FR_Manuel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FR_Manuel.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Appli9" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Appli9.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="_48x48_Transp_vert__échelle3_" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\48x48-Transp-vert -échelle3-.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="NOTEBOOK" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\NOTEBOOK.BMP;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="icons_2188729_1920_ICON2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icons-2188729_1920_ICON2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Clavier" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Clavier.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="star_gif" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -160,14 +163,17 @@
   <data name="COPY_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\COPY_png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="IconeJouerGammeInversecopie" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\IconeJouerGammeInverse copie.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="fleche_gauche_Orange_copie" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fleche-gauche_Orange copie.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="VWDTLS" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\VW-DTLS.BMP;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="IconeJouerGamme" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\IconeJouerGamme.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Clavier" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Clavier.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="emoticon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\emoticon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -175,11 +181,11 @@
   <data name="Play1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Play1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="sourire" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\images.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Interrog" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Interrog.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Capture" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Capture.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="_03_splash" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\03_splash.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -193,6 +199,9 @@
   <data name="exportHTML" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\exportHTML.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="splashnew" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\splashnew.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="DELETE_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DELETE_png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -204,6 +213,9 @@
   </data>
   <data name="stop_" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\stop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="DRAWING" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DRAWING.BMP;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="globe_earth" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\globe-earth.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -223,23 +235,32 @@
   <data name="Stop11_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Stop11-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="flèche_bas_v2." type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\flèche_bas_v2..png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="ReinitGraph" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ReinitGraph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Play22pxVert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Play22pxVert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Marqueurs6" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Marqueurs6.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="ARW06LT" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ARW06LT.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HELP2_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\HELP2_png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MISC31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MISC31.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="NEW_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\NEW_png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="IconeJouerGammeInversecopie" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\IconeJouerGammeInverse copie.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="NOTEBOOK" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NOTEBOOK.BMP;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="HELP2_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\HELP2_png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="fleche_gauche_Rouge_copie" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fleche-gauche_Rouge-copie.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Notes" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Notes.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -247,14 +268,14 @@
   <data name="globe_earth24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\globe-earth24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="exportHTML2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\exportHTML2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="CUT_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CUT_png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Culture2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Culture2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ARW06LT" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ARW06LT.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="exportHTML3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\exportHTML3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="IconeJouerGammeMonter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\IconeJouerGammeMonter.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -265,23 +286,23 @@
   <data name="FichierListeAccords" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FichierListeAccords.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="loupeMoins" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\loupeMoins.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="domain__1_" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\domain (1).png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Base_Ternaire" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Base Ternaire.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="exportHTML3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\exportHTML3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="NOTE6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NOTE6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="MISC31" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\MISC31.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Appli9" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Appli9.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="_49229" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\49229.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Capture" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Capture.PNG;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="language_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\language-32x32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="FichierListeGammes_Cubasev2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FichierListeGammes-Cubasev2.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -289,23 +310,20 @@
   <data name="Start24bis" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Start24bis.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="_48x43_Transp_vert__échelle3_" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\48x43-Transp-vert -échelle3-.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="PRINT" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PRINT.BMP;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="language_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\language-32x32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="TIMER01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TIMER01.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="exportHTML2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\exportHTML2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="a_propos_v2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\a-propos_v2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="CUT_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CUT_png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="NOTE6" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\NOTE6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="loupePlus" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\loupePlus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="VersLocators" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\VersLocators.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -313,52 +331,49 @@
   <data name="Base_Binaire" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Base Binaire.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="_49229" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\49229.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="PRINT55" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PRINT55.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PASTE_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PASTE-png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="_32x32_Transp_vert__échelle3_" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\32x32-Transp-vert -échelle3-.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="WRENCH" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\WRENCH.ICO;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="FichierListeGammes" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\FichierListeGammes.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="Marqueurs6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Marqueurs6.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="sourire" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\images.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="globe_earth32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\globe-earth32x32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PRINT1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\PRINT1.BMP;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="loupePlus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\loupePlus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Play22px" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Play22px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="flèche_bas_v2." type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\flèche_bas_v2..png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fleche_gauche_Bleu" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fleche-gauche-Bleu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fleche_gauche_Orange_copie" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fleche-gauche_Orange copie.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="fleche_gauche_verte" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fleche-gauche-verte.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="FichierListeGammes_Cubasev4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FichierListeGammes-Cubasev4.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="icons_2188729_1920_ICON2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icons-2188729_1920_ICON2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="PRINT1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PRINT1.BMP;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="_32x32_Transp_vert__échelle3_" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\32x32-Transp-vert -échelle3-.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="FichierListeGammes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FichierListeGammes.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="_48x43_Transp_vert__échelle3_" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\48x43-Transp-vert -échelle3-.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Play22px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Play22px.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="_48x48_Transp_vert__échelle3_" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\48x48-Transp-vert -échelle3-.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="fleche_gauche_verte" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\fleche-gauche-verte.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="fleche-Bleu vers droite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fleche-Bleu vers droite.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

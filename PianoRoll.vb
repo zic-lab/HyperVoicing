@@ -1,7 +1,4 @@
-﻿Imports System.ComponentModel
-Imports System.Collections.Specialized ' pour stringcollection
-Imports System.Linq
-Imports System.Runtime.Remoting.Messaging ' pour la méthode intersect des listes utilisée dans la recherche de chiffrage d'accord
+﻿'
 Public Class PianoRoll
     Private Canal As Byte
     Private Piste As Byte
@@ -146,8 +143,12 @@ Public Class PianoRoll
         End Set
     End Property
 
+    ' Propriété de demande de rafraichissement après glisser/déposer
+    ' **************************************************************
+    Public Refresh As Boolean = False
+
     Public F1 As New Form ' remarque : l'intégration de F1 dans l'onglet (page) de TabControl4 se fait dans Form1/PIANOROLL_Création (dans form1)
-    Private Grid1 As New FlexCell.Grid
+    Public Grid1 As New FlexCell.Grid
     ' Note sans " "
     Public ValNoteCubase As New List(Of String) From {
                    "C-2", "C#-2", "D-2", "D#-2", "E-2", "F-2", "F#-2", "G-2", "G#-2", "A-2", "A#-2", "B-2",
@@ -186,6 +187,7 @@ Public Class PianoRoll
     ReadOnly fnt7 As New System.Drawing.Font("Verdana", 7, FontStyle.Regular)
     ReadOnly fnt8 As New System.Drawing.Font("Verdana", 6, FontStyle.Regular)
     ReadOnly fnt9 As New System.Drawing.Font("Verdana", 4, FontStyle.Regular)
+    ReadOnly fnt10 As New System.Drawing.Font("Arial", 11, FontStyle.Bold)
     '
     ' Couleurs des models Midi
     ' ************************
@@ -208,8 +210,8 @@ Public Class PianoRoll
     Public CCActif As New List(Of CheckBox)
     Public GridCourbes As New List(Of FlexCell.Grid)
     '
-    Private Panneau2 As New SplitContainer ' contient Panneau1 (Barre outil+Grid de PianoRoll) dans sa partie supérieure et Panel1(courbes) dans sa partie inférieure
-    Private Panneau1 As New SplitContainer ' contient la barre d'outil dans sa partie supérieur et le piano roll dans sa partie inférieure
+    Public Panneau2 As New SplitContainer ' contient Panneau1 (Barre outil+Grid de PianoRoll) dans sa partie supérieure et Panel1(courbes) dans sa partie inférieure
+    Public Panneau1 As New SplitContainer ' contient la barre d'outil dans sa partie supérieur et le piano roll dans sa partie inférieure
     ' Eléments de courbes
     Private PanelCourbes As New Panel
     Private TabCourbes As New TabControl
@@ -228,8 +230,20 @@ Public Class PianoRoll
     Private Dénominateur As Integer
     Private DivisionMes As Integer
     '
+    ' Variables pour écoute sur clic
+    ' ******************************
     Private NoteCourante As Byte = 64
+    Private CanalCourant As Byte
     Private NoteAEtéJouée As Boolean = False
+    '
+    Class JeuxPoly
+        Public Note As Byte
+        Public Dyna As Byte
+        Public Canal As Byte
+    End Class
+    Dim ListJPoly As New List(Of JeuxPoly)
+    '
+    'Private TouchePoly As Boolean = False ' Touche d'écoute polyphonique : touche Echapp (voir grid1.Keydown)
     '
     Private NbAccords As Integer
     Private Chargé As Boolean = False
@@ -278,6 +292,7 @@ Public Class PianoRoll
     Private BMacroSel As New Button
     '
     Private CadreAllerVers As New GroupBox
+    Private CadreCtrls As New GroupBox
     '
     Private CheckTop As New CheckBox
     Private Destination As New TextBox
@@ -293,8 +308,14 @@ Public Class PianoRoll
     Private Const HautLig = 26
     Private Const ValZoomMoins = 17
     Private Const ValZoomPlus = LargCol
-
     '
+    ' Affichage pour Aide
+    ' *******************
+    Dim CheckAide As New CheckBox
+    Dim PanelAide As New Panel
+    Dim H1 As New Label
+    Dim H2 As New Label
+    Private H3 As New TextBox
     ' Contrepoint
     ' ***********
     Private SautMel As New Label
@@ -304,11 +325,18 @@ Public Class PianoRoll
     Public CheckMultiCan As New CheckBox
     Public ContrePoint As New Label
     Public ChkContrePoint As New CheckBox
-
+    Dim Listinterv As New List(Of String) From {"uni", "b2", "2", "3m", "3", "4", "b5", "5", "b6", "6", "b7", "7",
+        "oct", "b9", "9", "3m", "3", "11", "11#", "5", "b13", "13"}
+    Dim listConson As New List(Of String) From {"uni", "3m", "3", "5", "b6", "6", "oct", "b13", "13"}
+    Dim listConsonParf As New List(Of String) From {"uni", "5", "oct"}
+    Dim listConsonImParf As New List(Of String) From {"3m", "3", "b6", "6"}
+    Dim ListDissonance As New List(Of String) From {"b2", "2", "4", "b5", "b7", "7", "b9", "9", "11", "11#", "b13", "13"}
     Private Opacit As New Label
+    Private TitreCtrP As New Label
     '
     Private Menu1 As New System.Windows.Forms.MenuStrip()
     Private Fichier As New System.Windows.Forms.ToolStripMenuItem()
+    Private Enregistrer As New System.Windows.Forms.ToolStripMenuItem()
     Private MIDIReset As New System.Windows.Forms.ToolStripMenuItem()
     Private Quitter As New System.Windows.Forms.ToolStripMenuItem()
     Private Edition As New System.Windows.Forms.ToolStripMenuItem()
@@ -350,8 +378,11 @@ Public Class PianoRoll
     '
     Private CompteurActive As Integer = 0
     Private ToolTip1 As New ToolTip
+    Private ToolTip2 As New ToolTip
 
     Private CoulBarOut As Color
+    '
+
     '
     ' trait de base pour les notes PianoRoll
     'Private ReadOnly Trait As String = Convert.ToString(Convert.ToChar(9644)) ' +=43
@@ -453,13 +484,21 @@ Public Class PianoRoll
     ' **************
     Dim MenuContext2 As New ContextMenuStrip
     Dim ItemSp1 As New ToolStripSeparator
+    Dim ItemSp2 As New ToolStripSeparator
     Dim itemVélo As New ToolStripMenuItem
+    Dim itemInfo As New ToolStripMenuItem
     Dim NotesNoire As New ToolStripMenuItem
+    Dim NotesOrange As New ToolStripMenuItem
     Dim NotesRouge As New ToolStripMenuItem
+    Dim NotesVert As New ToolStripMenuItem
+    Dim NotesBleues As New ToolStripMenuItem
+    '
+    Dim NotesRougeCanal_11 As New ToolStripMenuItem
+    Dim NotesVertCanal_12 As New ToolStripMenuItem
+    Dim NotesBleuesCanal_13 As New ToolStripMenuItem
+
     Dim Ligature As New ToolStripMenuItem
-    'Dim NotesBleu As New ToolStripMenuItem
-    'Dim NotesVert As New ToolStripMenuItem
-    'Dim NotesOrange As New ToolStripMenuItem
+
 
     '
     Public Orig_PianoR As New OrigPianoR
@@ -512,6 +551,55 @@ Public Class PianoRoll
     Dim listAffn As New List(Of Affn)
     Dim AffnAEtéJouée As Boolean = False ' pour rétablissement des dynamiques dans les têtes de note
 
+    ' variables pour affichage de la note courante par survol souris
+    ' **************************************************************
+    Class Affnote
+        Public oldRow As Integer = -1
+        Public Forecolor As Color
+        Public Backcolor As Color
+    End Class
+    Dim SauvAffNote As New Affnote
+    '
+    ' Classe pour message temporaire dans nom du son
+    ' **********************************************
+    Class Warn
+        Public Blocage As Boolean
+        Public Message As String
+        Public ForeColor As Color
+        Public BackColor As Color
+        Sub New()
+            Blocage = False
+            Message = ""
+            ForeColor = Color.Black
+            BackColor = Color.White
+        End Sub
+    End Class
+    '
+    Dim Warning As New Warn
+    '
+    ' Label bulle info souris pour Harmonie entre 2 notes 
+    ' ***************************************************
+    Private infoLabel As New Label()
+    Private EditionNotes As New CheckBox
+    Private AffInfoBulle As New CheckBox
+    Private WithEvents JouerPoly As New CheckBox
+    Private isMouseMoving As Boolean = False
+    Private lastMousePosition As Point
+    Private lastMouseRow As Integer
+    Private lastMouseCol As Integer
+    '
+    Private ToucheCTRL As Boolean = False
+    Private ToucheAlt As Boolean = False
+    Private ToucheC As Boolean = False
+    Private ToucheV As Boolean = False
+    '
+    ' Constantes de tessiture d'un iano utilisée pour les pianoroll : C7=108 ; A-1 = 21
+    ' *********************************************************************************
+    Public Const TessHaut As Integer = 108
+    Public Const TessBas As Integer = 19
+    Private Th As Integer 'Th et Tb sont mis à jour dans construction_grid1
+    Private Tb As Integer
+
     ' remarque sur Numérateur et dénominateur : 
     '   - Par exemple dans 3/4 : 3 est le numérateur, 4 est le dénominateur
     '   - Le dénominateur donne l'unité de base constituant une mesure : 
@@ -540,14 +628,20 @@ Public Class PianoRoll
         AddHandler F1.Activated, AddressOf F1_Activated
         AddHandler F1.Deactivate, AddressOf F1_Deactivate
         AddHandler F1.Resize, AddressOf F1_resize
-        AddHandler F1.KeyUp, AddressOf F1_KeyUp
+        'AddHandler F1.Shown, AddressOf F1_Shown
+
+
 
         AddHandler Grid1.MouseDown, AddressOf Grid1_MouseDown2
         AddHandler Grid1.MouseUp, AddressOf Grid1_MouseUp
+        AddHandler Grid1.MouseLeave, AddressOf Grid1_MouseLeave
+        AddHandler Grid1.MouseMove, AddressOf Grid1_MouseMove
+        AddHandler Grid1.MouseEnter, AddressOf Grid1_MouseEnter
         'AddHandler Grid1.KeyPress, AddressOf Grid1_KeyPress
         AddHandler Grid1.KeyDown, AddressOf Grid1_Keydown
         AddHandler Grid1.KeyUp, AddressOf Grid1_KeyUp
         AddHandler Grid1.Scroll, AddressOf Grid1_Scroll
+
         '
         AddHandler BoutonF1_1.Click, AddressOf BoutonF1_1_Click
         AddHandler BoutonF1_2.Click, AddressOf BoutonF1_2_Click
@@ -587,6 +681,7 @@ Public Class PianoRoll
         AddHandler Coller.Click, AddressOf Coller_Click
         AddHandler Annuler.Click, AddressOf Annuler_Click
         AddHandler Supprimer.Click, AddressOf Supprimer_Click
+        AddHandler Enregistrer.Click, AddressOf Enregistrer_Click
         AddHandler MIDIReset.Click, AddressOf MIDIReset_Click
         AddHandler Quitter.Click, AddressOf Quitter_Click
         '
@@ -601,6 +696,10 @@ Public Class PianoRoll
         AddHandler ListMod.KeyDown, AddressOf ListMod_KeyDown
         AddHandler ListPRG.KeyDown, AddressOf ListPRG_KeyDown
         AddHandler ListTonNotes.KeyDown, AddressOf ListTonNotes_KeyDown
+        '
+        'AddHandler H3.TextChanged, AddressOf H3_TextChanged
+
+
 
         Me.Numérateur = Det_Numérateur(Me.Métrique)
         Me.Dénominateur = Det_Dénominateur(Me.Métrique)
@@ -608,7 +707,7 @@ Public Class PianoRoll
         '
         Me.Canal = Canal
         Me.CoulBarOut = CoulBarout
-        Me.F1.KeyPreview = True ' pour réception des tocuhes F4 et F5 pour Recalcul
+
         '
         BoutonFermer.Visible = False
         ' Init des Listes des calques : variable publique peut être lue ou modifiée par le formulaire CalquesMIDI
@@ -631,12 +730,38 @@ Public Class PianoRoll
         ListPédale.Add("A")
         ListPédale.Add("A#")
         ListPédale.Add("B")
-
         '
+        ' Configuration du label info bulle sur la souris
+        ' ***********************************************
+        ' Configuration du label
+        Grid1.Controls.Add(infoLabel)
+        infoLabel.AutoSize = True
+        infoLabel.BackColor = SystemColors.Info
+        infoLabel.BorderStyle = BorderStyle.None
+        infoLabel.Visible = False
+
+
+        infoLabel.AutoSize = True
+        infoLabel.BackColor = SystemColors.Info
+        infoLabel.BorderStyle = BorderStyle.None
+        infoLabel.Font = fnt10 'New Font("Arial", 11, FontStyle.Bold)
+        infoLabel.Visible = False
+        infoLabel.BringToFront()
+        ' Configuration du timer
+        'infoBulleTimer.Interval = 100 ' Intervalle en millisecondes
+        'infoBulleTimer.Start()
+        F1.KeyPreview = True '
+
+        ToolTip2.ForeColor = Color.Red
     End Sub
     ' *******************************************************
     '  METHODES PUBLIQUES
     ' *******************************************************
+    '<summary>
+    'Dessine tous les composants du piano roll
+    '</summary>
+    '<param name="a">pas de paramètre d'entrée</param>
+    '<returns>pas de retour</returns>
     Public Sub F1_Refresh()
         '
         Grid1.AutoRedraw = False
@@ -654,7 +779,7 @@ Public Class PianoRoll
         '
         Graphique_Divisions()
         '
-        If CheckTonique.Checked Then ' affichage de la Tonique d'un Mode = pédale
+        If CheckTonique.Checked Then ' e
             Graphique_Tonique()
         End If
         '
@@ -669,10 +794,16 @@ Public Class PianoRoll
         End If
         Grid1.AutoRedraw = True
         Grid1.Refresh()
-        '
+        Grid1.Select() '
         Me.Chargé = True
         '
+        CouleurTess()
     End Sub
+    '<summary>
+    'Dessine tous les composants du piano roll
+    '</summary>
+    '<param name="a">pas de paramètre d'entrée</param>
+    '<returns>pas de retour</returns>
     Public Sub F1_Refresh2()
         '
         Grid1.AutoRedraw = False
@@ -700,6 +831,8 @@ Public Class PianoRoll
         End If
         Grid1.AutoRedraw = True
         Grid1.Refresh()
+        Grid1.Select() '
+
         '
         Me.Chargé = True
         '
@@ -739,7 +872,6 @@ Public Class PianoRoll
         Dim DebutNote As Integer
         Dim Départ As Integer
         Dim Volume As String
-
 
 
         ' NOTES
@@ -804,14 +936,15 @@ Public Class PianoRoll
             For j = Départ To nbColonnes
                 N_Mes = Fix((j - 1) / nbColonnesMes) + 1 ' N_Mes : N° de mesure
                 If (N_Mes >= Form1_Début) And (N_Mes <= Form1_Fin) Then ' 
-                    For i = Grid1.FixedRows - 1 To Grid1.Rows - 1
-                        If IsNumeric(Grid1.Cell(i, j).Text) Then
+                    'For i = Grid1.FixedRows - 1 To Grid1.Rows - 1
+                    For i = Th To Tb ' hypervoicing applique la tessiture d'un piano accoustique; Th et Tb sont maj dans Construction_Grid1
+                        If IsNumeric(Grid1.Cell(i, j).Text) Then ' NOTES
                             Me.PPresNotes = True
                             ' analyse de la grille des notes
                             ' ******************************
                             If i <> Grid1.FixedRows - 1 Then    ' Notes
                                 NumPiste = Trim(n)
-                                Canal = Trim(n)
+                                Canal = Det_can(Grid1.Cell(i, j).ForeColor).ToString 'Trim(n)
                                 If CheckMultiCan.Checked And n = "1" Then Canal = Det_MultiCanal(Grid1.Cell(i, j).ForeColor)
                                 ValeurNote = Convert.ToString(ValNoteCubase.IndexOf(Grid1.Cell(i, 0).Text))
                                 DebutNote = (j - 1) - ((Form1_Début - 1) * nbColonnesMes)
@@ -821,7 +954,7 @@ Public Class PianoRoll
                                 a = a + ("Note" + " " + Trim(NumPiste) + " " + Trim(Canal) + " " + Trim(ValeurNote) + " " + Trim(Début) + " " _
 + Trim(Durée) + " " + Trim(Vélocité) + "-")
                             End If
-                        Else
+                        Else ' CTRL
                             ' LIGNE DE PEDALE
                             pédale = Trim(Trim(Grid1.Cell(i, j).Text))
                             If j = Départ Then
@@ -829,7 +962,7 @@ Public Class PianoRoll
                             End If
                             If i = (Grid1.FixedRows - 1) And (Trim(Grid1.Cell(i, j).Text) <> "" Or Trim(pédale) <> "") Then   ' ligne de Pedal 
                                 NumPiste = Trim(n)
-                                Canal = Trim(n)
+                                Canal = Det_can(Grid1.Cell(i, j).ForeColor).ToString 'Trim(n)
                                 If Trim(pédale) = "P+" Then
                                     ValeurCtrl = 127
                                 Else
@@ -842,26 +975,18 @@ Public Class PianoRoll
                             End If
                         End If
                     Next i
-                    ' analyse des courbes de controleurs
-                    ' **********************************
+                    ' Courbes de controleurs : expression, modulation, pan, cc50, cc51, cc52, cc53
+                    ' ****************************************************************************
                     For p = 0 To nbCourbes - 1
                         If CCActif.Item(p).Checked Then
-                            ValeurCtrl = ValCtrl(p, j)
-                            If (ValeurCtrl <> TValPréded(p) And Trim(ValeurCtrl) <> "-1") Or (j = Départ) Then 'Or (Trim(ValeurCtrl) = "-1" And j = Départ) Then
-                                'If ValeurCtrl <> TValPréded(p) Or (Trim(ValeurCtrl) = "-1" And j = Départ) Then ' And j = Départ) Then ' pas besoin de répéter plusieurs fois la même valeur ssauf sur le départ  (surtout le 0)
-                                ' on n'écrit l'expression que si le check du CTRL est true
-                                If j = Départ Then ' on va rechercher une valeur de CTRL située au départ ou avant  ' 
-                                    ValeurCtrl = DetCTRLAvant(p, j)
-                                    If ValeurCtrl = "-1" And p <> 0 Then ValeurCtrl = "0" ' P=0 est le CTRL d'expression et on peut pas le mettre à Zéro si aucune valeur n'est présente car cela coupe le son du canal
-                                End If
-                                If Trim(ValeurCtrl) <> "-1" Then ' cas du controleur d'expression sans valeur avant
-                                    NumPiste = Trim(n)
-                                    Canal = Trim(n)
-                                    DebutNote = (j - 1) - ((Form1_Début - 1) * nbColonnesMes)
-                                    Début = Convert.ToString(DebutNote + (k * LongueurPart))
-                                    a = a + "CTRL" + " " + Trim(NumPiste) + " " + Trim(Canal) + " " + Trim(Début) + " " + Convert.ToString(Det_CTRL(p)) + " " + Trim(ValeurCtrl) + "-"
-                                    TValPréded(p) = ValeurCtrl
-                                End If
+                            ValeurCtrl = ValCtrl(p, j) ' ValCtrl traite différemment les ctrl Expression et Pan des autres ctrl
+                            If (ValeurCtrl <> TValPréded(p)) Or (j = Départ) Then ' TValPréced donne la valeur la plus immédiate avant la valeur en cours
+                                NumPiste = Trim(n)
+                                Canal = Trim(n)
+                                DebutNote = (j - 1) - ((Form1_Début - 1) * nbColonnesMes)
+                                Début = Convert.ToString(DebutNote + (k * LongueurPart))
+                                a = a + "CTRL" + " " + Trim(NumPiste) + " " + Trim(Canal) + " " + Trim(Début) + " " + Convert.ToString(Det_CTRL(p)) + " " + Trim(ValeurCtrl) + "-"
+                                TValPréded(p) = ValeurCtrl
                             End If
                         End If
                     Next p
@@ -921,9 +1046,7 @@ Public Class PianoRoll
         Dim j As Integer = colonne
         Dim k As Integer = 0
         For ligne = 1 To GridCourbes.Item(N_Courbe).Rows - 1
-            If ligne = GridCourbes.Item(N_Courbe).Rows - 1 Then
-                k = 0 ' remise à 0 du CTRl si pas de valeur
-                ' If N_Courbe = 0 Then k = 128 ' quand le CTRL d'expression est absent on le neutralise en lui donnant une valeur max 
+            If ligne = GridCourbes.Item(N_Courbe).Rows - 1 Then ' /si/ courbe non dessinée dans la colonne
                 k = CTRL_ValAmont(N_Courbe, colonne)
                 Exit For
             Else
@@ -1066,6 +1189,7 @@ Public Class PianoRoll
         Dim i, j As Integer
         Dim nbColonnesMes As Integer
         Dim a As String = "PianoRoll," + NumPianoR(Me.Canal.ToString, "HV") + ",NotesMélo,"
+
         '
         Dim Ligne As String
         Dim Colonne As String
@@ -1078,18 +1202,20 @@ Public Class PianoRoll
         nbColonnesMes = NbDivInduit(Me.Dénominateur) * Me.Numérateur ' en 4/4 le résultat donne 16, en 7/8
         nbColonnes = (nbColonnesMes) * nbMesuresX 'Me.NbAccords ' 
         '
+
         For j = 1 To nbColonnes
             For i = Grid1.FixedRows - 1 To Grid1.Rows - 1
                 If IsNumeric(Grid1.Cell(i, j).Text) Then
-                    If i <> Grid1.FixedRows - 1 Then ' notes
+                    If i <> Grid1.FixedRows - 1 Then ' NOTES
                         Ligne = Convert.ToString(i)
                         Colonne = Convert.ToString(j)
                         ValeurNote = Convert.ToString(ValNoteCubase.IndexOf(Grid1.Cell(i, 0).Text))
                         Durée = Det_LongueurNote(i, j) ' longueur de la note en nombre de double croches
                         Vélocité = Trim(Grid1.Cell(i, j).Text)
                         CoulNote = Grid1.Cell(i, j).ForeColor.ToString
+                        If CoulNote <> "[Red]" And CoulNote <> "[Green]" And CoulNote <> "[Blue]" And CoulNote <> "[DarkMagenta]" Then CoulNote = CoulNote.Replace(",", "_")
                         a = a + Ligne + "-" + Colonne + "-" + ValeurNote + "-" + Durée + "-" + Vélocité + "-" + CoulNote + ","
-                    Else ' CTRL expression
+                    Else  ' CTRLs expression
                         Ligne = Convert.ToString(i) ' le N° de ligne = 5 permet dans 'Ouvrir' de reconnaitre le CTRl Modulation = 1 
                         Colonne = Convert.ToString(j)
                         ValeurCtrl = Trim(Grid1.Cell(i, j).Text)
@@ -1142,12 +1268,17 @@ Public Class PianoRoll
         For i = 0 To nbCourbes - 1
             a = a + Convert.ToString(CCActif.Item(i).Checked) + ","
         Next i
-        If Me.Canal = 1 Then
-            a = a + Convert.ToString(AffCtrls.Checked) + ","
-            a = a + Convert.ToString(CheckMultiCan.Checked)
-        Else
-            a = a + Convert.ToString(AffCtrls.Checked)
-        End If
+        a = a + Convert.ToString(AffCtrls.Checked) + ","
+        a = a + Convert.ToString(AffInfoBulle.Checked)
+
+
+
+        'If Me.Canal = 1 Then
+        'a = a + Convert.ToString(AffCtrls.Checked) + ","
+        'a = a + Convert.ToString(CheckMultiCan.Checked)
+        'Else
+        'a = a + Convert.ToString(AffCtrls.Checked)
+        'End If
         Return a
     End Function
     Public Function Enregistrer_Assist1CTRP() As String
@@ -1176,18 +1307,19 @@ Public Class PianoRoll
         Dim tbl1() As String
         tbl1 = LesCtrlSys.Split(",")
 
-        If Me.Canal = 1 Then
-            For i = 3 To tbl1.Count - 3
-                CCActif.Item(i - 3).Checked = tbl1(i)
-            Next
-            AffCtrls.Checked = tbl1(tbl1.Count - 2)
-            CheckMultiCan.Checked = tbl1(tbl1.Count - 1)
-        Else
-            For i = 3 To tbl1.Count - 2
-                CCActif.Item(i - 3).Checked = tbl1(i)
-            Next
-            AffCtrls.Checked = tbl1(tbl1.Count - 1)
-        End If
+        'If Me.Canal = 1 Then
+        'For i = 3 To tbl1.Count - 3
+        'CCActif.Item(i - 3).Checked = tbl1(i)
+        'Next
+        'AffCtrls.Checked = tbl1(tbl1.Count - 2)
+        'CheckMultiCan.Checked = tbl1(tbl1.Count - 1)
+        'Else
+        For i = 3 To tbl1.Count - 3
+            CCActif.Item(i - 3).Checked = Boolean.Parse(tbl1(i))
+        Next
+        AffCtrls.Checked = Boolean.Parse(tbl1(tbl1.Count - 2))
+        AffInfoBulle.Checked = Boolean.Parse(tbl1(tbl1.Count - 1))
+        'End If
         '
     End Sub
     Public Sub Charger_CalquesMIDI(LesCalques As String)
@@ -1314,6 +1446,7 @@ Public Class PianoRoll
             CCActif.Item(i).Checked = False
         Next i
         AffCtrls.Checked = False
+        AffInfoBulle.Checked = False
     End Sub
     Public Sub Clear_Courbes()
         Dim i As Integer
@@ -1368,6 +1501,7 @@ Public Class PianoRoll
         Dim tbl2() As String
         Dim Durée As Integer
         Dim Vélocité As String
+        Dim c As Color
 
         If Trim(LesNotes) <> "" Then
             tbl1 = LesNotes.Split(",")
@@ -1385,18 +1519,20 @@ Public Class PianoRoll
                     ' écriture de la note
                     ' *******************
                     If tbl2.Count - 1 = 5 Then ' verrue à retirer + tard : dans les anciens fichiers, il n'y a pas de tbl(5) pour définir la couleur de note, les données s'arrêtent à tbl(4)
-                        Grid1.Cell(i, j).ForeColor = det_CoulNote(tbl2(5))
+                        c = Det_CoulNote(tbl2(5))
+                        Grid1.Cell(i, j).ForeColor = c
                     Else
                         Grid1.Cell(i, j).ForeColor = Color.Black
                     End If
                     Grid1.Cell(i, j).Text = Vélocité
-                        Grid1.Cell(i, j).FontBold = True
-                        For m = j + 1 To (Durée + j - 1)
-                            Grid1.Cell(i, m).Text = Trait
-                            Grid1.Cell(i, m).FontBold = True
-                        Next
-                    Else ' CTRL modulation = 1 pour ligne (i) = 5
-                        Grid1.Cell(i, j).Text = Trim(tbl2(2))
+                    Grid1.Cell(i, j).FontBold = True
+                    For m = j + 1 To (Durée + j - 1)
+                        Grid1.Cell(i, m).Text = Trait
+                        Grid1.Cell(i, m).FontBold = True
+                        Grid1.Cell(i, m).ForeColor = c
+                    Next
+                Else ' CTRL modulation = 1 pour ligne (i) = 5
+                    Grid1.Cell(i, j).Text = Trim(tbl2(2))
                 End If
             Next k
             Grid1.AutoRedraw = True
@@ -1404,19 +1540,25 @@ Public Class PianoRoll
             Grid1.Visible = True
         End If
     End Sub
-    Function det_CoulNote(c As String) As Color
-        Dim a As Color
+    Function Det_CoulNote(c As String) As Color
+        Dim a As Color = Color.Black
         Select Case c
             Case "Color [Black]"
                 a = Color.Black
             Case "Color [Red]"
                 a = Color.Red
+            Case "Color [Green]"
+                a = Color.Green
             Case "Color [Blue]"
                 a = Color.Blue
-            Case "Color [DarkOliveGreen]"
-                a = Color.DarkOliveGreen
-            Case "Color [DarkOrchid]"
-                a = Color.DarkOrchid
+            Case "Color [DarkMagenta]"
+                a = Color.DarkMagenta
+            Case "Color [A=255_ R=155_ G=0_ B=0]"
+                a = Color.FromArgb(255, 155, 0, 0)
+            Case "Color [A=255_ R=0_ G=93_ B=0]"
+                a = Color.FromArgb(255, 0, 93, 0)
+            Case "Color [A=255_ R=0_ G=0_ B=180]"
+                a = Color.FromArgb(255, 0, 0, 180)
         End Select
         Return a
     End Function
@@ -1500,6 +1642,12 @@ Public Class PianoRoll
         F1.FormBorderStyle = FormBorderStyle.SizableToolWindow
         F1.ControlBox = False
         ' 
+        F1.KeyPreview = True
+
+
+
+        '
+
         Maj_TabNotes()
         Construction_Grid1()
         Construction_BarreOutils()
@@ -1517,6 +1665,9 @@ Public Class PianoRoll
         '
         Construction_MenuContext()
 
+        '
+
+
         ' A placer obligatoirement en fin de création de l'IHM
         Position_Init() ' taille du formulaire F1 et Positionnement du splitter du haut(splitter Panneau1)
         Hide_Ctrls()
@@ -1530,90 +1681,247 @@ Public Class PianoRoll
             itemVélo.Text = "Random velocities"
         End If
         MenuContext2.Items.Add(itemVélo)
-
-        ' Barrre de séparation
+        ' Trait de séparation
         MenuContext2.Items.Add(ItemSp1)
-        '
         ' Menu Notes en noire
         NotesNoire.ForeColor = Color.Black
         NotesNoire.Checked = True
+
+
+
+        ' ______________ Couleurs pour canal courant________________________
         If Langue = "fr" Then
-            NotesNoire.Text = "Notes en noire"
+            NotesNoire.Text = "Notes noires (poly)"
         Else
-            NotesNoire.Text = "Notes in black)"
+            NotesNoire.Text = "Black notes (poly)"
         End If
         MenuContext2.Items.Add(NotesNoire)
+        ' Trait de séparation
+        MenuContext2.Items.Add(ItemSp2)
         '
-        ' Menu Notes en rouge
+        '
+        ' Menu Notes en rouge - canal 13
+        NotesOrange.ForeColor = Color.DarkMagenta
+        If Langue = "fr" Then
+            NotesOrange.Text = "- Notes magenta (c=13)"
+        Else
+            NotesOrange.Text = "- Magenta notes (c=13)"
+        End If
+        MenuContext2.Items.Add(NotesOrange)
+
+
+
+        ' Menu Notes en rouge - canal 14
         NotesRouge.ForeColor = Color.Red
         If Langue = "fr" Then
-            NotesRouge.Text = "Notes en rouge"
+            NotesRouge.Text = "- Notes rouges (c=14)"
         Else
-            NotesRouge.Text = "Notes in red"
+            NotesRouge.Text = "- Red notes (c=14)"
         End If
         MenuContext2.Items.Add(NotesRouge)
         '
-        ' Ligature
-        MenuContext2.Items.Add(Ligature)
-        Ligature.Text = "Ligature"
-        Ligature.Checked = False
+        ' Menu Notes en Vert - canal 15
+        NotesVert.ForeColor = Color.Green
+        If Langue = "fr" Then
+            NotesVert.Text = "- Notes vertes (c=15)"
+        Else
+            NotesVert.Text = "- Green Notes (c=15)"
+        End If
+        MenuContext2.Items.Add(NotesVert)
 
-
-        ' Menu Notes en Bleu
-        'NotesBleu.ForeColor = Color.Blue
-        'If Langue = "fr" Then
-        'NotesBleu.Text = "Notes en bleu (C13)"
-        'Else
-        'NotesBleu.Text = "Notes in blue (C13)"
-        'End If
-        'MenuContext2.Items.Add(NotesBleu)
+        ' Menu Notes en Bleu canal 16
+        NotesBleues.ForeColor = Color.Blue
+        If Langue = "fr" Then
+            NotesBleues.Text = "- Notes bleues (c=16)"
+        Else
+            NotesBleues.Text = "- Blue Notes (c=16)"
+        End If
+        MenuContext2.Items.Add(NotesBleues)
         ' '
-        '' Menu Notes en Vert
-        'NotesVert.ForeColor = Color.Green
-        'If Langue = "fr" Then
-        'NotesVert.Text = "Notes en vert (C14)"
-        'Else
-        'NotesVert.Text = "Notes in green (C14)"
-        'End If
-        'MenuContext2.Items.Add(NotesVert)
-        ''
-        '' Menu Notes en orange
-        'NotesOrange.ForeColor = Color.DarkOrchid
-        'If Langue = "fr" Then
-        'NotesOrange.Text = "Notes en violet (C15)"
-        'Else
-        'NotesOrange.Text = "Notes in purple (C15)"
-        'End If
-        'MenuContext2.Items.Add(NotesOrange)
+        ' ______________Canal/Couleur en contrepoint________________________
 
+        ' Menu Notes en rouge
+        'NotesRougeCanal_11.ForeColor = DarkenColor(Color.Red, 100)
+        'If Langue = "fr" Then
+        'NotesRougeCanal_11.Text = "- Notes rouges (Canal 11)"
+        'Else
+        'NotesRougeCanal_11.Text = "- Red notes (Channel 11)"
+        'End If
+        'MenuContext2.Items.Add(NotesRougeCanal_11)
+        ''
+        '' Menu Notes en Vert
+        'NotesVertCanal_12.ForeColor = DarkenColor(Color.Green, 35)
+        'If Langue = "fr" Then
+        'NotesVertCanal_12.Text = "- Notes vertes (Canal 12)"
+        'Else
+        'NotesVertCanal_12.Text = "- Green Notes (Channel 12)"
+        'End If
+        'MenuContext2.Items.Add(NotesVertCanal_12)
+
+        '' Menu Notes en Bleu
+        'NotesBleuesCanal_13.ForeColor = DarkenColor(Color.Blue, 75)
+        'If Langue = "fr" Then
+        'NotesBleuesCanal_13.Text = "- Notes bleues (Canal 13)"
+        'Else
+        'NotesBleuesCanal_13.Text = "- Blue Notes (Channel 13)"
+        'End If
+        'MenuContext2.Items.Add(NotesBleuesCanal_13)
+        '
+        '' Ligature
+        '' ********
+        'MenuContext2.Items.Add(Ligature)
+        Ligature.Text = "- Ligature"
+        Ligature.Checked = False
         AddHandler itemVélo.Click, AddressOf itemVéloClick
-        AddHandler NotesNoire.Click, AddressOf NotesNoireClick
-        AddHandler NotesRouge.Click, AddressOf NotesRougeClick
+        AddHandler NotesNoire.Click, AddressOf NotesNoiresClick
+        AddHandler NotesOrange.Click, AddressOf NotesOrangesClick
+        AddHandler NotesRouge.Click, AddressOf NotesRougesClick
+        AddHandler NotesVert.Click, AddressOf NotesVertesClick
+        AddHandler NotesBleues.Click, AddressOf NotesBleuesClick
+        '
+        'AddHandler NotesRougeCanal_11.Click, AddressOf NotesRougesCanal_11Click
+        'AddHandler NotesVertCanal_12.Click, AddressOf NotesVertesCanal_12Click
+        'AddHandler NotesBleuesCanal_13.Click, AddressOf NotesBleuesCanal_13Click
+        '
         AddHandler Ligature.Click, AddressOf LigatureClick
         'AddHandler NotesVert.Click, AddressOf NotesVertClick
         'AddHandler NotesOrange.Click, AddressOf NotesOrangeClick
         '
     End Sub
+    ''' <summary>
+    ''' Assombrir une couleur
+    ''' </summary>
+    ''' <param name="color">couleur à assombrir</param>
+    ''' <param name="amount">quantité à soustraire pour assombrir</param>
+    ''' <returns></returns>
+    Function DarkenColor(color As Color, amount As Integer) As Color
+        Dim r As Integer = Math.Max(color.R - amount, 0)
+        Dim g As Integer = Math.Max(color.G - amount, 0)
+        Dim b As Integer = Math.Max(color.B - amount, 0)
+
+        Return Color.FromArgb(color.A, r, g, b)
+    End Function
+    ''' <summary>
+    ''' Détermination du canal MIDI en fonction de la couleur de la note
+    ''' </summary>
+    ''' <param name="C">couleur de la note pour déterminer son canal</param>
+    ''' <returns></returns>
+    Public Function Det_can(C As Color) As Byte
+        Dim ret As Byte = Me.Canal
+        Select Case C
+            Case Color.Black
+                ret = Me.Canal ' n° canal du piano roll par défaut
+            Case Color.DarkMagenta
+                ret = 12 ' canal 13
+            Case Color.Red
+                ret = 13 ' canal 14
+            Case Color.Green
+                ret = 14 ' canal 15
+            Case Color.Blue
+                ret = 15 'canal 16
+                'Case DarkenColor(Color.Red, 100)
+                'ret = 10 ' canal 11
+                'Case DarkenColor(Color.Green, 35)
+                'ret = 11 ' canal 12
+                'Case DarkenColor(Color.Blue, 75)
+                'ret = 12 ' canal 13
+        End Select
+
+        Return ret
+    End Function
     Sub LigatureClick()
         Ligature.Checked = Not Ligature.Checked
     End Sub
 
 
-    Sub NotesNoireClick()
+    Sub NotesNoiresClick()
         Couleurnote = Color.Black
-        NotesRouge.Checked = False
         NotesNoire.Checked = True
+        NotesOrange.Checked = False
+        NotesRouge.Checked = False
+        NotesVert.Checked = False
+        NotesBleues.Checked = False
+        NotesRougeCanal_11.Checked = False
+        NotesVertCanal_12.Checked = False
+        NotesBleuesCanal_13.Checked = False
     End Sub
-    Sub NotesRougeClick()
-        Couleurnote = Color.Red
-        NotesRouge.Checked = True
+
+    Sub NotesOrangesClick()
+        Couleurnote = Color.DarkMagenta          'ColorTranslator.FromHtml("#bb8fce")
+        NotesOrange.Checked = True
         NotesNoire.Checked = False
+        NotesRouge.Checked = False
+        NotesVert.Checked = False
+        NotesBleues.Checked = False
+        NotesRougeCanal_11.Checked = False
+        NotesVertCanal_12.Checked = False
+        NotesBleuesCanal_13.Checked = False
     End Sub
-    Sub NotesBleuClick()
+
+    Sub NotesRougesClick()
+        Couleurnote = Color.Red
+        NotesOrange.Checked = False
+        NotesNoire.Checked = False
+        NotesRouge.Checked = True
+        NotesVert.Checked = False
+        NotesBleues.Checked = False
+        NotesRougeCanal_11.Checked = False
+        NotesVertCanal_12.Checked = False
+        NotesBleuesCanal_13.Checked = False
+    End Sub
+    Sub NotesVertesClick()
+        NotesOrange.Checked = False
+        Couleurnote = Color.Green
+        NotesNoire.Checked = False
+        NotesRouge.Checked = False
+        NotesVert.Checked = True
+        NotesBleues.Checked = False
+        NotesRougeCanal_11.Checked = False
+        NotesVertCanal_12.Checked = False
+        NotesBleuesCanal_13.Checked = False
+    End Sub
+    Sub NotesBleuesClick()
+        NotesOrange.Checked = False
         Couleurnote = Color.Blue
+        NotesNoire.Checked = False
+        NotesRouge.Checked = False
+        NotesVert.Checked = False
+        NotesBleues.Checked = True
+        NotesRougeCanal_11.Checked = False
+        NotesVertCanal_12.Checked = False
+        NotesBleuesCanal_13.Checked = False
     End Sub
-    Sub NotesVertClick()
-        Couleurnote = Color.DarkOliveGreen
+
+    Sub NotesRougesCanal_11Click()
+        Couleurnote = DarkenColor(Color.Red, 100)
+        NotesNoire.Checked = False
+        NotesRouge.Checked = False
+        NotesVert.Checked = False
+        NotesBleues.Checked = False
+        NotesRougeCanal_11.Checked = True
+        NotesVertCanal_12.Checked = False
+        NotesBleuesCanal_13.Checked = False
+    End Sub
+
+    Sub NotesVertesCanal_12Click()
+        Couleurnote = DarkenColor(Color.Green, 35) ' ColorTranslator.FromHtml("#00FA9A") ' medium spring green 'Color.Green
+        NotesNoire.Checked = False
+        NotesRouge.Checked = False
+        NotesVert.Checked = False
+        NotesBleues.Checked = False
+        NotesRougeCanal_11.Checked = False
+        NotesVertCanal_12.Checked = True
+        NotesBleuesCanal_13.Checked = False
+    End Sub
+    Sub NotesBleuesCanal_13Click()
+        Couleurnote = DarkenColor(Color.Blue, 75) 'ColorTranslator.FromHtml("#4682B4") ' steel blue
+        NotesNoire.Checked = False
+        NotesRouge.Checked = False
+        NotesVert.Checked = False
+        NotesBleues.Checked = False
+        NotesRougeCanal_11.Checked = False
+        NotesVertCanal_12.Checked = False
+        NotesBleuesCanal_13.Checked = True
     End Sub
     Sub NotesOrangeClick()
         Couleurnote = Color.DarkOrchid
@@ -1701,7 +2009,7 @@ Public Class PianoRoll
         'Else
         Panneau2.SplitterDistance = Panneau2.Height - 195
         'End If
-        'Panneau2.IsSplitterFixed = True
+        Panneau2.IsSplitterFixed = True ' 
         '
         PanelCourbes.Visible = True
         '
@@ -1717,7 +2025,8 @@ Public Class PianoRoll
         MidiLearn.Checked = False
         Panneau2.IsSplitterFixed = False
         Panneau2.SplitterDistance = Panneau2.Size.Height
-        Panneau2.IsSplitterFixed = False
+
+        Panneau2.IsSplitterFixed = True '<-------
         PanelCourbes.Visible = False
         '
         For i = 0 To nbCourbes - 1
@@ -1787,14 +2096,6 @@ Public Class PianoRoll
             For j = 0 To GridCourbes.Item(i).Cols - 1
                 GridCourbes.Item(i).Column(j).Width = LargCol
             Next
-
-            'Dim ii, jj As Integer
-            'For ii = 0 To (GridCourbes.Item(i).Rows) - 1
-            'For jj = 0 To GridCourbes.Item(i).Cols - 1
-            'GridCourbes.Item(i).Cell(ii, jj).BackColor = Color.White
-            'Next
-            'Next
-            '   GridCourbes.Item(i).HideGridLines = True
 
             Select Case i
                 Case 0
@@ -1925,7 +2226,7 @@ Public Class PianoRoll
         If LangueIHM = "fr" Then
             Assist2Text1.Text = "Veuillez sélectionner au moins 3 notes dans le Piano Roll"
         Else
-            Assist2Text1.Text = "Please select at least 3 notes in the Piano Roll"
+            Assist2Text1.Text = "Please Select at least 3 notes In the Piano Roll"
         End If
 
         Assist2Text1.Visible = False
@@ -2113,9 +2414,12 @@ Public Class PianoRoll
             If GridCourbes.Item(N_Courbe).Cell(ligne, j).BackColor <> Color.White Then ' valeur trouvée
                 k = ((GridCourbes.Item(N_Courbe).Rows - 1 - ligne) * 2) - 1
                 Exit For
+            Else
+                k = CTRL_ValAmont(N_Courbe, j)
             End If
         Next ligne
         '
+        k = k - 1
         If k = -1 Then
             AffMidiLearn.Text = "off"
         Else
@@ -2164,8 +2468,9 @@ Public Class PianoRoll
         If Orig_PianoR.Orig1 = OrigPianoCourbe.Courbe Then
             If e.KeyCode <> Keys.ControlKey Then
                 If Orig_PianoR.Orig1 = OrigPianoCourbe.Courbe Then
-                    If e.KeyCode = Keys.Add Or e.KeyCode = Keys.Subtract Then
+                    If e.KeyCode = Keys.Add Or e.KeyCode = Keys.Subtract Or e.KeyCode = Keys.P Or e.KeyCode = Keys.M Then
                         b = ValCtrl2_Ligne(ind, j) ' 
+                        'b = ValCtrl(ind, j)
                         If Trim(b) <> "" Then
                             k = Convert.ToInt16(Trim(b)) ' lecture de la ligne actuelle
                             '
@@ -2174,7 +2479,7 @@ Public Class PianoRoll
                             '
                             ' INCREMENTATION
                             ' **************
-                            If e.KeyCode = Keys.Add Then
+                            If e.KeyCode = Keys.Add Or e.KeyCode = Keys.P Then
                                 k -= 1
                                 GridCourbes.Item(ind).AutoRedraw = False
                                 GridCourbes.Item(ind).Range(k, j, GridCourbes.Item(ind).Rows - 1, j).BackColor = Det_CouleurCTRL(ind)
@@ -2191,11 +2496,10 @@ Public Class PianoRoll
                                 Else
                                     AffMidiLearn.Text = "--"
                                 End If
-
                                 '
                                 ' DECREMENTATION
                                 ' **************
-                            ElseIf e.KeyCode = Keys.Subtract Then
+                            ElseIf e.KeyCode = Keys.Subtract Or e.KeyCode = Keys.M Then
                                 k += 1
                                 If k <= GridCourbes.Item(ind).Rows - 1 Then '  And k <= GridCourbes.Item(ind).Rows - 1 
                                     GridCourbes.Item(ind).AutoRedraw = False
@@ -2209,12 +2513,12 @@ Public Class PianoRoll
                                     If Trim(vv) <> "-1" Then
                                         v = Trim(vv) 'Convert.ToByte(vv)
                                         AffMidiLearn.Text = v.ToString
-                                        If MidiLearn.Checked Then
-                                            Dim c As Byte = Det_CTRL(ind)
-                                            Send_CTRL(c, v, Canal) ' Canal est donné par la constructeur de la classe
-                                        End If
+                                        ''If MidiLearn.Checked Then
+                                        Dim c As Byte = Det_CTRL(ind)
+                                        Send_CTRL(c, v, Canal) ' Canal est donné par le constructeur de la classe
+                                        'End If
                                     Else
-                                        AffMidiLearn.Text = "--"
+                                        AffMidiLearn.Text = "off"
                                     End If
                                 End If
                             End If
@@ -2322,6 +2626,10 @@ Public Class PianoRoll
 
         If Me.F1.Dock = DockStyle.Fill Then
             Me.F1.Visible = False '   --> DETACHER
+            '
+            CheckAide.Visible = False ' gestion de l'aide
+            PanelAide.Visible = False
+            '
             Me.F1.FormBorderStyle = FormBorderStyle.SizableToolWindow
             F1.Text = "PIANO ROLL" + Str(Me.Canal + 1) ' - 5)
             ' 
@@ -2361,34 +2669,37 @@ Public Class PianoRoll
             Maj_Tooltips()
         Else                            ' --> ATTACHER
             Me.F1.Visible = False
+            '
+            CheckAide.Visible = True ' gestion de l'aide
+            If CheckAide.Checked Then PanelAide.Visible = True
             Me.F1.FormBorderStyle = FormBorderStyle.None ' attacher
-            Me.F1.TopMost = False   ' un seul des 2 suffit ?
-            Me.F1.TopLevel = False
-            Form1.TabControl4.TabPages.Item(NumOnglet).Controls.Add(Me.F1)
-            F1.Text = Nothing
-            Me.F1.MainMenuStrip.Visible = False
-            Me.F1.MainMenuStrip.Enabled = False
-            'Menu1.Visible = False
-            'Menu1.Enabled = False
-            'AnnulationHandlerEdition()
-            Me.F1.Dock = DockStyle.Fill
-            '
-            If Module1.LangueIHM = "fr" Then
-                DockButton.Text = "Détacher"
-            Else
-                DockButton.Text = "UnDock"
+                Me.F1.TopMost = False   ' un seul des 2 suffit ?
+                Me.F1.TopLevel = False
+                Form1.TabControl4.TabPages.Item(NumOnglet).Controls.Add(Me.F1)
+                F1.Text = Nothing
+                Me.F1.MainMenuStrip.Visible = False
+                Me.F1.MainMenuStrip.Enabled = False
+                'Menu1.Visible = False
+                'Menu1.Enabled = False
+                'AnnulationHandlerEdition()
+                Me.F1.Dock = DockStyle.Fill
+                '
+                If Module1.LangueIHM = "fr" Then
+                    DockButton.Text = "Détacher"
+                Else
+                    DockButton.Text = "UnDock"
+                End If
+                Me.F1.Visible = True
+                '
+                Refresh_Général()
+                Maj_Tooltips()
+                '
+                If AffCtrls.Checked Then
+                    Show_Ctrls()
+                Else
+                    Hide_Ctrls()
+                End If
             End If
-            Me.F1.Visible = True
-            '
-            Refresh_Général()
-            Maj_Tooltips()
-            '
-            If AffCtrls.Checked Then
-                Show_Ctrls()
-            Else
-                Hide_Ctrls()
-            End If
-        End If
     End Sub
     ''' <summary>
     ''' Attacher : attacher le formulaire. Sert au menu Fichier/Quitter du formulaire
@@ -2429,6 +2740,12 @@ Public Class PianoRoll
         If e.KeyCode = Keys.Enter Then
             e.SuppressKeyPress = True ' pour supprimer le son sur 'Enter' - ne fonctionne que sur KeyDown
             Aller_Vers()
+        End If
+        '
+        If e.KeyCode = Keys.Escape Then
+            TouchePoly = True
+        Else
+            TouchePoly = False
         End If
     End Sub
     Private Sub Destination_TextChanged(sender As Object, e As EventArgs)
@@ -2526,8 +2843,10 @@ Public Class PianoRoll
         Grid1.Range(5, 1, 5, 1)
     End Sub
     Private Sub F1_Activated(sender As Object, e As EventArgs)
-        'F1.Opacity = 1
-        'Panneau1.Visible = True
+        If Form1.PR_Refresh1(Me.Canal - 1) = True Then
+            Form1.Maj_PianoRoll2(Me.Canal - 1)
+            Form1.PR_Refresh1(Me.Canal - 1) = False
+        End If
     End Sub
     Private Sub F1_Deactivate(sender As Object, e As EventArgs)
 
@@ -2544,29 +2863,6 @@ Public Class PianoRoll
             Panneau2.IsSplitterFixed = True
         End If
     End Sub
-    Private Sub F1_KeyUp(sender As Object, e As KeyEventArgs)
-        '' PLAY, RECALCUL : F5
-        '' *******************
-        'If e.KeyCode = Keys.F5 Then
-        'If Not Form1.Horloge1.IsRunning Then
-        'Form1.PlayAccords()
-        'Else
-        'Form1.ReCalcul()
-        'End If
-        'End If
-        ''
-        ''
-        '' STOP : F4
-        '' *********
-        'If e.KeyCode = Keys.F4 Then
-        'Form1.StopPlay()
-        'End If
-        '
-        'If e.KeyCode = Keys.F Then
-        'F1.ActiveControl = Grid1
-        'End If
-    End Sub
-
     Sub BRadio1_MouseDown(sender As Object, e As EventArgs)
         Send_Pano(Trim(BRadio1.Text))
     End Sub
@@ -2676,22 +2972,22 @@ Public Class PianoRoll
         Grid1.AutoRedraw = False
         '
         For i = 0 To Grid1.Rows - 1
-                Grid1.Row(i).Height = ValZoomMoins
-            Next
-            '
-            For i = 1 To Grid1.Cols - 1
-                Grid1.Column(i).Width = ValZoomMoins
-            Next i
-            '
-            For i = 0 To nbCourbes - 1
-                GridCourbes.Item(i).AutoRedraw = False
-                For j = 1 To GridCourbes.Item(i).Cols - 1
-                    GridCourbes.Item(i).Column(j).Width = ValZoomMoins
-                Next j
-                GridCourbes.Item(i).AutoRedraw = True
-                GridCourbes.Item(i).Refresh()
-            Next i
-            Dim f As New System.Drawing.Font("Tahoma", 6, FontStyle.Bold)
+            Grid1.Row(i).Height = ValZoomMoins
+        Next
+        '
+        For i = 1 To Grid1.Cols - 1
+            Grid1.Column(i).Width = ValZoomMoins
+        Next i
+        '
+        For i = 0 To nbCourbes - 1
+            GridCourbes.Item(i).AutoRedraw = False
+            For j = 1 To GridCourbes.Item(i).Cols - 1
+                GridCourbes.Item(i).Column(j).Width = ValZoomMoins
+            Next j
+            GridCourbes.Item(i).AutoRedraw = True
+            GridCourbes.Item(i).Refresh()
+        Next i
+        Dim f As New System.Drawing.Font("Tahoma", 6, FontStyle.Bold)
         Grid1.DefaultFont = f
         Grid1.AutoRedraw = True
         Grid1.Refresh()
@@ -2778,15 +3074,15 @@ Public Class PianoRoll
         Dim PRG As Integer
         '
         PRG = ListPRG.SelectedIndex - 1
-        If Chargé = True Then
-            If Trim(PRG) <> -1 Then
-                If Not (Form1.SortieMidi.Item(Form1.ChoixSortieMidi).IsOpen) Then
-                    Form1.SortieMidi.Item(Form1.ChoixSortieMidi).Open()
-                End If
-                'tbl = Split(Trim(PRG))
-                Form1.SortieMidi.Item(Form1.ChoixSortieMidi).SendProgramChange(Me.Canal, PRG)
+        'If Chargé = True Then
+        If Trim(PRG) <> -1 Then
+            If Not (Form1.SortieMidi.Item(Form1.ChoixSortieMidi).IsOpen) Then
+                Form1.SortieMidi.Item(Form1.ChoixSortieMidi).Open()
             End If
+            'tbl = Split(Trim(PRG))
+            Form1.SortieMidi.Item(Form1.ChoixSortieMidi).SendProgramChange(Me.Canal, PRG)
         End If
+        'End If
     End Sub
     Sub ListdynF1_SelectedIndexChanged(sender As Object, e As EventArgs)
         Dim i, j As Integer
@@ -2816,8 +3112,8 @@ Public Class PianoRoll
         Dim ActC As Cell
         Dim aa As New Ann
 
-        Dim ii As Integer = Grid1.ActiveCell.Row 'Grid1.MouseRow
-        Dim jj As Integer = Grid1.ActiveCell.Col 'Grid1.MouseCol
+        Dim ii As Integer = Grid1.ActiveCell.Row ' 
+        Dim jj As Integer = Grid1.ActiveCell.Col ' 
         Dim Fr_ As Integer = Grid1.Selection.FirstRow
         Dim Fc_ As Integer = Grid1.Selection.FirstCol
         Dim Lr_ As Integer = Grid1.Selection.LastRow
@@ -2829,10 +3125,9 @@ Public Class PianoRoll
             If Orig_PianoR.Orig1 = OrigPianoCourbe.Piano Then
                 ListAnnulation.Clear()
                 PointAnn = -1
-
-                If My.Computer.Keyboard.CtrlKeyDown And (Not EnRecalcul) And ii >= Grid1.FixedRows Then
+                If ToucheCTRL And ii >= Grid1.FixedRows And ToucheAlt = False And (Grid1.ActiveCell.BackColor <> Color.Moccasin) Then ' Moccasin est la couleur hors tessiture
                     If IsNumeric(Grid1.ActiveCell.Text) = False Then
-                        ' 
+                        Grid1.AutoRedraw = False
                         ' longueur de la note
                         j = NbDiv(ListTypNote.Text)
                         ' gestion ctrlz avec buffer juste avant d'écrire
@@ -2842,10 +3137,8 @@ Public Class PianoRoll
                         ' écriture tête de note
                         Grid1.ActiveCell.ForeColor = Couleurnote
                         Grid1.ActiveCell.Text = Trim(ListDynF1.Text) ' tête de note
-                        'CanalJouerNote = Det_CanalJouer(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col)
-                        'Grid1.Cell(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + i).FontBold = True
+                        Grid1.ActiveCell.Refresh()
                         '
-
                         For i = 1 To j - 1
                             If Grid1.ActiveCell.Col + i <= Grid1.Cols - 1 Then
                                 If IsNumeric(Grid1.Cell(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + i).Text) Then
@@ -2855,46 +3148,23 @@ Public Class PianoRoll
                                 Exit For
                             End If
                             If Grid1.ActiveCell.Col + i >= Grid1.Cols - 15 Then Exit For ' ne pas dépasser la dernière mesure avec les "Traits" des notes
-                            'Grid1.Cell(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + i).FontBold = True
 
                             Grid1.Cell(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + i).ForeColor = Couleurnote
+                            Grid1.Cell(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + i).Refresh()
                             Grid1.Cell(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + i).Text = Trait ' longueur de note
-
-
+                            Grid1.Cell(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + i).Refresh()
                         Next
                         ' gestion ctrly avec buffer juste après écrire
                         gest_ctrly(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col, Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + (j - 1))
                         '
-                        'ListAnnulation.Add(aa)
-                        'PointAnn = PointAnn + 1
-                        'ListAnnulation.Item(PointAnn).Action = ActionEnum.Effacer
-                        'ListAnnulation.Item(PointAnn).Tinfo = TypeInfo.Notes
-                        'Dim oo2 As New Ann.SauvAnnuler With {
-                        '.Ligne = ActC.Row, 'Grid1.ActiveCell.Row,
-                        '.Colonne = ActC.Col 'Grid1.ActiveCell.Col
-                        '}
-                        'oo2.Longueur = Det_LongueurNote(oo2.Ligne, oo2.Colonne)
-                        'oo2.Vélo = Grid1.ActiveCell.Text
-                        'ListAnnulation.Item(PointAnn).ListAnnuler.Add(oo2)
 
+                        Grid1.AutoRedraw = True
+                        Grid1.Refresh()
                     Else
                         ' Effacer Note
                         ' gestion ctrlz avec buffer juste avant d'écrire
                         j = Det_LongueurNote(Grid1.ActiveCell.Row, (Grid1.ActiveCell.Col))
                         gest_ctrlz(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col, Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + (j - 1))
-                        ' gestion Ctrl+Z
-                        'ListAnnulation.Add(aa)
-                        'PointAnn = PointAnn + 1
-                        'ListAnnulation.Item(PointAnn).Action = ActionEnum.Restituer
-                        'ListAnnulation.Item(PointAnn).Tinfo = TypeInfo.Notes
-                        'Dim oo2 As New Ann.SauvAnnuler With {
-                        '.Ligne = Grid1.ActiveCell.Row,
-                        '.Colonne = Grid1.ActiveCell.Col
-                        '}
-                        'oo2.Longueur = Det_LongueurNote(oo2.Ligne, oo2.Colonne)
-                        'oo2.Vélo = Grid1.ActiveCell.Text
-                        'ListAnnulation.Item(PointAnn).ListAnnuler.Add(oo2)
-                        '
                         ' Raccourcir et Effacer (Effacer => tête de note = "" et  raccourcir à partir du début+1)
                         Grid1.Cell(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + i).ForeColor = Color.Black
                         Grid1.ActiveCell.Text = "" ' effacer tête de note
@@ -2904,33 +3174,20 @@ Public Class PianoRoll
                         ' gestion ctrly avec buffer juste après écrire
                         gest_ctrly(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col, Grid1.ActiveCell.Row, Grid1.ActiveCell.Col + (j - 1))
                     End If
+                    Grid1.AutoRedraw = True
+                    Grid1.Refresh()
 
-                    'Form1.ReCalcul()
                 End If
                 '
                 ' Modification longueur de note
                 ' *****************************
-                If My.Computer.Keyboard.AltKeyDown Then
+                If ToucheAlt And Not ToucheCTRL Then
                     ' Modifier longueur de note (pas d'annulation pour une longueur de note)
                     ' **********************************************************************
                     If Trim(Grid1.ActiveCell.Text) = "" Then 'rallonger
                         ' gestion ctrlz avec buffer juste avant d'écrire
                         Dim c1 As Integer = Det_TêtedeNote(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col)
                         gest_ctrlz(Grid1.ActiveCell.Row, c1, Grid1.ActiveCell.Row, Grid1.ActiveCell.Col)
-
-                        ' gestion du ctrl+Z
-                        'ListAnnulation.Add(aa)
-                        'PointAnn = PointAnn + 1
-                        'ListAnnulation.Item(PointAnn).Action = ActionEnum.Restituer
-                        'ListAnnulation.Item(PointAnn).Tinfo = TypeInfo.NotesRallg
-                        'Dim oo1 As New Ann.SauvAnnuler With {
-                        '.Ligne = Grid1.ActiveCell.Row,
-                        '.Colonne = Det_TêtedeNote(.Ligne, Grid1.ActiveCell.Col)'Grid1.ActiveCell.Col
-                        '}
-                        'oo1.Longueur = Det_LongueurNote(oo1.Ligne, oo1.Colonne)
-                        'Dim z As Integer = Det_TêtedeNote(oo1.Ligne, oo1.Colonne)
-                        'oo1.Vélo = Trim(Grid1.Cell(oo1.Ligne, z).Text)
-                        'ListAnnulation.Item(PointAnn).ListAnnuler.Add(oo1)
                         ' rallonger
                         Rallonger(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col)
                         '  gestion ctrly avec buffer juste après écriture
@@ -2943,20 +3200,6 @@ Public Class PianoRoll
                             Dim c2 As Integer = Det_FinNote(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col)
                             '
                             gest_ctrlz(Grid1.ActiveCell.Row, c1, Grid1.ActiveCell.Row, c2)
-                            ' gestion du ctrl+Z
-                            'ListAnnulation.Add(aa)
-                            'PointAnn = PointAnn + 1
-                            'ListAnnulation.Item(PointAnn).Action = ActionEnum.Restituer
-                            'ListAnnulation.Item(PointAnn).Tinfo = TypeInfo.Notes
-                            'Dim oo2 As New Ann.SauvAnnuler With {
-                            '.Ligne = Grid1.ActiveCell.Row,
-                            '.Colonne = Grid1.ActiveCell.Col
-                            '}
-                            ' raccourcir
-                            'oo2.Longueur = Det_LongueurNote(oo2.Ligne, oo2.Colonne)
-                            'oo2.Vélo = Grid1.ActiveCell.Text
-                            'ListAnnulation.Item(PointAnn).ListAnnuler.Add(oo2)
-                            ' raccourcir
                             Raccourcir(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col)
                             ' gestion ctrly avec buffer juste après écriture
                             gest_ctrly(Grid1.ActiveCell.Row, c1, Grid1.ActiveCell.Row, c2)
@@ -2965,9 +3208,33 @@ Public Class PianoRoll
                 End If
                 '
                 ' Coupure de note jouée avec la souris
-                If NoteAEtéJouée = True Then
-                    StoperNote(NoteCourante, 0)
-                    NoteAEtéJouée = False
+                ' ************************************
+                'If NoteAEtéJouée = True Then
+                'StoperNote(NoteCourante, CanalCourant, 0)
+                'NoteAEtéJouée = False
+                'End If
+
+
+                ' Mode ecoute mono
+                ' ****************
+                If JouerPoly.Checked = False Then
+                    If ListJPoly.Count <> 0 Then
+                        For Each a As JeuxPoly In ListJPoly
+                            StoperNote(a.Note, a.Canal, 0)
+                        Next
+                        ListJPoly.Clear()
+                    End If
+                End If
+                '
+                ' Mode écoute poly
+                ' ****************
+                If JouerPoly.Checked = True Then
+                    If ListJPoly.Count <> 0 Then
+                        For Each a As JeuxPoly In ListJPoly
+                            StoperNote(a.Note, a.Canal, 0)
+                        Next
+                        ListJPoly.Clear()
+                    End If
                 End If
                 '
                 ' Ecriture/Effacement pédale
@@ -3017,15 +3284,95 @@ Public Class PianoRoll
             Det_ChiffAcc()
             '
             ' Calcul de l'intervalle harmonique et du saut mélodique entre 2 notes
-            ' *******************************************************************
-            CalcInterv(Fr_, Fc_, Lr_, Lc_, e)
-            CalcSaut(Fr_, Fc_, Lr_, Lc_, e)
+            ' ********************************************************************
+            If ctrp_Actif(Grid1.ActiveCell.Row, Grid1.ActiveCell.Col) Then
+                Grid1.AutoRedraw = False
+                '
+                'CalcInterv(Fr_, Fc_, Lr_, Lc_, e) ' Rendu invisible pour le moment le 29/11/24
+                CalcSaut(Fr_, Fc_, Lr_, Lc_, e)   ' Rendu invisible pour le moment le 29/11/24
+                '
+                Grid1.AutoRedraw = True
+                Grid1.Refresh()
+            Else
+                IntervH.Text = "---"
+                SautMel.Text = "---"
+            End If
             '
             '
+            ' Mémorisation des notes la sélection initiale pour QuantMel et QuantPos
+            ' **********************************************************************
+            Selrest.Clear() ' raz dela restitution de la sélection
+            Selinit.Clear()
+            With Grid1.Selection
+                For i = .FirstRow To .LastRow
+                    For j = .FirstCol To .LastCol
+                        If IsNumeric(Grid1.Cell(i, j).Text) Then
+                            Selinit.Add(SignCell(i, j))
+                        End If
+                    Next
+                Next
+            End With
         End If
+    End Sub
+    Public Sub MemoNotesSel()
+        ' Mémorisation des notes la sélection initiale pour QuantMel et QuantPos
+        ' **********************************************************************
+        Selrest.Clear() ' raz dela restitution de la sélection
+        Selinit.Clear()
+        With Grid1.Selection
+            For i = .FirstRow To .LastRow
+                For j = .FirstCol To .LastCol
+                    If IsNumeric(Grid1.Cell(i, j).Text) Then
+                        Selinit.Add(SignCell(i, j))
+                    End If
+                Next
+            Next
+        End With
     End Sub
 
 
+
+    '
+    ''' <summary>
+    ''' Cette fonction contrôle qu'en dessous d'une note, il existe une autre note de couleur différente,
+    ''' ceci afin de permettre/interdire le calcul du contrepoint
+    ''' </summary>
+    ''' <param name="i">ligne de grid1</param>
+    ''' <param name="j">colonne de grid1</param>
+    ''' <returns>ok si couleurs différentes</returns>
+    Function ctrp_Actif(i As Integer, j As Integer) As Boolean
+        Dim couleur1 As Color = Grid1.Cell(i, j).ForeColor
+        Dim couleur2 As Color
+        Dim ligne1 As Integer
+        Dim ret As Boolean = False
+
+        For ligne1 = i + 1 To Grid1.Rows - 1
+            If Trim(Grid1.Cell(ligne1, j).Text) <> "" Then
+                couleur2 = Grid1.Cell(ligne1, j).ForeColor
+                Exit For
+            End If
+        Next
+        '
+        If couleur1 = Color.Black And couleur2 = Color.Black Then ret = True
+        If couleur1 <> couleur2 Then ret = True
+        Return ret
+    End Function
+
+
+
+
+
+    ''' <summary>
+    ''' Détermine une signature unique d'une cellule dans une grille.
+    ''' </summary>
+    ''' <param name="r">L'indice de la ligne de la cellule.</param>
+    ''' <param name="c">L'indice de la colonne de la cellule.</param>
+    ''' <returns>Une chaîne de caractères donnant la signature</returns>
+    Function SignCell(r As Integer, c As Integer) As String
+        Dim a As String = ""
+        a = r.ToString + c.ToString
+        Return a
+    End Function
 
 
 
@@ -3101,25 +3448,25 @@ Public Class PianoRoll
         End If
 
     End Function
-    Private Sub Grid1_MouseDown(Sender As Object, e As EventArgs)
+    Private Sub Grid1_MouseDown(Sender As Object, e As MouseEventArgs)
         ' Jouer la note sur simple clic
-        Dim ii As Integer = Grid1.MouseRow
-        Dim jj As Integer = Grid1.MouseCol
+        'Dim ii As Integer = Grid1.MouseRow
+        'Dim jj As Integer = Grid1.MouseCol
+        ''
+        'Orig_PianoR.Orig1 = OrigPianoCourbe.Piano
+        'Orig_PianoR.N_Courbe = -1
         '
-        Orig_PianoR.Orig1 = OrigPianoCourbe.Piano
-        Orig_PianoR.N_Courbe = -1
-
-        If ii > 5 And jj > -1 Then ' cas où MouseRow ou MouseCol n'arrivent pas  à temps, ils valent -1 ce qui n'est pas utilisable
-
-            If Not EnRecalcul Then
-                Dim ValeurNote = ValNoteCubase.IndexOf(Grid1.Cell(ii, 0).Text)
-                If IsNumeric(Grid1.Cell(ii, jj).Text) Then
-                    'JouerNote(ValeurNote, Convert.ToByte(Grid1.Cell(ii, jj).Text))
-                Else
-                    'JouerNote(ValeurNote, Convert.ToByte(ListDynF1.Text))
-                End If
-            End If
-        End If
+        'If ii > 5 And jj > -1 Then ' cas où MouseRow ou MouseCol n'arrivent pas  à temps, ils valent -1 ce qui n'est pas utilisable
+        '
+        'If Not EnRecalcul Then
+        'Dim ValeurNote = ValNoteCubase.IndexOf(Grid1.Cell(ii, 0).Text)
+        'If IsNumeric(Grid1.Cell(ii, jj).Text) Then
+        ''JouerNote(ValeurNote, Convert.ToByte(Grid1.Cell(ii, jj).Text))
+        'Else
+        ''JouerNote(ValeurNote, Convert.ToByte(ListDynF1.Text))
+        'End If
+        'End If
+        'End If
 
     End Sub
     Private Sub TimerStop_Tick()
@@ -3127,48 +3474,303 @@ Public Class PianoRoll
         'StoperNote(NoteCourante, 0)
     End Sub
     ' 
+    Private Sub Grid1_MouseMove(sender As Object, e As MouseEventArgs)
+        Dim i As Integer = Grid1.MouseRow
+        Dim j As Integer = Grid1.MouseCol
+
+
+        If Not (My.Computer.Keyboard.AltKeyDown) Or Not (My.Computer.Keyboard.ShiftKeyDown) _
+            Or Not (My.Computer.Keyboard.CtrlKeyDown) Then
+
+            If i <> -1 And j <> -1 Then
+                If i > Grid1.FixedRows - 1 Then
+                    Grid1.AutoRedraw = False
+                    If i <> -1 Then
+                        ' restitution ancienne cellule de colone 0
+                        If SauvAffNote.oldRow <> -1 Then
+                            Grid1.Cell(SauvAffNote.oldRow, 0).ForeColor = SauvAffNote.Forecolor
+                            Grid1.Cell(SauvAffNote.oldRow, 0).BackColor = SauvAffNote.Backcolor
+                        End If
+                        '
+                        ' sauvegarde nouvelle cellule de colone 0
+                        SauvAffNote.oldRow = i
+                        SauvAffNote.Forecolor = Grid1.Cell(i, 0).ForeColor
+                        SauvAffNote.Backcolor = Grid1.Cell(i, 0).BackColor
+                        '
+                        ' Modification des couleurs de la cellule courante
+                        Grid1.Cell(SauvAffNote.oldRow, 0).ForeColor = Color.Yellow
+                        Grid1.Cell(SauvAffNote.oldRow, 0).BackColor = Color.DarkOliveGreen
+                    End If
+                    Grid1.AutoRedraw = True
+                    Grid1.Refresh()
+                End If
+                '
+                ' Gestion de l'info bulle souris
+                ' ******************************
+                ' Définissez la position du label en fonction de la position de la souris
+                If AffInfoBulle.Checked And i > Grid1.FixedRows - 1 Then
+                    infoLabel.Location = New Point(e.X + 10, e.Y + 10)
+                    infoLabel.Refresh()
+                    '
+                    ' Mettre à jour l'interval dans infoLabel
+                    If lastMousePosition = e.Location Then ' And (lastMouseRow <> i Or lastMouseCol <> j)
+                        infoLabel.ForeColor = Color.Red
+                        infoLabel.Text = CalcIntervSouris(i, j) '"Info:   (" & e.X & ", " & e.Y & ")"
+                        ' couleurs 
+                        If listConsonParf.Contains(infoLabel.Text) Then infoLabel.ForeColor = Color.Green
+                        If listConsonImParf.Contains(infoLabel.Text) Then infoLabel.ForeColor = Color.Green
+                        infoLabel.Visible = True
+                        infoLabel.Refresh()
+                    End If
+                    '
+                Else
+                    infoLabel.Visible = False
+                End If
+                lastMousePosition = e.Location
+            Else
+                infoLabel.Visible = False
+            End If
+            ' 
+            ' Aide
+            ' ****
+            ' Grid1 PianoRoll
+            ' ***************
+
+            If My.Computer.Keyboard.ShiftKeyDown Then
+                PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+                If CheckAide.Checked Then
+                    If Langue = "fr" Then
+                        H1.Text = "PianoRoll"
+                        H2.Text = "But : écriture de notes." + Chr(13) + Chr(13) + "1 - Fonctions basiques : " + Chr(13) +
+                        "- Ecrire Note : CTRL + Clic." + Chr(13) + 'Chr(13) +
+                        "- Effacer Note : CTRL + Clic sur tête de note (ou CTRL + X, ou Suppr)." + Chr(13) + 'Chr(13) +
+                        "- Effacer sélection de notes : faire une sélection puis CTRL + X, ou Suppr." + Chr(13) +
+                        "- Modifier les vélocités : faire une sélection de notes puis touche P pour 'plus', et touche M pour 'moins'." + Chr(13) +
+                        "- Rallonger / Raccourcir Note : ALT +Clic" + Chr(13) + Chr(13) +
+                    "2 - Editions : " + Chr(13) +                                                                                                       '
+                        "- Edition de Notes : faire une sélection de notes puis CTRL + C, X, V." + Chr(13) + 'Chr(13) +
+                        "- Annulation : CTRL + Z (infini)." + Chr(13) + 'Chr(13) +
+                        "- Restitution : CTRL + Y (infini)." + Chr(13) + Chr(13) +
+                        "3 - Quantification : " + Chr(13) +
+                        "- Quantification mélodique : faire une sélection de notes puis flèches Haut et Bas." + Chr(13) + 'Chr(13) +
+                        "- Quantification rythmique : faire une sélection de notes puis flèches Gauche et Droite." + Chr(13) + Chr(13) +
+                    "4 - Gestion MIDI : " + Chr(13) +
+                        "- Les canaux MIDI des PianoRoll sont fixes et correspondent au N° de PianoRoll indiqués dans le titre de leur onglet." + Chr(13) +
+                        "- Utilisation de Canaux MIDI spécifiques se différenciant par des couleurs de notes : Clic Droit. Une couleur de note correspond à un canal MIDI spécifique." + Chr(13) +
+                        "- Vélocités aléatoires : faire une sélection de notes puis Clic Droit." + Chr(13)
+                    Else
+                        H2.Text = ""
+                    End If
+                End If
+            End If
+        End If
+    End Sub
+    ''' <summary>
+    ''' Ecriture infos dans la bulle associée à la souris
+    ''' </summary>
+    ''' <param name="i">position de la souris sur la ligne i</param>
+    ''' <param name="j">position de la souris sur la ligne j</param>
+    Sub InfoSouris(i As Integer, j As Integer, e As MouseEventArgs)
+        ' Gestion de l'info bulle souris
+        ' ******************************
+        ' Définissez la position du label en fonction de la position de la souris
+        If AffInfoBulle.Checked And i > Grid1.FixedRows - 1 Then
+            infoLabel.Location = New Point(e.X + 10, e.Y + 10)
+            infoLabel.Refresh()
+            '
+            ' Mettre à jour l'interval dans infoLabel
+            If lastMousePosition = e.Location Then ' And (lastMouseRow <> i Or lastMouseCol <> j)
+                infoLabel.ForeColor = Color.Black
+                infoLabel.Text = CalcIntervSouris(i, j) '"Info:   (" & e.X & ", " & e.Y & ")"
+                ' couleurs 
+                If listConsonParf.Contains(infoLabel.Text) Then infoLabel.ForeColor = Color.Red
+                If listConsonImParf.Contains(infoLabel.Text) Then infoLabel.ForeColor = Color.Green
+                infoLabel.Visible = True
+                infoLabel.Refresh()
+            End If
+            '
+        Else
+            infoLabel.Visible = False
+        End If
+        lastMousePosition = e.Location
+    End Sub
+
+    ' Gestionnaire de l'événement MouseLeave
+    Private Sub Grid1_MouseLeave(sender As Object, e As EventArgs)
+        ' Rendre le label invisible lorsque la souris quitte Grid1
+        infoLabel.Visible = False
+        ' Sortie de l'aide
+        ' ****************
+        'H1.Text="Aide"
+        'H2.Text="Passer la souris au dessus d'un composant pour afficher son Aide"
+    End Sub
+
+    ' Gestionnaire de l'événement MouseEnter
+    Private Sub Grid1_MouseEnter(sender As Object, e As EventArgs)
+        ' Rendre le label visible lorsque la souris entre dans Grid1
+        infoLabel.Visible = True
+    End Sub
+    ' 
     Private Sub Grid1_MouseDown2(Sender As Object, e As MouseEventArgs)
         Dim i As Integer = Grid1.MouseRow 'Grid1.ActiveCell.Row 'Grid1.MouseRow
         Dim j As Integer = Grid1.MouseCol 'Grid1.ActiveCell.Col 'Grid1.MouseCol
         '
-        Dim ii As Integer = i
-        Dim jj As Integer = j
-        Form1.DerGridCliquée = GridCours.Autre ' pour éviter que la touche suppr active le raccourcis suppr du menu principal
-        Orig_PianoR.Orig1 = OrigPianoCourbe.Piano
-        Orig_PianoR.N_Courbe = -1
-        '
-        ' Jouer Notes
-        ' ***********
-        Dim wcol As Integer = jj
-        If ii > Grid1.FixedRows - 1 Then
-            If (Grid1.Cell(ii, wcol).Text) = Trait Then
-                'déterminer la colonne de la tête de note
-                While Trim(Grid1.Cell(ii, wcol).Text) = Trait And wcol <> 0
-                    wcol = wcol - 1
-                End While
-            End If
-            NoteCourante = ValNoteCubase.IndexOf(Grid1.Cell(ii, 0).Text) ' détermination de la note à jouer
-            JouerNote(NoteCourante, Convert.ToByte(ListDynF1.Text), Det_CanalJouer(ii, wcol))
-        End If
-        '
-        ' Menu contextuel pour vélocité aléatoires
-        ' ****************************************
-        If e.Button = MouseButtons.Right Then
-            Dim p As New Point
-            p.X = Cursor.Position.X
-            p.Y = Cursor.Position.Y
-            MenuContext2.Show(p)
 
+        If j <> -1 And i <> -1 Then
+            Dim ii As Integer = i
+            Dim jj As Integer = j
+            Form1.DerGridCliquée = GridCours.Autre ' pour éviter que la touche suppr active le raccourcis suppr du menu principal
+            Orig_PianoR.Orig1 = OrigPianoCourbe.Piano
+            Orig_PianoR.N_Courbe = -1
+
+
+            '
+            ' Jouer Notes
+            ' ***********
+
+            If JouerPoly.Checked = False Then
+                Play_Mono(ii, jj)
+            Else
+                'StopPoly()
+                Play_Poly(jj)
+            End If
+
+            '
+            ' Menu contextuel pour vélocité aléatoires
+            ' ****************************************
+            If e.Button = MouseButtons.Right Then
+                Dim p As New Point
+                p.X = Cursor.Position.X
+                p.Y = Cursor.Position.Y
+                Act_Multican(Me.Canal)
+                MenuContext2.Show(p)
+
+            End If
+            '
+            ' Mise à jour de l'info bulle
+            ' ***************************
+            InfoSouris(ii, jj, e)
+
+            '
+            ' Calcul de l'intervalle entre 2 notes d'une même colonne
+            ' *******************************************************
+            'CalcInterv(ii, jj, ii, jj, e)
+            '
+            ' Pour debug à supprimer
+            'SautMel.Text = ii
+            'IntervH.Text = jj
         End If
-        '
-        ' Calcul de l'intervalle entre 2 notes d'une même colonne
-        ' *******************************************************
-        'CalcInterv(ii, jj, ii, jj, e)
-        '
-        ' Pour debug à supprimer
-        'SautMel.Text = ii
-        'IntervH.Text = jj
     End Sub
+    Sub Act_Multican(NPianoR As Integer)
+        If NPianoR - 1 = 0 Then
+            NotesOrange.Enabled = True
+            NotesVert.Enabled = True
+            NotesBleues.Enabled = True
+            NotesRouge.Enabled = True
+        Else
+            NotesOrange.Enabled = False
+            NotesVert.Enabled = False
+            NotesBleues.Enabled = False
+            NotesRouge.Enabled = False
+        End If
+    End Sub
+
+    Sub Play_Poly(wcol As Integer)
+        Dim a As String
+        Dim tbl() As String
+        Dim ii As Integer = Grid1.FixedRows + TessBas
+        Dim jj As Integer = Grid1.FixedRows + TessHaut
+
+        ' Vider la liste des notes polyphoniques
+        ListJPoly.Clear()
+
+        ' Parcourir les lignes du tableau
+        For i = ii To jj
+            ' Vérifier si la cellule contient une valeur numérique
+            'If IsNumeric(Grid1.Cell(i, wcol).Text) Then
+            If Trim(Grid1.Cell(i, wcol).Text) <> "" Then
+                Dim note1 As New JeuxPoly
+                a = Det_DynaJouer(i, wcol)
+                tbl = a.Split()
+
+                ' Définir les propriétés de la note
+                note1.Note = ValNoteCubase.IndexOf(Grid1.Cell(i, 0).Text)
+                note1.Dyna = Convert.ToByte(tbl(0))
+                note1.Canal = Det_can(Grid1.Cell(i, wcol).ForeColor)
+
+                ' Ajouter la note à la liste
+                ListJPoly.Add(note1)
+            End If
+        Next
+
+        ' Jouer chaque note dans la liste
+        For Each n As JeuxPoly In ListJPoly
+            With n
+                JouerNote(.Note, .Dyna, .Canal)
+            End With
+        Next
+    End Sub
+    Private Sub StopPoly()
+        ' Désactivation écoute polyphonique à chaque clic sur nouvelle colonne
+        ' ********************************************************************
+
+        If ListJPoly.Count <> 0 Then
+            For Each a As JeuxPoly In ListJPoly
+                StoperNote(a.Note, a.Canal, 0)
+            Next
+        End If
+    End Sub
+
+
+
+    Sub Play_Mono(i As Integer, j As Integer)
+
+        Dim note1 As New JeuxPoly
+        Dim a As String
+        Dim dyn As Byte
+        Dim wcol As Integer
+        '
+        If i >= Grid1.FixedRows + TessBas And i <= Grid1.FixedRows + TessHaut Then
+            a = Det_DynaJouer(i, j)
+            tbl = a.Split
+            dyn = Convert.ToByte(tbl(0))   ' dynamique à jour
+            wcol = Convert.ToInt16(tbl(1)) ' colonne cliquée (hors trait)  ou colonne de la tête de note
+
+            note1.Note = ValNoteCubase.IndexOf(Grid1.Cell(i, 0).Text) ' détermination de la note à jouer
+            note1.Dyna = dyn
+            note1.Canal = Det_can(Grid1.Cell(i, wcol).ForeColor)
+            '
+            ListJPoly.Add(note1)
+            '
+            With note1
+                JouerNote(.Note, .Dyna, .Canal)
+            End With
+        End If
+
+    End Sub
+
+
+
+    ''' <summary>
+    ''' Cette fonction retourn un string avec  la dynamique d'une note à jouer
+    ''' et la colonne où elle se trouve : dyn + " " + col
+    ''' </summary>
+    ''' <param name="i">ligne de la cellule cliquée</param>
+    ''' <param name="j">colonne de la cellule cliquée</param>
+    ''' <returns></returns>
+    Private Function Det_DynaJouer(i As Integer, j As Integer) As String
+        Dim dyn As String = Convert.ToByte(ListDynF1.Text)
+
+        If (Grid1.Cell(i, j).Text) = Trait Or IsNumeric(Grid1.Cell(i, j).Text) Then ' 
+            'déterminer la colonne de la tête de note
+            While Trim(Grid1.Cell(i, j).Text) = Trait And j <> 0
+                j = j - 1
+            End While
+            dyn = Convert.ToByte(Grid1.Cell(i, j).Text)
+        End If
+        Return dyn.ToString + " " + j.ToString
+
+    End Function
     Function Det_CanalJouer(i As Integer, j As Integer)
         Dim c As Color = Couleurnote
 
@@ -3257,31 +3859,66 @@ Public Class PianoRoll
         '
     End Sub
     Private Sub Grid1_Keydown(Sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs)
-        ' incrémentation / décrémentation de valeurs de dynamique
-        ' *******************************************************
-        Grid1.AutoRedraw = False
+        ' Captures des commandes clavier
+        ' ******************************
+
+        If e.Control Then ToucheCTRL = True
+        If e.Alt Then ToucheAlt = True
         '
+
         Select Case e.KeyCode
-            Case Keys.P
+            Case Keys.P, Keys.Add
                 Change_Dyn(1)
-            Case Keys.M
+            Case Keys.M, Keys.Subtract
                 Change_Dyn(-1)
-            Case Keys.H
-                If KeyUpSurvenu Then ' opération non répétée sila touche H n'a pas été relachée
+            Case Keys.Up
+                If KeyUpSurvenu Then ' opération non répétée si la touche flèche up n'a pas été relachée
                     QuantMel(-1)
                     KeyUpSurvenu = False
                 End If
-            Case Keys.B
-                If KeyUpSurvenu Then ' opération non répétée sila touche B n'a pas été relachée
+            Case Keys.Down
+                If KeyUpSurvenu Then ' opération non répétée si la touche flèche down n'a pas été relachée
                     QuantMel(1)
                     KeyUpSurvenu = False
                 End If
+            Case Keys.Left
+                QuantPos(-1)
+            Case Keys.Right
+                QuantPos(1)
+            Case Keys.W
+                If JouerPoly.Checked = False Then
+                    JouerPoly.Checked = True
+                Else
+                    JouerPoly.Checked = False
+                End If
+            Case Keys.X
+                If AffInfoBulle.Checked = False Then
+                    AffInfoBulle.Checked = True
+                Else
+                    AffInfoBulle.Checked = False
+                End If
+            Case Keys.S
+                If EditionNotes.Checked = False Then
+                    EditionNotes.Checked = True
+                Else
+                    EditionNotes.Checked = False
+                End If
+            Case Keys.Control
+                ToucheCTRL = True
+            Case Keys.Alt
+                ToucheAlt = True
+            Case Keys.C
+                ToucheC = True
+            Case Keys.V
+                ToucheV = True
+
+
         End Select
         '
-        Grid1.AutoRedraw = True
-        Grid1.Refresh()
+
         '
-        If (e.KeyCode = Keys.H Or e.KeyCode = Keys.B) And AccAEtéJouée <> True Then
+        '
+        If (e.KeyCode = Keys.B) And AccAEtéJouée <> True Then
             ' Jouer les notes verticales de la 1ere colonne de la sélection = Accord
             ' **********************************************************************
             Dim i1 As Integer = Grid1.Selection.FirstRow
@@ -3337,10 +3974,10 @@ Public Class PianoRoll
                                 .c = j,
                                 .d = Trim(Grid1.Cell(i, j).Text)
                             }
-                            listAffn.Add(oo)
-                            Grid1.Cell(i, j).Text = Trim(LCase(note))
-                            AffnAEtéJouée = True
-                        End If
+                        listAffn.Add(oo)
+                        Grid1.Cell(i, j).Text = Trim(LCase(note))
+                        AffnAEtéJouée = True
+                    End If
                 Next
             Next
             Grid1.AutoRedraw = True
@@ -3401,6 +4038,9 @@ Public Class PianoRoll
 
         KeyUpSurvenu = True
 
+        If Not e.Control Then ToucheCTRL = False
+        If Not e.Alt Then ToucheAlt = False
+
         ' *********************
         ' * Effacer sélection *
         ' *********************
@@ -3408,15 +4048,19 @@ Public Class PianoRoll
             Form1.listPIANOROLL.Item(i - 1).EffacerSelection()
         End If
 
-
-        ' **************************************
-        ' * Quatification des hauteur de notes *
-        ' **************************************
+        ' ***************************************
+        ' * Quantification des hauteur de notes *
+        ' ***************************************
         Select Case e.KeyCode
             Case Keys.H
                 'QuantMel(-1)
             Case Keys.B
                 'QuantMel(1)
+            Case Keys.C
+                ToucheC = False ' calcul intervalle entre 1er 3e note pour intervalle sur souris
+            Case Keys.V
+                ToucheV = False ' calcul intervalle entre 1er 2e note pour intervalle sur souris
+
         End Select
         '
         ' ******************************
@@ -3446,6 +4090,32 @@ Public Class PianoRoll
             Grid1.AutoRedraw = True
             Grid1.Refresh()
         End If
+        '
+        ' Resitution de la sélection lors d'une quantification (mélodique ou podition)
+        ' ****************************************************************************
+        If Selrest.Fr <> Nothing Then
+            Grid1.Range(Selrest.Fr, Selrest.Fc, Selrest.Lr, Selrest.Lc).SelectCells() ' selrest est mis à jour dans sub quantmel
+            'Selrest.Clear()
+        End If
+
+        ' Désactivation écoute polyphonique : envoi des notes off de l'accord 
+        ' *******************************************************************
+        If e.KeyCode = Keys.W Then
+            TouchePoly = False
+            If ListJPoly.Count <> 0 Then
+                For Each a As JeuxPoly In ListJPoly
+                    StoperNote(a.Note, a.Canal, 0)
+                Next
+                ListJPoly.Clear()
+            End If
+        End If
+    End Sub
+
+    Sub Eff_Warning()
+        NomduSon.Text = Warning.Message
+        NomduSon.BackColor = Warning.BackColor
+        NomduSon.ForeColor = Warning.ForeColor
+        Warning.Blocage = False
     End Sub
     Sub Grid1_Scroll(sender As Object, a As EventArgs)
         For i = 0 To nbCourbes - 1
@@ -3564,6 +4234,7 @@ Public Class PianoRoll
         '
         Retour = ""
         CalquesMIDI.StartPosition = FormStartPosition.CenterScreen
+        Cacher_FormTransparents()
         CalquesMIDI.ShowDialog()
         If Retour = "OK" Then
             For i = 0 To PassChoixCalques.Count - 1
@@ -3613,14 +4284,44 @@ Public Class PianoRoll
                         Graphique_Tonique()
                         Graphique_Divisions()
                     Case 5 ' Tessiture
-                        Maj_Tessiture(TessDebLocale, TessFinLocale)
+                        ' Maj_Tessiture(TessDebLocale, TessFinLocale)  ' --> supprimer
                 End Select
             End If
         Next i
         '
+        CouleurTess() ' colorisation des zones hors tessitures
+        '
         Grid1.AutoRedraw = True
         Grid1.Refresh()
     End Sub
+    ''' <summary>
+    ''' Colorisation des zones hors tessitures
+    ''' </summary>
+    Public Sub CouleurTess()
+        Dim i, j As Integer
+        ' Colorisation des zones hors Tessiture
+        '**************************************
+        Grid1.SelectionMode = SelectionModeEnum.ByCell
+        Th = ((Grid1.FixedCols - 1) + (127 - TessHaut)) ' tessiture haute dans grid1 en N° de ligne (Tesshaut = C7 = 108)
+        Tb = ((Grid1.Rows - 1) - TessBas) + 1 '  tessiture basse dans grid1 en N° de ligne (TessBas = A1 = 21)
+        '
+        For i = Grid1.FixedRows To Th + Grid1.FixedRows - 1
+            For j = 1 To Grid1.Cols - 1
+                Grid1.Cell(i, j).BackColor = Color.Moccasin
+            Next
+        Next
+        '
+        For i = Tb To Grid1.Rows - 1
+            For j = 1 To Grid1.Cols - 1
+                Grid1.Cell(i, j).BackColor = Color.Moccasin
+            Next
+        Next
+        '
+        Grid1.SelectionMode = SelectionModeEnum.Free
+    End Sub
+
+
+
     Sub Nouv_CalquesMIDI()
         Grid1.AutoRedraw = False
         '
@@ -4031,8 +4732,13 @@ Public Class PianoRoll
     Private Sub Supprimer_Click(sender As Object, e As EventArgs)
         EffacerSelection()
     End Sub
+
+    Sub Enregistrer_Click(sender As Object, e As EventArgs)
+        Form1.Enregistrer()
+    End Sub
+
     Sub MIDIReset_Click(sender As Object, e As EventArgs)
-        Form1.MIDIReset()
+        Form1.MIDI_Panic()
     End Sub
     Sub Quitter_Click(sender As Object, e As EventArgs)
         'Form1.Quitter()
@@ -4133,7 +4839,6 @@ Public Class PianoRoll
         Grid1.AutoRedraw = True
         Grid1.Refresh()
         '
-
     End Sub
     Sub Construction_BarreOutils()
         Dim i As Integer
@@ -4169,18 +4874,7 @@ Public Class PianoRoll
         AddHandler CheckMute.CheckedChanged, AddressOf CheckMute_CheckedChanged
         AddHandler CheckMute.Click, AddressOf CheckMute_Click
         AddHandler CheckMute.KeyDown, AddressOf CheckMute_KeyDown
-
-        ' SoloBout
-        ' ********
-        Panneau1.Panel1.Controls.Add(SoloBoutPR)
-        SoloBoutPR.TabStop = False
-        SoloBoutPR.Location = New Point(2, 27)
-        SoloBoutPR.Font = New Font("Calibri", 8, FontStyle.Regular)
-        SoloBoutPR.Size = New Size(50, 20)
-        SoloBoutPR.BackColor = Color.Beige
-        SoloBoutPR.Text = "SOLO"
-        SoloBoutPR.Visible = False
-        AddHandler SoloBoutPR.MouseUp, AddressOf SoloBoutPR_MouseUp
+        '
         '
         ' liste des types de notes
         ' ************************
@@ -4217,6 +4911,9 @@ Public Class PianoRoll
         ListTypNote.Font = f
         ListTypNote.SelectedIndex = 2
         '
+        AddHandler ListTypNote.MouseMove, AddressOf ListTypNote_MouseMove
+        '
+        '
         ' liste des dynamiques
         ' ********************
         P.X = P.X + S.Width + 5
@@ -4242,6 +4939,9 @@ Public Class PianoRoll
         '
         ListDynF1.Font = f
         ListDynF1.SelectedIndex = 37
+        '
+        AddHandler ListDynF1.MouseMove, AddressOf ListDynF1_MouseMove
+
         '
         ' Liste des programmes
         ' ********************
@@ -4270,19 +4970,20 @@ Public Class PianoRoll
         ActionsPianoR.Size = S
         ActionsPianoR.BackColor = ColorTranslator.FromHtml("#c4df9b")
         Dim PP As New Point()
-        pp = P
-        pp.X = pp.X + 12
+        PP = P
+        PP.X = PP.X + 12
 
-        ActionsPianoR.Location = pp
+        ActionsPianoR.Location = PP
         ActionsPianoR.Text = "Actions"
+        AddHandler ActionsPianoR.MouseMove, AddressOf ActionsPianoR_MouseMove
 
-        ' Bouton appel formulaire des calques midi
-        ' ****************************************
+        ' Bouton appel formulaire des Calques MIDI
+        ' **************************************** 
         Panneau1.Panel1.Controls.Add(OuvrirCalques)
         P.X = ActionsPianoR.Location.X 'P.X + S.Width + 10
         P.Y = 27
         S.Height = 22
-        S.Width = 100
+        S.Width = 120
         OuvrirCalques.Location = P
         OuvrirCalques.Size = S
         If Langue = "fr" Then
@@ -4292,6 +4993,8 @@ Public Class PianoRoll
         End If
         OuvrirCalques.Visible = True
         OuvrirCalques.BackColor = ColorTranslator.FromHtml("#7accc8")
+        '
+        AddHandler OuvrirCalques.MouseMove, AddressOf OuvrirCalques_MouseMove
 
         ' Cadre Aller Vers
         ' ****************
@@ -4317,33 +5020,9 @@ Public Class PianoRoll
         End If
         '
         CadreAllerVers.Controls.Add(Destination)
-        ' 
-
         '
         ' Sélection affichage des contrôleurs (checkbox général)
         ' ******************************************************
-        Dim positprov As Integer = 800
-        'P.X = positprov + S.Width - 200
-        P.X = 570
-        If Canal = 1 Then
-            P.Y = 15
-        Else
-            P.Y = 15
-        End If
-
-        S.Width = 200
-        Panneau1.Panel1.Controls.Add(AffCtrls)
-        AffCtrls.Size = S
-        AffCtrls.TabStop = False
-        AffCtrls.AutoSize = False
-        AffCtrls.Font = fnt7
-        AffCtrls.TextAlign = ContentAlignment.MiddleLeft
-        AffCtrls.Location = P
-        If LangueIHM = "fr" Then
-            AffCtrls.Text = "CTRLs"
-        Else
-            AffCtrls.Text = "CTRLs"
-        End If
 
         ' Courbes contrôleur
         ' ******************
@@ -4403,8 +5082,70 @@ Public Class PianoRoll
             CCActif.Item(i).AutoSize = True
         Next
 
-        ' Midi Learn (mis en visible =false)
-        ' **********
+        ' Cadre controleurs
+        ' *****************
+        Panneau1.Panel1.Controls.Add(CadreCtrls)
+        P.X = 560
+        P.Y = 4
+        S.Height = 43
+        S.Width = 100
+        CadreCtrls.Location = P
+        CadreCtrls.Size = S
+        If Langue = "fr" Then
+            CadreCtrls.Text = "Graphes Ctrls"
+        Else
+            CadreCtrls.Text = "Ctrls graphs"
+        End If
+        AddHandler CadreCtrls.MouseMove, AddressOf CadreCtrls_MouseMove
+
+        ' Checkbox Ctrls
+        ' **************
+        Dim positprov As Integer = 800
+        'P.X = positprov + S.Width - 200
+        P.X = 7
+        P.Y = 18
+        S.Height = 15
+        S.Width = 60
+        Panneau1.Panel1.Controls.Add(AffCtrls)
+        AffCtrls.Size = S
+        AffCtrls.TabStop = False
+        AffCtrls.AutoSize = False
+        AffCtrls.Font = fnt7
+        'AffCtrls.ForeColor = Color.Red
+        AffCtrls.TextAlign = ContentAlignment.MiddleLeft
+        AffCtrls.Location = P
+        If LangueIHM = "fr" Then
+            AffCtrls.Text = "CTRLs"
+        Else
+            AffCtrls.Text = "CTRLs"
+        End If
+        CadreCtrls.Controls.Add(AffCtrls)
+        AffCtrls.BringToFront()
+
+
+        ' Affichage des valeurs envoyées pour MIDI Learn (label "off"))
+        ' **********************************************
+        Panneau1.Panel1.Controls.Add(AffMidiLearn)
+        AffMidiLearn.AutoSize = True
+        P.X = 72 '583 'P.X + MidiLearn.Size.Width + 150
+        P.Y = 18
+        'S.Height = 43
+        'S.Width = 30
+        'P.X = 2
+        AffMidiLearn.AutoSize = True
+        AffMidiLearn.Location = P
+        AffMidiLearn.Font = fnt7
+        AffMidiLearn.Visible = True
+        AffMidiLearn.Enabled = True
+        AffMidiLearn.ForeColor = Color.Red
+        AffMidiLearn.Text = "off"
+        'AffMidiLearn.ForeColor = Color.Red
+
+        CadreCtrls.Controls.Add(AffMidiLearn)
+        AffMidiLearn.BringToFront()
+
+        ' Midi Learn (non visible)
+        ' ************************
         P.X = sauv
         Panneau1.Panel1.Controls.Add(MidiLearn)
         MidiLearn.TabStop = False
@@ -4422,30 +5163,16 @@ Public Class PianoRoll
         MidiLearn.Location = P 'New Point(300, 5)
         MidiLearn.Visible = False
         MidiLearn.Enabled = False
+
+        ' CadreCtrls.Controls.Add(MidiLearn)
         MidiLearn.BringToFront()
 
-
-        ' Affichage des valeurs envoyées pour MIDI Learn (label "off"))
-        ' **********************************************
-        Panneau1.Panel1.Controls.Add(AffMidiLearn)
-        AffMidiLearn.AutoSize = True
-        P.X = 570 'P.X + MidiLearn.Size.Width + 150
-        P.Y = 7
-        S.Width = 30
-        'P.X = 2
-        AffMidiLearn.Location = P
-        AffMidiLearn.Font = fnt7
-        AffMidiLearn.Visible = True
-        AffMidiLearn.Enabled = True
-        AffMidiLearn.Text = "off"
-        AffMidiLearn.ForeColor = Color.Red
-        AffMidiLearn.BringToFront()
         '
         ' Label affichages chiffrage des accords
         ' **************************************
         Panneau1.Panel1.Controls.Add(NotesAcc)
         NotesAcc.AutoSize = False
-        P.X = 660
+        P.X = 670 '660
         P.Y = 7
         S.Width = 70
         S.Height = 20
@@ -4453,7 +5180,7 @@ Public Class PianoRoll
         NotesAcc.Location = P
         NotesAcc.Font = fnt7
         NotesAcc.BorderStyle = BorderStyle.FixedSingle
-        NotesAcc.BackColor = ColorTranslator.FromHtml("#7accc8") 'Color.Yellow
+        NotesAcc.BackColor = ColorTranslator.FromHtml("#f0b27a") 'Color.Yellow
         NotesAcc.TextAlign = ContentAlignment.MiddleCenter
         NotesAcc.Visible = True
         NotesAcc.Enabled = True
@@ -4462,11 +5189,13 @@ Public Class PianoRoll
         NotesAcc.Text = "---"
         NotesAcc.Size = S
         NotesAcc.BringToFront()
+        AddHandler NotesAcc.MouseMove, AddressOf NotesAcc_MouseMove
+
         '
         ' Titre de notesacc
         ' *****************
         '
-        P.X = 673
+        P.X = 680 '673
         P.Y = 30
         Panneau1.Panel1.Controls.Add(TitNotesAcc)
         TitNotesAcc.Location = P
@@ -4482,9 +5211,9 @@ Public Class PianoRoll
         '
         If Langue = "fr" Then
             'If Module1.LangueIHM = "fr" Then
-            TitNotesAcc.Text = "Accord"
+            TitNotesAcc.Text = "Accords"
         Else
-            TitNotesAcc.Text = "Chord"
+            TitNotesAcc.Text = "Chords"
         End If
 
 
@@ -4504,7 +5233,7 @@ Public Class PianoRoll
         '
         ' Bouton Docking
         ' ***************
-        P1.X = 1150 '570
+        P1.X = 1200 '570
         P1.Y = 3
         S.Width = 40
         S.Height = 40
@@ -4548,19 +5277,10 @@ Public Class PianoRoll
         Else
             Opacit.Text = "Opacity"
         End If
+        Opacité.Visible = False
         Opacit.Visible = False
 
-        ' Up and Down Opacité
-        ' *******************
-        P.Y = 10
-        Opacité.TabStop = False
-        Opacité.Size = S
-        Opacité.Location = P
-        Opacité.Enabled = True
-        Opacité.Minimum = 60
-        Opacité.Maximum = 100
-        Opacité.Value = 100
-        Opacité.Visible = False
+
         '
         ' TextBox Nom du Son
         ' ******************
@@ -4596,174 +5316,297 @@ Public Class PianoRoll
         AffNomduSon.Tag = i
 
         AddHandler AffNomduSon.MouseUp, AddressOf AffNomduson_MouseUp
+        '
         ' *********************************
         ' Contrepoint : sauts/intervalles *
         ' *********************************
 
-        ' Mode Multi canal pour le 1er pianoroll seulement
-        ' ************************************************
-        'If Canal = 1 Then '
         ' Checkbox Contre point + Label
         ' *****************************
         P.X = 770 '800 ' 925
-            P.Y = 2
+        P.Y = 2
 
-            S.Width = 214
-            S.Height = 14
-            ' label
-            '
-            Panneau1.Panel1.Controls.Add(ContrePoint)
-            ContrePoint.Size = S
-            ContrePoint.TabStop = False
-            ContrePoint.AutoSize = False
-            ContrePoint.BackColor = Color.Beige
-            ContrePoint.BorderStyle = BorderStyle.FixedSingle
-            ContrePoint.TabStop = False
-            ContrePoint.AutoSize = False
-            ContrePoint.TextAlign = ContentAlignment.MiddleCenter
-            ContrePoint.Font = fnt7
-            ContrePoint.Location = P
+        S.Width = 214
+        S.Height = 14
+        ' label
+        '
+        Panneau1.Panel1.Controls.Add(ContrePoint)
+        ContrePoint.Size = S
+        ContrePoint.TabStop = False
+        ContrePoint.AutoSize = False
+        ContrePoint.BackColor = Color.Beige
+        ContrePoint.BorderStyle = BorderStyle.FixedSingle
+        ContrePoint.TabStop = False
+        ContrePoint.AutoSize = False
+        ContrePoint.TextAlign = ContentAlignment.MiddleCenter
+        ContrePoint.Font = fnt7
+        ContrePoint.Location = P
         ContrePoint.Visible = False
         If Langue = "fr" Then
-                ContrePoint.Text = "Aide au Contrepoint"
-            Else
-                ContrePoint.Text = "Counterpoint Help"
-            End If
-            '
-            ' checkbox ContrePoint
-            '
-            Panneau1.Panel1.Controls.Add(ChkContrePoint)
-            P.X = 750 ' 910
-            P.Y = 2
-            '
-            S.Width = 40
-            S.Height = 15
-            '
-            ChkContrePoint.Size = S
-            ChkContrePoint.TabStop = False
-            ChkContrePoint.AutoSize = False
-            ChkContrePoint.Checked = True
-            ChkContrePoint.Location = P
-            ChkContrePoint.Font = fnt9
-            ChkContrePoint.Text = ""
-            ChkContrePoint.Visible = False
-
-            AddHandler ChkContrePoint.CheckedChanged, AddressOf ChkContrePoint_CheckedChanged
-
-            ' Checkbox multicanal
-            ' *******************
-            P.X = 870 ' 905
-            P.Y = 20
-
-            S.Width = 200
-            S.Height = 15
-
-            Panneau1.Panel1.Controls.Add(CheckMultiCan)
-            CheckMultiCan.Size = S
-            CheckMultiCan.TabStop = False
-            CheckMultiCan.AutoSize = False
-            CheckMultiCan.Font = fnt7
-            CheckMultiCan.TextAlign = ContentAlignment.MiddleLeft
-        CheckMultiCan.Location = P
-        If LangueIHM = "fr" Then
-            CheckMultiCan.Text = "Multicanal(15,16)"
+            ContrePoint.Text = "Aide au Contrepoint"
         Else
-            CheckMultiCan.Text = "Multichannel(15,16)"
-            End If
-        CheckMultiCan.Visible = False
-        ' (pas de AddHandler pour CheckMultiCan)
+            ContrePoint.Text = "Counterpoint Help"
+        End If
+        '
+        ' checkbox ContrePoint
+        '
+        Panneau1.Panel1.Controls.Add(ChkContrePoint)
+        P.X = 750 ' 910
+        P.Y = 2
+        '
+        S.Width = 40
+        S.Height = 15
+        '
+        ChkContrePoint.Size = S
+        ChkContrePoint.TabStop = False
+        ChkContrePoint.AutoSize = False
+        ChkContrePoint.Checked = True
+        ChkContrePoint.Location = P
+        ChkContrePoint.Font = fnt9
+        ChkContrePoint.Text = ""
+        ChkContrePoint.Visible = False
 
-        P.X = 745 '800
-        P.Y = 7
+        AddHandler ChkContrePoint.CheckedChanged, AddressOf ChkContrePoint_CheckedChanged
+
+        ' (pas de AddHandler pour CheckMultiCan)
+        '
+        ' INTERVAL MELODIQUE
+        ' ******************
+
+        P.X = 1000 '975 '745 '800
+        P.Y = 5
 
         S.Width = 40
-            S.Height = 20
+        S.Height = 20
 
-            Panneau1.Panel1.Controls.Add(SautMel)
-            SautMel.Size = S
-            SautMel.BorderStyle = BorderStyle.FixedSingle
+        Panneau1.Panel1.Controls.Add(SautMel)
+        SautMel.Size = S
+        SautMel.BorderStyle = BorderStyle.FixedSingle
         SautMel.BackColor = ColorTranslator.FromHtml("#fff799") 'Color.Yellow
         SautMel.TabStop = False
         SautMel.AutoSize = False
-            SautMel.Font = fnt7
-            SautMel.TextAlign = ContentAlignment.MiddleCenter
-            SautMel.Location = P
-            SautMel.Text = "---"
-            SautMel.BringToFront()
-            SautMel.Visible = True
+        SautMel.Font = fnt7
+        SautMel.TextAlign = ContentAlignment.MiddleCenter
+        SautMel.Location = P
+        SautMel.Text = "---"
+        SautMel.BringToFront()
+        SautMel.Visible = False
+        SautMel.Font = fnt10
         '
-
-        P.X = 752 '800 ' 925
-        P.Y = 30
+        P.X = 990 '752 '800 ' 925
+        P.Y = 25 ' 35
 
         Panneau1.Panel1.Controls.Add(TitSautMel)
-            TitSautMel.Size = S
-            TitSautMel.BorderStyle = BorderStyle.None
-            TitSautMel.TabStop = False
-            TitSautMel.AutoSize = True
-            TitSautMel.Font = fnt7
-            TitSautMel.TextAlign = ContentAlignment.MiddleCenter
-            TitSautMel.Location = P
-            TitSautMel.Visible = True
-            TitSautMel.BringToFront()
-            TitSautMel.Visible = True
-            '
-            If Langue = "fr" Then
-                'If Module1.LangueIHM = "fr" Then
-                TitSautMel.Text = "Saut"
-            Else
-                TitSautMel.Text = "Leap"
-            End If
+
+        TitSautMel.BorderStyle = BorderStyle.None
+        TitSautMel.TabStop = False
+        TitSautMel.AutoSize = True
+        TitSautMel.Font = fnt7
+        TitSautMel.TextAlign = ContentAlignment.MiddleCenter
+        TitSautMel.Location = P
+        TitSautMel.Visible = False
+        TitSautMel.BringToFront()
+        '
+        If Langue = "fr" Then
+            'If Module1.LangueIHM = "fr" Then
+            TitSautMel.Text = "Intervalle" + Chr(13) + "Mélodique"
+        Else
+            TitSautMel.Text = "Melod. interval"
+        End If
 
         '
-        P.X = 800 ' 820 '850
-        P.Y = 7 '20
+        P.X = 1025 '800 ' 820 '850
+        P.Y = 15 '20
 
         S.Width = 40
-            S.Height = 20
+        S.Height = 20
 
-            Panneau1.Panel1.Controls.Add(IntervH)
-            IntervH.Size = S
-            IntervH.BorderStyle = BorderStyle.FixedSingle
+
+        ' INTERVALLE HARMONIQUE
+        ' *********************
+        Panneau1.Panel1.Controls.Add(IntervH)
+        IntervH.Size = S
+        IntervH.BorderStyle = BorderStyle.FixedSingle
         IntervH.BackColor = ColorTranslator.FromHtml("#fff799") 'Color.Yellow
         IntervH.TabStop = False
-            IntervH.AutoSize = False
-            IntervH.Font = fnt7
-            IntervH.TextAlign = ContentAlignment.MiddleCenter
-            IntervH.Location = P
-            IntervH.Visible = True
-            IntervH.Text = "---"
-            IntervH.BringToFront()
-            IntervH.Visible = True
+        IntervH.AutoSize = False
+        IntervH.Font = fnt7
+        IntervH.TextAlign = ContentAlignment.MiddleCenter
+        IntervH.Location = P
+        IntervH.Visible = False
+        IntervH.Text = "---"
+        IntervH.BringToFront()
         '
-        P.X = 798 '850
-        P.Y = 30
+        P.X = 1027 '798 '850
+        P.Y = 35
         '
         Panneau1.Panel1.Controls.Add(TitIntervH)
-            TitIntervH.Size = S
-            TitIntervH.BorderStyle = BorderStyle.None
-            TitIntervH.TabStop = False
-            TitIntervH.AutoSize = True
-            TitIntervH.Font = fnt7
-            TitIntervH.TextAlign = ContentAlignment.MiddleCenter
-            TitIntervH.Location = P
-            TitIntervH.Visible = True
-            TitIntervH.BringToFront()
-            TitIntervH.Visible = True
-            '
-            If Langue = "fr" Then
-                'If Module1.LangueIHM = "fr" Then
-                TitIntervH.Text = "Interval."
-            Else
-                TitIntervH.Text = "Interval"
-            End If
+        TitIntervH.BorderStyle = BorderStyle.None
+        TitIntervH.TabStop = False
+        TitIntervH.AutoSize = True
+        TitIntervH.Font = fnt7
+        TitIntervH.TextAlign = ContentAlignment.MiddleCenter
+        TitIntervH.Location = P
+        TitIntervH.BringToFront()
+        TitIntervH.Visible = False
+        '
+        If Langue = "fr" Then
+            'If Module1.LangueIHM = "fr" Then
+            TitIntervH.Text = "Interv."
+        Else
+            TitIntervH.Text = "Interv."
+        End If
         'End If
+
+        ' Titre Contrepoint
+        ' *****************    TitreCtrP
+        P.X = 970 ' 798 ' 850
+        P.Y = 0
+        '
+        S.Width = 100
+        S.Height = 12
+        '
+        Panneau1.Panel1.Controls.Add(TitreCtrP)
+        TitreCtrP.BorderStyle = BorderStyle.None
+        TitreCtrP.BackColor = Me.CoulBarOut 'ColorTranslator.FromHtml("#fff799") 'Color.Yellow
+        TitreCtrP.TabStop = False
+        TitreCtrP.AutoSize = False
+        TitreCtrP.Size = S
+        TitreCtrP.Font = fnt7
+        TitreCtrP.TextAlign = ContentAlignment.MiddleCenter
+        TitreCtrP.Location = P
+        TitreCtrP.Visible = False
+        TitreCtrP.BringToFront()
+
+        If Langue = "fr" Then
+            'If Module1.LangueIHM = "fr" Then
+            TitreCtrP.Text = "Contrepoint"
+        Else
+            TitreCtrP.Text = "Couterpoint"
+        End If
+
+
+        ' Edition des notes (supprimé)
+        ' ******************
+        P.X = 795                  '807  '798 '850
+        P.Y = 8
+
+        Panneau1.Panel1.Controls.Add(EditionNotes)
+        EditionNotes.Font = fnt7
+        EditionNotes.AutoSize = True
+        EditionNotes.BackColor = SystemColors.Info
+        EditionNotes.BackColor = ColorTranslator.FromHtml("#148f77")
+        EditionNotes.ForeColor = Color.White
+        EditionNotes.Location = P
+        EditionNotes.Visible = False
+
+        If Langue = "fr" Then
+            'If Module1.LangueIHM = "fr" Then
+            EditionNotes.Text = "Edition des Notes (S)"
+        Else
+            EditionNotes.Text = "Notes edition (S)"
+        End If
+
+        ' CheckBox - Info bulle sur souris (à ne pas confondre avec la label infoLabel qui est créé dans sub New)
+        ' ********************************
+        P.X = 760 '807  '798 '850
+        P.Y = 30
+
+        Panneau1.Panel1.Controls.Add(AffInfoBulle)
+
+
+        AffInfoBulle.Font = fnt7
+        AffInfoBulle.AutoSize = True
+        AffInfoBulle.BackColor = SystemColors.Info
+        AffInfoBulle.BackColor = Color.DarkSeaGreen
+        AffInfoBulle.ForeColor = Color.Black
+        AffInfoBulle.Location = P
+
+        If Langue = "fr" Then
+            'If Module1.LangueIHM = "fr" Then
+            AffInfoBulle.Text = "Intervalles sur souris (X)"
+        Else
+            AffInfoBulle.Text = "Intervals on mouse(X) "
+        End If
+
+        AddHandler AffInfoBulle.MouseMove, AddressOf affinfobulle_MouseMove
+        '
+        ' Jouer Polyphonique
+        ' ******************
+        P.X = 760 '807  '798 '850
+        P.Y = 8
+
+        Panneau1.Panel1.Controls.Add(JouerPoly)
+        JouerPoly.Font = fnt7
+        JouerPoly.AutoSize = True
+        JouerPoly.BackColor = SystemColors.Info
+        JouerPoly.BackColor = Color.DarkKhaki
+        JouerPoly.ForeColor = Color.Black
+        JouerPoly.Location = P
+
+        If Langue = "fr" Then
+            'If Module1.LangueIHM = "fr" Then
+            JouerPoly.Text = "Ecoute polyphonique (W)"
+        Else
+            JouerPoly.Text = "Polyphonic listening (W)"
+        End If
+        '
+
+        '
+        'System d'aide
+        '*************
+        Panneau1.Panel1.Controls.Add(CheckAide)
+        CheckAide.Location = New Point(950, 20)
+        CheckAide.BackColor = Color.Gold
+        CheckAide.ForeColor = Color.Black
+        CheckAide.AutoSize = True
+        CheckAide.Visible = True
+        If Langue = "fr" Then
+            CheckAide.Text = "Afficher l'aide"
+        Else
+            CheckAide.Text = "Show Help"
+        End If
+        AddHandler CheckAide.MouseClick, AddressOf CheckAide_MouseClick
+        AddHandler CheckAide.MouseMove, AddressOf CheckAide_MouseMove
+
+        'Panneau1.Panel2.Controls.Add(PanelAide)
+        'PanelAide.Controls.Add(H1)
+        'PanelAide.Controls.Add(H2)
+
+        'PanelAide.Size = New Size(230, 520)
+        'PanelAide.Location = New Point(1046, 0)
+        'PanelAide.AutoScroll = True
+        'PanelAide.Dock = DockStyle.Right
+        'PanelAide.BackColor = Color.OldLace
+
+
+        'H1.Location = New Size(0, 0)
+        'H1.Font = New Font(H1.Font, FontStyle.Bold)
+        'H1.AutoSize = False
+        'H1.Size = New Size(228, 19)
+        'H1.BorderStyle = BorderStyle.None
+        'H1.BackColor = Color.OldLace
+        'H1.ForeColor = Color.Maroon
+        'H1.Text = "Aide"
+
+        'H2.Location = New Point(0, 20)
+        'H2.AutoSize = False
+        'H2.Size = New Size(228, 520)
+        'H2.BorderStyle = BorderStyle.None
+        'H2.BackColor = Color.OldLace
+        'H2.ForeColor = Color.Maroon
+        'H2.Text = "Pour afficher l'aide d'un composant, passer la souris au dessus du composant"
+
+        'PanelAide.Visible = False
+        'PanelAide.BringToFront()
+
+        AIDE_CREATION()
+
 
 
         ' Tool Tip (bulles d'aides)
         ' *************************
         If Langue = "fr" Then
-
             '
             ToolTip1.SetToolTip(BoutonF1_1, "Réduit")
             ToolTip1.SetToolTip(BoutonF1_2, "Large")
@@ -4784,12 +5627,13 @@ Public Class PianoRoll
             ToolTip1.SetToolTip(Opacité, "Opacité")
             ToolTip1.SetToolTip(ActiveExpression, "Activation du ctrl expression")
             ToolTip1.SetToolTip(ActionsPianoR, "Actions dans une sélection : Effacer, Coller, Transposer")
-            ToolTip1.SetToolTip(NomduSon, "Ecrivez ici le nom du son utilisé")
+            ToolTip1.SetToolTip(NomduSon, "Texte libre")
             ToolTip1.SetToolTip(NotesAcc, "Faire une sélection verticale pour obtenir l'accord correspondant : accord de 3 ou 4 notes.")
             ToolTip1.SetToolTip(CheckMultiCan, "Noire=canal 15;Rouge=canal 16")
-            ToolTip1.SetToolTip(CheckMultiCan, "Activation de l'aide au ContrPoint")
+            ToolTip1.SetToolTip(CheckMultiCan, "Activation de l'aide au ContrPoint") ' AffMidiLearn
+            ToolTip1.SetToolTip(AffMidiLearn, "Valeur d'une colonne sur graphe controleur. Faire ctrl+clic sur colonne graphe puis flèche haut/bas")
 
-            ToolTip1.SetToolTip(AffCtrls, "Activer les contrôleurs")
+            ToolTip1.SetToolTip(AffCtrls, "Activer les graphes contrôleurs")
             ToolTip1.SetToolTip(CCActif.Item(0), "Expression - 11")
             ToolTip1.SetToolTip(CCActif.Item(1), "Modulation - 1")
             ToolTip1.SetToolTip(CCActif.Item(2), "Pan - 10")
@@ -4797,6 +5641,9 @@ Public Class PianoRoll
             ToolTip1.SetToolTip(CCActif.Item(4), "Libre - 51")
             ToolTip1.SetToolTip(CCActif.Item(5), "Libre - 52")
             ToolTip1.SetToolTip(CCActif.Item(6), "Libre - 53")
+            '
+            ' tooltp2 avec forecolor en rouge
+            ToolTip2.SetToolTip(SautMel, "Pour voix monophoniques seulement.")
 
         Else
             ToolTip1.SetToolTip(BoutonF1_1, "Small")
@@ -4818,11 +5665,14 @@ Public Class PianoRoll
             ToolTip1.SetToolTip(Opacité, "Opacity")
             ToolTip1.SetToolTip(ActiveExpression, "Ctrl expression activation")
             ToolTip1.SetToolTip(ActionsPianoR, "Actions inside a slection : Clear, Paste, Transpose ")
-            ToolTip1.SetToolTip(AffCtrls, "Activate the controllers")
-            ToolTip1.SetToolTip(NomduSon, "Write here the name of the sound used")
+            ToolTip1.SetToolTip(AffCtrls, "Activate the graphs controlers")
+            ToolTip1.SetToolTip(NomduSon, "Free text")
             ToolTip1.SetToolTip(NotesAcc, "Make a vertical selection to get the corresponding chord : 3 or 4 notes chord.")
             ToolTip1.SetToolTip(CheckMultiCan, "Black=channel 15;Red=channel 16;")
             ToolTip1.SetToolTip(CheckMultiCan, "Counterpoint help Activation ")
+            ToolTip1.SetToolTip(AffMidiLearn, "Value of a column on a controler graph. Ctrl+click on graph column then up/down arrow")
+
+
 
             ToolTip1.SetToolTip(CCActif.Item(0), "Expression - 11")
             ToolTip1.SetToolTip(CCActif.Item(1), "Modulation - 1")
@@ -4831,9 +5681,67 @@ Public Class PianoRoll
             ToolTip1.SetToolTip(CCActif.Item(4), "Free - 51")
             ToolTip1.SetToolTip(CCActif.Item(5), "Free - 52")
             ToolTip1.SetToolTip(CCActif.Item(6), "Free - 53")
+
+            ' tooltip2 avec forcolor en rouge
+            ToolTip2.SetToolTip(SautMel, " For monophonic voices only.")
+
         End If
 
     End Sub
+    Sub AIDE_CREATION()
+        If LangueIHM = "fr" Then
+            CheckAide.Text = "Activer l'aide"
+        Else
+            CheckAide.Text = "Activate Help"
+        End If
+        '
+        Panneau1.Panel2.Controls.Add(PanelAide)
+        PanelAide.Controls.Add(H1)
+        PanelAide.Controls.Add(H2)
+        '
+        PanelAide.Size = New Size(410, 502)
+        PanelAide.Location = New Point(863, 0)
+        PanelAide.AutoScroll = False
+        PanelAide.Dock = DockStyle.None
+        PanelAide.BackColor = Color.OldLace
+        PanelAide.BorderStyle = BorderStyle.FixedSingle
+        '
+        H1.Font = New Font("Microsoft Sans Serif", 8, FontStyle.Bold)
+        H1.AutoSize = False
+        H1.Size = New Size(400, 19)
+        H1.BorderStyle = BorderStyle.None
+        H1.BackColor = Color.OldLace
+        H1.ForeColor = Color.Maroon
+        H1.Text = "Aide"
+        '
+        H2.Location = New Point(0, H1.Size.Height + 10)
+        H2.AutoSize = False
+        H2.Size = New Size(400, 520)
+        H2.BorderStyle = BorderStyle.None
+        H2.BackColor = Color.OldLace
+        H2.ForeColor = Color.Maroon
+        H2.Text = "Pour afficher l'aide d'un composant, passer la souris au dessus du composant"
+        '
+        PanelAide.Visible = False
+        PanelAide.BringToFront()
+    End Sub
+
+    Private Function Font(v1 As String, v2 As Integer, bold As FontStyle) As Font
+        Throw New NotImplementedException()
+    End Function
+
+    Sub CheckAide_MouseClick()
+        If CheckAide.Checked Then
+            PanelAide.Visible = True
+            H1.Text = "Aide"
+            H2.Text = AIDE_TEXTE("fr")
+        Else
+            PanelAide.Visible = False
+        End If
+
+    End Sub
+
+
     Sub ChkContrePoint_CheckedChanged()
         If ChkContrePoint.Checked Then
             'ContrePoint.Enabled = True
@@ -5234,7 +6142,8 @@ Public Class PianoRoll
     End Sub
     Sub Construction_Menu()
         '
-        Fichier.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {MIDIReset, Quitter})
+        ' Menu Fichier
+        Fichier.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Enregistrer, MIDIReset, Quitter})
         Fichier.Size = New System.Drawing.Size(87, 20)
         If Me.Langue = "fr" Then
             Fichier.Text = "Fichier"
@@ -5243,7 +6152,7 @@ Public Class PianoRoll
         End If
         Fichier.Visible = True
         Fichier.BackColor = Me.CoulBarOut
-        ' Edition
+        ' Menu Edition
         Edition.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Couper, Copier, Coller, Séparateur1, Annuler, Séparateur2, Supprimer})
         Edition.Size = New System.Drawing.Size(56, 20)
         Edition.Text = "Edition"
@@ -5252,8 +6161,17 @@ Public Class PianoRoll
         ' 
         ' Quitter (de Fichier)
         '
+        If Me.Langue = "fr" Then
+            Enregistrer.Text = "Enregistrer"
+        Else
+            Enregistrer.Text = "Save"
+        End If
+        Enregistrer.ShortcutKeys = Keys.Control Or Keys.S
+
         MIDIReset.Text = "MIDI Reset"
         MIDIReset.ShortcutKeys = Keys.F12
+
+        ' 
         '
         If Me.Langue = "fr" Then
             Quitter.Text = "Attacher"
@@ -5998,7 +6916,7 @@ Public Class PianoRoll
         Grid1.Cell(3, Pos).Alignment = AlignmentEnum.LeftCenter
         Grid1.Cell(3, Pos).FontBold = True
 
-        Grid1.Cell(3, Pos).BackColor = Color.FromArgb(240, 240, 240) ' gris clair
+        Grid1.Cell(3, Pos).BackColor = CouleurFondG1 'Color.FromArgb(240, 240, 240) ' 
         Grid1.Cell(3, Pos).ForeColor = Color.Black
         '
         'Dim a As String = Form1.Det_ListGam()
@@ -6076,23 +6994,26 @@ Public Class PianoRoll
     Dim ListAnnulation As New List(Of Ann) ' Liste pour CTRL Z 
     Public PointAnn As Integer = -1 ' pointeur de la liste d'annulation
     Sub JouerNote(ValeurNote As Byte, Dyn As Byte, can As Byte)
+        Dim a As String = ""
+        Dim b As String = ""
+        'If NoteAEtéJouée = False Then
         'Dim Canal As Byte = Microsoft.VisualBasic.Right(Trim(Me.CheckMute.Text), 1) ' N° piste, N° canal
         Try
-            'TimerStop.Interval = 1500
-            'TimerStop.Start()
             If Not (Form1.SortieMidi.Item(Form1.ChoixSortieMidi).IsOpen) Then
                 Form1.SortieMidi.Item(Form1.ChoixSortieMidi).Open()
             End If
             '
             Form1.SortieMidi.Item(Form1.ChoixSortieMidi).SendNoteOn(can, ValeurNote, Dyn)
             NoteCourante = ValeurNote
+            CanalCourant = can
             NoteAEtéJouée = True
+            '
         Catch ex As Exception
             'TimerStop.Stop()
             MessageHV.TypBouton = "OK"
             If Module1.LangueIHM = "fr" Then
                 MessageHV.PTitre = "Problème de ressource MIDI"
-                MessageHV.PContenuMess = "Warning : détection d'une erreur dans procédure " + "Pianoroll.JouerNote" + Constants.vbCrLf + "- " +
+                MessageHV.PContenuMess = a + "---" + b + "Warning : détection d'une erreur dans procédure " + "Pianoroll.JouerNote" + Constants.vbCrLf + "- " +
                 "Message  : " + ex.Message + Constants.vbCrLf + "- " + "Choisissez une autre sortie MIDI"
             Else
                 MessageHV.PTitre = "MIDI Resource Problem"
@@ -6103,28 +7024,29 @@ Public Class PianoRoll
             NoteAEtéJouée = True
             Cacher_FormTransparents()
             MessageHV.ShowDialog()
-            'End
         End Try
+        'End If
     End Sub
-    Sub StoperNote(ValeurNote As Byte, Dyn As Byte)
+    Sub StoperNote(ValeurNote As Byte, CanalCours As Byte, Dyn As Byte)
         'Dim Canal As Byte = Microsoft.VisualBasic.Right(Trim(Me.CheckMute.Text), 1) ' N° piste, N° canal
         Try
-            'TimerStop.Stop()
+
 
             If Not (Form1.SortieMidi.Item(Form1.ChoixSortieMidi).IsOpen) Then
                 Form1.SortieMidi.Item(Form1.ChoixSortieMidi).Open()
             End If
             '
-            Form1.SortieMidi.Item(Form1.ChoixSortieMidi).SendNoteOff(CanalJouerNote, ValeurNote, 0)
+            Form1.SortieMidi.Item(Form1.ChoixSortieMidi).SendNoteOff(CanalCours, ValeurNote, 0)
             NoteAEtéJouée = False
+
         Catch ex As Exception
             messa = "Problème de ressource MIDI"
             Cacher_FormTransparents()
             MessageHV.PContenuMess = messa + Constants.vbCrLf + "Détection d'une erreur dans procédure : " + "StoperNote" + "." + Constants.vbCrLf + "Message  : " + ex.Message
             MessageHV.PTypBouton = "OK"
             Cacher_FormTransparents()
-            MessageHV.ShowDialog()
-            End
+            'MessageHV.ShowDialog()
+            'End
         End Try
     End Sub
     Sub StoperNoteAcc(ValeurNote As Byte, Dyn As Byte, Canal As Byte)
@@ -6416,36 +7338,40 @@ Public Class PianoRoll
                             oo.Colonne = j
                             oo.Vélo = a.Vélo
                             '
-                            If j <= Grid1.Cols - 16 Then
-                                Grid1.Cell(i, j).ForeColor = a.ForeCol
-                                Grid1.Cell(i, j).Text = a.Vélo
-                                Grid1.Cell(i, j).FontBold = True
-                                ' pour quatification mélodique
-                                lstR.Add(i)
-                                lstC.Add(j)
-                                If Grid1.Cell(i, j).BackColor = Color.White Then flag_quantifier = False ' flag_quantifier = False car on supprime la quantification automatique - pour la remettre écrire flag_quantifier = True
-                                ' l'inconvénient de l'auto quantmel est de supprimer les possibilités de ctrlz et ctrly
-                            End If
-                            m = 1
-                                For k = j + 1 To j + a.Longueur - 1
-                                If k <= Grid1.Cols - 16 Then
-                                    If IsNumeric(Grid1.Cell(i, k).Text) = False Then
-                                        m = m + 1
-                                        Grid1.Cell(i, k).ForeColor = a.ForeCol
-                                        Grid1.Cell(i, k).Text = Trait
-                                        Grid1.Cell(i, k).FontBold = True
+                            If Not Det_ZoneHorsTess(i) Then
+                                If j <= Grid1.Cols - 16 Then ' tête de note
+                                    Grid1.Cell(i, j).ForeColor = a.ForeCol
+                                    Grid1.Cell(i, j).Text = a.Vélo
+                                    Grid1.Cell(i, j).FontBold = True
+                                    ' pour quatification mélodique
+                                    lstR.Add(i)
+                                    lstC.Add(j)
+                                    If Grid1.Cell(i, j).BackColor = Color.White Then flag_quantifier = False ' flag_quantifier = False car on supprime la quantification automatique - pour la remettre écrire flag_quantifier = True
+                                    ' l'inconvénient de l'auto quantmel est de supprimer les possibilités de ctrlz et ctrly
+                                End If
+                                m = 1
+                                For k = j + 1 To j + a.Longueur - 1  ' longueur de la note en Trait
+                                    If k <= Grid1.Cols - 16 Then
+                                        If IsNumeric(Grid1.Cell(i, k).Text) = False Then
+                                            m = m + 1
+                                            Grid1.Cell(i, k).ForeColor = a.ForeCol
+                                            Grid1.Cell(i, k).Text = Trait
+                                            Grid1.Cell(i, k).FontBold = True
+                                        Else
+                                            Exit For
+                                        End If
                                     Else
                                         Exit For
                                     End If
-                                Else
-                                    Exit For
-                                    End If
                                 Next k
                                 oo.Longueur = m
+
+
                                 'ListAnnulation.Item(PointAnn).ListAnnuler.Add(oo) ' sauvegarde pour CTRL+Z
                                 'ListAnnulation.Item(PointAnn).Tinfo = TypeInfo.All
                                 'ListAnnulation.Item(PointAnn).Action = ActionEnum.EffacerRestituer
                             End If
+                        End If
                     Next
                     ' 
                     ' quantifier si au moins une note n'et sur un calque après le collage
@@ -6463,31 +7389,40 @@ Public Class PianoRoll
                     '
                     ' gestion de la restitution à placer après la modification
                     gest_ctrly(LigneInitial, ColonneInitial, Lr, Lc)
+                    '
+                    ' Collage CTRL des pédales
+                    ' ************************
+                    For Each a As CtrlCCC In ListCCCctrl
+                        Dim ooo As New Ann.SauvAnnulerCtrl
+                        i = Grid1.FixedRows - 1
+                        j = ColonneInitial + a.EcartCol
                         '
-                        ' Collage CTRL des pédales
-                        ' ************************
-                        For Each a As CtrlCCC In ListCCCctrl
-                            Dim ooo As New Ann.SauvAnnulerCtrl
-                            i = Grid1.FixedRows - 1
-                            j = ColonneInitial + a.EcartCol
-                            '
-                            ooo.Colonne = j
-                            If j <= Grid1.Cols - 1 Then
-                                Grid1.Cell(i, j).Text = a.Valeur
-                                'ooo.Valeur = a.Valeur
-                                'ListAnnulation.Item(PointAnn).ListAnnulerCTRL.Add(ooo) ' ' sauvegarde pour CTRL+Z
-                                'ListAnnulation.Item(PointAnn).Tinfo = TypeInfo.All
-                            End If
-                        Next
-                        '
-                        'Grid1.TopRow = LigneInitial
-                        'Grid1.LeftCol = ColonneInitial - 10
+                        ooo.Colonne = j
+                        If j <= Grid1.Cols - 1 Then
+                            Grid1.Cell(i, j).Text = a.Valeur
+                            'ooo.Valeur = a.Valeur
+                            'ListAnnulation.Item(PointAnn).ListAnnulerCTRL.Add(ooo) ' ' sauvegarde pour CTRL+Z
+                            'ListAnnulation.Item(PointAnn).Tinfo = TypeInfo.All
+                        End If
+                    Next
+                    '
+                    'Grid1.TopRow = LigneInitial
+                    'Grid1.LeftCol = ColonneInitial - 10
 
-                        Grid1.Cell(LigneInitial, ColonneInitial).EnsureVisible()
-                    End If
+                    Grid1.Cell(LigneInitial, ColonneInitial).EnsureVisible()
                 End If
+            End If
         End If
     End Sub
+    Function Det_ZoneHorsTess(i As Integer) As Boolean
+        Dim ret As Boolean = False
+
+        If i < (Grid1.FixedRows + (127 - TessHaut)) Then ret = True
+        If i > (Grid1.Rows - 1) - TessBas Then ret = True
+        Return ret
+    End Function
+
+
     Function Det_lastRow(fr As Integer) As Integer
         Dim list1 As New List(Of Integer)
         For Each a As NotesCCC In ListCCC
@@ -6887,7 +7822,7 @@ Public Class PianoRoll
             Do
                 i = i + 1
                 col = col + 1
-            Loop Until Trim(Grid1.Cell(Ligne, col).Text) = "" Or Information.IsNumeric(Grid1.Cell(Ligne, col).Text) = True Or col = (Grid1.Cols - 1)
+            Loop Until Trim(Grid1.Cell(Ligne, col).Text) = "" Or IsNumeric(Grid1.Cell(Ligne, col).Text) = True Or col = (Grid1.Cols - 1)
 
         End If
         Return Convert.ToString(i)
@@ -6916,14 +7851,19 @@ Public Class PianoRoll
     Private Sub Rallonger(Ligne As Integer, ColDeb As Integer)
         Dim j As Integer
         Dim Col As Integer = ColDeb
+        Dim couleur As Color
         ' Déterminer le point de départ vers l'arrière
         Col = Col + 1
         Do
             Col = Col - 1
-        Loop Until Grid1.Cell(Ligne, Col).Text = Trait Or Col <= 1 Or IsNumeric(Grid1.Cell(Ligne, Col).Text) = True
-        If Col > 1 Then
+        Loop Until Grid1.Cell(Ligne, Col).Text = Trait Or IsNumeric(Grid1.Cell(Ligne, Col).Text) = True Or Col = 0
+
+
+        If Col > 0 Then
+            couleur = Grid1.Cell(Ligne, Col).ForeColor
             For j = Col + 1 To ColDeb
                 Grid1.Cell(Ligne, j).Text = Trait
+                Grid1.Cell(Ligne, j).ForeColor = couleur
             Next
         End If
     End Sub
@@ -7166,21 +8106,19 @@ Public Class PianoRoll
                 Grid1.Cell(3, j).FontBold = True
             Next
         End If
-        Grid1.Refresh()
+        'Grid1.Refresh()
     End Sub
     Sub Refresh_G1_Marq()
         Dim i, j As Integer
         Dim tbl(), tbl1(), tbl2() As String
 
         ' effacer le texte de la ligne entière des marqueurs
-        'Grid1.Range(4, 1, 4, Grid1.Cols - 1).ClearText() ' effacer le texte de la ligne des marqueurs
+        '
         For j = 1 To Grid1.Cols - 1
             Grid1.Cell(4, j).Text = ""
-            Grid1.Cell(4, j).BackColor = Color.FromArgb(240, 240, 240)
+            Grid1.Cell(4, j).BackColor = CouleurFondG1 'Color.FromArgb(240, 240, 240)
             Grid1.Cell(4, j).ForeColor = Color.Black
         Next
-
-
         '
         If Trim(ListMarq) <> "" Then
             ' mise à jour des accords
@@ -7192,8 +8130,6 @@ Public Class PianoRoll
                 a = Trim(tbl2(0) + ".1.1") ' tbl2(0) = N0 mesure
                 j = PosColonnes(a) + 1 ' identification du N° de colonnes dans grid1
                 If Trim(Grid1.Cell(4, j).Text) <> "" Then tbl1(1) = Trim(Grid1.Cell(4, j).Text) + "/" + tbl1(1) ' on place u / entre les accords dans une même mesure
-
-                '
                 ' écriture de la gamme
                 Grid1.Cell(4, j).Text = tbl1(1)
                 Grid1.Cell(4, j).BackColor = Color.DarkGreen
@@ -7277,9 +8213,48 @@ Public Class PianoRoll
         Public old_col As Integer
         Public old_row As Integer
         '
-        Public new_row As Integer
+        Public couleur As Color
+        '
+        Public new_row As Integer = -1 ' utilisation dans QuantMel
+        Public new_col As Integer = -1 ' utilisation dans QuantPos
     End Class
-    Public Sub QuantMel(pas As Integer)
+    Class SelRestit
+        Public Fr As Integer
+        Public Fc As Integer
+        Public Lr As Integer
+        Public Lc As Integer
+
+
+        Public Sub New()
+            RAZVar()
+        End Sub
+        Public Sub Clear()
+            RAZVar()
+        End Sub
+        '
+        Private Sub RAZVar()
+            Fr = Nothing
+            Fc = Nothing
+            Lr = Nothing
+            Lc = Nothing
+        End Sub
+    End Class
+    Dim Selrest As New SelRestit ' 
+    Dim Selinit As New List(Of String)
+
+    ''' <summary>
+    ''' Cette méthode déplace les notes sélectionnées dans une grille de piano roll vers le haut ou vers le bas en cohérence avec la gamme choisie la gamme choisie
+    ''' </summary>
+    ''' <param name="pas"> Utilisez -1 pour monter et 1 pour descendre.</param>
+    ''' <remarks>
+    ''' La méthode effectue les étapes suivantes :
+    ''' 1. Détermine les notes sélectionnées et les stocke dans une liste.
+    ''' 2. Calcule la nouvelle position des notes en fonction de la direction de déplacement.
+    ''' 3. Efface les anciennes positions des notes.
+    ''' 4. Met à jour la grille avec les nouvelles positions des notes.
+    ''' 5. Met à jour la sélection et calcule les nouvelles valeurs associées.
+    ''' </remarks>
+    Public Sub QuantMel_old(pas As Integer)
         Dim listNotes As New List(Of CNote)
         Dim ListRow As New List(Of Integer)
         Dim ListCol As New List(Of Integer)
@@ -7349,17 +8324,17 @@ Public Class PianoRoll
                     End With
                 Next i
 
-                'If Not flag_sortir Then
+                '
                 If (ii > Grid1.FixedRows - 1) And (ii < Grid1.Rows - 1) Then
 
                     ' annulation du ctrl z et ctrl y
                     Listann.Clear()
                     Pointeurz = -1
                     Listrestit.Clear()
-                    Pointeury = -1 'Listann.Count
+                    Pointeury = -1 ' 
 
-                    ' Effacer old notes position
-                    ' **************************
+                    ' Effacer anciennes positions de notes
+                    ' ************************************
 
                     For i = 0 To listNotes.Count - 1
                         With listNotes(i)
@@ -7388,10 +8363,16 @@ Public Class PianoRoll
                         End With
                     Next i
                     '
-                    ' Gestion de la sélection
+                    ' Gestion de la sélection : restitution des notes sélectionnée
                     ' ***********************
                     ListCol.Sort()
                     ListRow.Sort()
+                    ' Données à récupérer par KeyUp pour restitution de la sélection
+                    Selrest.Fr = ListRow(0)
+                    Selrest.Fc = ListCol(0)
+                    Selrest.Lr = ListRow(ListRow.Count - 1)
+                    Selrest.Lc = ListCol(ListCol.Count - 1)
+                    '
                     Grid1.Range(ListRow(0), ListCol(0), ListRow(ListRow.Count - 1), ListCol(ListCol.Count - 1)).SelectCells()
                     '
                     ' Calcul du nouveau chiffrage sur la nouvelle sélection
@@ -7412,6 +8393,389 @@ Public Class PianoRoll
         Grid1.AutoRedraw = True
         Grid1.Refresh()
     End Sub
+    ''' <summary>
+    ''' Cette méthode déplace les notes sélectionnées dans une grille de piano roll vers le haut ou vers le bas en cohérence avec la gamme choisie la gamme choisie
+    ''' </summary>
+    ''' <param name="pas"> Utilisez -1 pour monter et 1 pour descendre.</param>
+    ''' <remarks>
+    ''' La méthode effectue les étapes suivantes :
+    ''' 1. Détermine les notes sélectionnées et les stocke dans une liste.
+    ''' 2. Calcule la nouvelle position des notes en fonction de la direction de déplacement.
+    ''' 3. Efface les anciennes positions des notes.
+    ''' 4. Met à jour la grille avec les nouvelles positions des notes.
+    ''' 5. Met à jour la sélection et calcule les nouvelles valeurs associées.
+    ''' </remarks>
+    Public Sub QuantMel(pas As Integer)
+        Dim listNotes As New List(Of CNote)
+        Dim ListRow As New List(Of Integer)
+        Dim ListCol As New List(Of Integer)
+
+
+        Dim i, j As Integer
+        Dim ii, jj As Integer
+        Dim colold As Integer
+        Dim flag As Boolean = False
+        Dim flag_sortir As Boolean = False
+        '
+        Dim PremRow As Integer = Det_PremRowSel() ' -1 si pas trouvé
+        Dim DerRow As Integer = Det_DerRowSel()   ' -1 si pas trouvé
+        '
+
+        Grid1.AutoRedraw = False
+        '
+        If PremRow <> -1 And DerRow <> -1 Then
+
+            If (pas = -1 And PremRow > Grid1.FixedRows) Or (pas = 1 And DerRow < Grid1.Rows - 1) Then
+
+                ' Détermination des notes sélectionnées
+                ' *************************************
+                With Grid1.Selection
+                    For i = .FirstRow To .LastRow
+                        For j = .FirstCol To .LastCol
+                            If Trim(Grid1.Cell(i, j).Text) <> "" And Trim(Grid1.Cell(i, j).Text) <> Trait _
+                                And Selinit.Contains(SignCell(i, j)) Then
+                                '
+                                Dim OO As New CNote With {
+                                    .old_row = i,
+                                    .old_col = j,
+                                    .old_dyn = Trim(Grid1.Cell(i, j).Text),
+                                    .old_long = Det_LongueurNote(i, j),
+                                    .new_row = -1,
+                                    .couleur = Grid1.Cell(i, j).ForeColor
+                                }
+                                '                                                                                                      
+                                listNotes.Add(OO)
+                                ListCol.Add(OO.old_col)
+                            End If
+                        Next
+                    Next i
+                End With
+                '
+                ' Cacul déplacement (remontée ou descente)
+                ' ****************************************
+                For i = 0 To listNotes.Count - 1
+                    With listNotes(i)
+                        ' Cacul de la nouvelle ligne
+                        ' **************************
+                        ii = .old_row
+                        colold = .old_col
+                        If Grid1.Cell(ii, .old_col).BackColor = Color.Gold Or           ' Première colonne mesure à 4/4
+                           Grid1.Cell(ii, .old_col).BackColor = Color.LightSteelBlue Or ' division mesure à 4/4
+                           Grid1.Cell(ii, .old_col).BackColor = Color.Olive Or          ' Première colonne mesure à 12/8
+                           Grid1.Cell(ii, .old_col).BackColor = CDiv_12_8 Then          ' division mesure à 12/8
+                            colold = .old_col + 1 ' on intervient ici pour éviter de tomber sur les colonnes orange (Gold) ou les colonnes bleu (LightSteelBlue) ou les colonnesvertes de 12/8
+                        End If
+                        '
+                        Do
+                            ii = ii + pas ' II va donner la nouvelle ligne pour la note
+                        Loop Until ((Grid1.Cell(ii, colold).BackColor = CoulCalqTon) _
+                            Or (Grid1.Cell(ii, colold).BackColor = CoulCalqGammes) _
+                            Or (Grid1.Cell(ii, colold).BackColor = CoulCalqAcc)) _
+                            Or (ii <= Grid1.FixedRows - 1) Or (ii >= Grid1.Rows - 1)
+                        '
+                        .new_row = ii ' maj de la nouvelle ligne
+                        ListRow.Add(.new_row)
+                    End With
+                Next i
+                ' Controler que le déplacement est possible (pas de notes qui bloquent par le haut/bas): si pas possible flag=false
+                ' **************************************************************************************************
+
+                flag = True
+                flag_sortir = False
+                For i = 0 To listNotes.Count - 1
+                    With listNotes(i)
+                        For j = .old_col To .old_col + (.old_long - 1)
+                            jj = Det_NoteBloquante(.new_row, j)
+                            If Trim(Grid1.Cell(.new_row, j).Text) <> "" And Not (Selinit.Contains(SignCell(.new_row, jj))) Then
+                                flag = False   ' blocage sur une note n'appartenant pas à la selection
+                                flag_sortir = True
+                                Exit For
+                            End If
+                        Next
+                    End With
+                    If flag_sortir Then Exit For
+                Next
+                '
+                If flag Then
+                    If (ii > Grid1.FixedRows - 1) And (ii < Grid1.Rows - 1) Then
+
+                        ' annulation du ctrl z et ctrl y
+                        Listann.Clear()
+                        Pointeurz = -1
+                        Listrestit.Clear()
+                        Pointeury = -1 ' 
+
+                        ' Effacer anciennes positions de notes
+                        ' ************************************
+                        'c = Grid1.Cell(listNotes(i).old_row, listNotes(i).old_col).ForeColor 'sauvegarde de la couleur de la note
+
+                        Grid1.AutoRedraw = False
+                        For i = 0 To listNotes.Count - 1
+                            With listNotes(i)
+                                For jj = .old_col To (.old_col + (.old_long - 1))
+                                    Grid1.Cell(.old_row, jj).Text = ""
+                                Next
+                            End With
+                        Next i
+
+                        '
+                        ' Mise à jour new notes position
+                        ' ******************************
+                        Selinit.Clear()
+                        For i = 0 To listNotes.Count - 1
+                            With listNotes(i)
+                                ' Ecriture nouvelle position (sans la longueur)
+                                ' ---------------------------------------------
+                                Grid1.Cell(.new_row, .old_col).Text = .old_dyn
+                                Grid1.Cell(.new_row, .old_col).ForeColor = listNotes(i).couleur
+                                Selinit.Add(SignCell(.new_row, .old_col))
+
+                                ' Ecriture des longueurs
+                                ' ----------------------
+                                For jj = (.old_col + 1) To ((.old_col + 1) + (.old_long - 2))
+                                    If Not (IsNumeric(Grid1.Cell(.new_row, jj).Text)) Then
+                                        Grid1.Cell(.new_row, jj).Text = Trait
+                                        Grid1.Cell(.new_row, jj).ForeColor = listNotes(i).couleur
+                                    Else
+                                        Exit For
+                                    End If
+                                Next
+                            End With
+                        Next i
+                        Grid1.AutoRedraw = True
+                        Grid1.Refresh()
+                        '
+                        ' Gestion de la sélection : restitution des notes sélectionnée
+                        ' ***********************
+                        ListCol.Sort()
+                        ListRow.Sort()
+                        ' Données à récupérer par KeyUp pour restitution de la sélection
+                        Selrest.Fr = ListRow(0)
+                        Selrest.Fc = ListCol(0)
+                        Selrest.Lr = ListRow(ListRow.Count - 1)
+                        Selrest.Lc = ListCol(ListCol.Count - 1)
+                        '
+                        'Grid1.BackColorSel = Color.Blue
+                        'Grid1.Range(ListRow(0), ListCol(0), ListRow(ListRow.Count - 1), ListCol(ListCol.Count - 1)).SelectCells()
+                        '
+                        ' Calcul du nouveau chiffrage sur la nouvelle sélection
+                        ' *****************************************************
+                        Det_ChiffAcc()
+                        '
+                    End If
+                Else
+                    ' 
+                    ' Gestion de la sélection et de sa couleur (rouge en cas de blocage)
+                    ' ******************************************************************
+                    If flag Then
+                        Grid1.BackColorSel = Color.PaleGreen
+                    Else
+                        Grid1.BackColorSel = Color.Red ' cas où la quantification a bloqué --> couleur = rouge
+                    End If
+
+                End If
+            End If
+        End If
+        '
+        Grid1.AutoRedraw = True
+        Grid1.Refresh()
+    End Sub
+    Sub Aff_Warning(Message As String)
+        If Warning.Blocage = False Then
+            Warning.Message = NomduSon.Text
+            Warning.BackColor = NomduSon.BackColor
+            Warning.ForeColor = NomduSon.ForeColor
+            Warning.Blocage = True
+            '
+            NomduSon.Text = Message
+            '
+            NomduSon.BackColor = Color.Red
+            NomduSon.ForeColor = Color.White
+        End If
+    End Sub
+    Private Function Det_NoteBloquante(ro As Integer, co As Integer) As Integer
+        Dim j As Integer
+        ' recherche tête de note (par la gauche)
+        For j = co To 1 Step -1
+            If IsNumeric(Grid1.Cell(ro, j).Text) Then
+                Exit For
+            End If
+        Next
+        Return j
+    End Function
+    Public Sub QuantPos(pas As Integer)
+        Dim listNotes As New List(Of CNote)
+        Dim ListRow As New List(Of Integer)
+        Dim ListCol As New List(Of Integer)
+        Dim i, j, jj As Integer
+        Dim fin As Integer
+        Dim flag As Boolean = False
+        Dim flag_sortir As Boolean = False
+
+        '
+        Dim PremCol As Integer = Det_PremColSel() ' -1 si pas trouvé
+        Dim DerCol As Integer = Det_DerColSel()   ' -1 si pas trouvé
+        '
+        Grid1.AutoRedraw = False
+        '
+        If PremCol <> -1 And DerCol <> -1 Then
+            If (pas = -1 And PremCol > 1) Or (pas = 1 And DerCol < Grid1.Cols - 1) Then
+                '
+                ' Détermination des notes sélectionnées
+                ' *************************************
+                With Grid1.Selection
+                    For i = .FirstRow To .LastRow
+                        For j = .FirstCol To .LastCol
+                            If Trim(Grid1.Cell(i, j).Text) <> "" And Trim(Grid1.Cell(i, j).Text) <> Trait _
+                                And Selinit.Contains(SignCell(i, j)) Then
+                                '
+                                Dim OO As New CNote With {
+                                    .old_row = i,
+                                    .old_col = j,
+                                    .old_dyn = Trim(Grid1.Cell(i, j).Text),
+                                    .old_long = Det_LongueurNote(i, j),
+                                    .new_col = -1,
+                                    .couleur = Grid1.Cell(i, j).ForeColor
+                                }
+                                '
+                                listNotes.Add(OO)
+                                ListRow.Add(OO.old_row)
+                            End If
+                        Next
+                    Next i
+                End With
+                '
+                ' Cacul déplacement (gauche ou droite)
+                ' ****************************************
+                Dim a As String
+                For i = 0 To listNotes.Count - 1
+                    With listNotes(i)
+                        ' Controler que le déplacement est possible à gauche ou à droite : si pas possible flag=false
+                        Select Case pas
+                            Case -1
+                                If (.old_col - 1) > 0 Then
+                                    a = Trim(Grid1.Cell(.old_row, (.old_col - 1)).Text)
+
+                                    If Trim(Grid1.Cell(.old_row, (.old_col - 1)).Text) <> "" Then
+                                        jj = Det_NoteBloquante(.old_row, (.old_col - 1)) ' calcul de la calcul de la tête de note
+                                        If Not (Selinit.Contains(SignCell(.old_row, jj))) Then
+                                            flag = False ' blocage
+                                            Exit For
+                                        Else
+                                            .new_col = .old_col - 1
+                                            ListCol.Add(.new_col)
+                                            flag = True
+                                        End If
+                                    Else
+                                        .new_col = .old_col - 1
+                                        ListCol.Add(.new_col)
+                                        flag = True
+                                    End If
+                                End If
+                            Case 1
+
+                                fin = (.old_col + 1) + (.old_long - 1)
+                                If fin <= nbMesures * 16 Then
+                                    If Trim(Grid1.Cell(.old_row, fin).Text) <> "" Then
+                                        jj = Det_NoteBloquante(.old_row, fin) ' calcul de la calcul de la tête de note
+                                        If Not (Selinit.Contains(SignCell(.old_row, jj))) Then
+                                            flag = False ' blocage
+                                            Exit For
+                                        Else
+                                            .new_col = .old_col + 1
+                                            ListCol.Add(.new_col)
+                                            flag = True
+                                        End If
+                                    Else
+                                        .new_col = .old_col + 1
+                                        ListCol.Add(.new_col)
+                                        flag = True
+                                    End If
+                                End If
+                        End Select
+                    End With
+                Next i
+                '
+                If flag Then
+
+                    ' Annulation du ctrl z et ctrl y
+                    ' ******************************
+                    Listann.Clear()
+                    Pointeurz = -1
+                    Listrestit.Clear()
+                    Pointeury = -1 ' 
+                    '
+                    ' Effacer anciennes positions de notes
+                    ' ************************************
+                    Grid1.AutoRedraw = False
+                    For i = 0 To listNotes.Count - 1
+                        With listNotes(i)
+                            For jj = .old_col To (.old_col + (.old_long - 1))
+                                Grid1.Cell(.old_row, jj).Text = ""
+                            Next
+                        End With
+                    Next i
+                    '
+                    ' Mise à jour new notes position
+                    ' ******************************
+                    Selinit.Clear()
+                    For i = 0 To listNotes.Count - 1
+                        With listNotes(i)
+                            ' Ecriture nouvelle position (sans la longueur)
+                            ' ---------------------------------------------
+                            Grid1.Cell(.old_row, .new_col).Text = .old_dyn
+                            Selinit.Add(SignCell(.old_row, .new_col))
+                            Grid1.Cell(.old_row, .new_col).ForeColor = listNotes(i).couleur
+                            ' Ecriture des longueurs
+                            ' ----------------------
+                            For jj = (.new_col + 1) To ((.new_col + 1) + (.old_long - 2))
+                                Grid1.Cell(.old_row, jj).Text = Trait
+                                Grid1.Cell(.old_row, jj).ForeColor = listNotes(i).couleur
+                            Next
+                        End With
+                    Next i
+                    Grid1.AutoRedraw = True
+                    Grid1.Refresh()
+                    '
+                    ' Gestion de la sélection : restitution des notes sélectionnées
+                    ' *************************************************************
+                    ListCol.Sort()
+                    ListRow.Sort()
+                    ' Données à récupérer par KeyUp pour restitution de la sélection
+                    'Grid1.Range(ListRow(0), ListCol(0), ListRow(ListRow.Count - 1), ListCol(ListCol.Count - 1)).SelectCells()
+                    Selrest.Fr = ListRow(0)
+                    Selrest.Fc = ListCol(0)
+                    Selrest.Lr = ListRow(ListRow.Count - 1)
+                    Selrest.Lc = ListCol(ListCol.Count - 1)
+                End If
+                '
+
+                '
+
+                '
+                ' Calcul du nouveau chiffrage sur la nouvelle sélection
+                ' *****************************************************
+                Det_ChiffAcc()
+                '
+
+            End If
+        End If
+        '
+        ' Gestion de la couleur de la sélection : rouge en cas de blocage
+        ' ***************************************************************
+        If flag Then
+            Grid1.BackColorSel = Color.PaleGreen
+        Else
+            Grid1.BackColorSel = Color.Red ' cas où la quantification a bloqué --> couleur= rouge
+        End If
+
+        '
+        Grid1.AutoRedraw = True
+        Grid1.Refresh()
+    End Sub
+
+
+
     Function Det_DerRowSel() As Integer
         Dim list1 As New List(Of Integer)
         list1 = ListRowSort()
@@ -7424,6 +8788,26 @@ Public Class PianoRoll
     Function Det_PremRowSel() As Integer
         Dim list1 As New List(Of Integer)
         list1 = ListRowSort()
+        If list1.Count <> 0 Then
+            Return list1(0)
+        Else
+            Return -1
+        End If
+    End Function
+    '
+    Function Det_DerColSel() As Integer
+        Dim list1 As New List(Of Integer)
+        list1 = ListColSort()
+        If list1.Count <> 0 Then
+            Return list1(list1.Count - 1)
+        Else
+            Return -1
+        End If
+    End Function
+
+    Function Det_PremColSel() As Integer
+        Dim list1 As New List(Of Integer)
+        list1 = ListColSort()
         If list1.Count <> 0 Then
             Return list1(0)
         Else
@@ -7454,7 +8838,31 @@ Public Class PianoRoll
         End With
         listRow.Sort()
         Return listRow
-
+    End Function
+    Function ListColSort() As List(Of Integer)
+        Dim i, j As Integer
+        Dim list1 As New List(Of CNote)
+        Dim listRow As New List(Of Integer)
+        With Grid1.Selection
+            For i = .FirstRow To .LastRow
+                For j = .FirstCol To .LastCol
+                    If Trim(Grid1.Cell(i, j).Text) <> "" And Trim(Grid1.Cell(i, j).Text) <> Trait Then
+                        '
+                        Dim OO As New CNote With {
+                            .old_row = i,
+                            .old_col = j,
+                            .old_dyn = Trim(Grid1.Cell(i, j).Text),
+                            .old_long = Det_LongueurNote(i, j),
+                            .new_row = -1
+                        }
+                        listRow.Add(OO.old_col)
+                        '
+                    End If
+                Next
+            Next i
+        End With
+        listRow.Sort()
+        Return listRow
     End Function
     Class Cdyn
         Public row As Integer
@@ -7483,10 +8891,10 @@ Public Class PianoRoll
                     If IsNumeric(Trim(Grid1.Cell(i, j).Text)) Then
                         '
                         Dim OO As New Cdyn With {
-                            .row = i,
-                            .col = j,
-                            .dyn = Trim(Grid1.Cell(i, j).Text)
-                        }
+                        .row = i,
+                        .col = j,
+                        .dyn = Trim(Grid1.Cell(i, j).Text)
+                    }
                         ListDyn.Add(OO)
                     End If
                 Next
@@ -7532,9 +8940,9 @@ Public Class PianoRoll
     '**********************************************
     Dim ListeChiff As New List(Of String)
     Dim LTnotes As New List(Of String) From {
-    "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b", "c", "c#", "d", "d#", "e", "f", "f#",
-    "g", "g#", "a", "a#", "b", "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"
-    }
+"c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b", "c", "c#", "d", "d#", "e", "f", "f#",
+"g", "g#", "a", "a#", "b", "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"
+}
     Sub Det_ChiffAcc()
         ' Détermination des notes à analyser
         ' **********************************
@@ -7664,6 +9072,9 @@ Public Class PianoRoll
     Sub gest_ctrlz(Fr As Integer, Fc As Integer, Lr As Integer, Lc As Integer) '  ' à placer avant toute action
         Dim oo As New Zann
 
+        If Lr > Grid1.Rows - 1 Then Lr = Grid1.Rows - 1
+        If Lc > nbMesures * 16 Then Lc = nbMesures * 16
+
         oo.zFr = Fr
         oo.zFc = Fc
         oo.zLr = Lr
@@ -7753,6 +9164,9 @@ Public Class PianoRoll
     Sub gest_ctrly(Fr As Integer, Fc As Integer, Lr As Integer, Lc As Integer) ' à placer après toute action
         Dim oo As New Zann
 
+        If Lr > Grid1.Rows - 1 Then Lr = Grid1.Rows - 1
+        If Lc > nbMesures * 16 Then Lc = nbMesures * 16
+
         oo.zFr = Fr
         oo.zFc = Fc
         oo.zLr = Lr
@@ -7821,64 +9235,99 @@ Public Class PianoRoll
     ' ***********************************************
     '
     Sub CalcInterv(fr As Integer, fc As Integer, lr As Integer, lc As Integer, e As MouseEventArgs)
-        Dim Listinterv As New List(Of String) From {"uni", "b2", "2", "3m", "3", "4", "b5", "5", "b6", "6", "7b", "7",
-            "oct", "b9", "9", "3m", "3", "11", "11#", "5", "b13", "13"}
-        Dim listConson As New List(Of String) From {"uni", "3m", "3", "5", "b6", "6", "oct", "b13", "13"}
+        'Dim Listinterv As New List(Of String) From {"uni", "b2", "2", "3m", "3", "4", "b5", "5", "b6", "6", "7b", "7",
+        '"oct", "b9", "9", "3m", "3", "11", "11#", "5", "b13", "13"}
+        'Dim listConson As New List(Of String) From {"uni", "3m", "3", "5", "b6", "6", "oct", "b13", "13"}
         Dim xcol As Integer
         Dim i, j As Integer
         Dim a As String
         If e.Button <> MouseButtons.Right Then
             '
-            If det_NbNotesSel(fr, fc, lr, lc) <= 2 Then ' le nombre de notes sélectionnées  ne doit pas être > 2
-                If fr = lr And fc = lc Then
-                    If IsNumeric(Trim(Grid1.Cell(fr, fc).Text)) Or Trim(Grid1.Cell(fr, fc).Text) = "" Then
-                        'xrow = fr
-                        xcol = fc
-                        'i = xrow
-                        'j = 0
-                        'Do
-                        'i = i + 1
-                        'j = j + 1
-                        'Loop Until (Trim(Grid1.Cell(i, xcol).Text) = Trait) _
-                        'Or (j > Listinterv.Count - 1) Or (i >= (Grid1.Rows)) Or (IsNumeric(Trim(Grid1.Cell(i, xcol).Text)))
-
-                        j = 0
-                        For i = fr + 1 To Grid1.Rows - 1
-                            If (Trim(Grid1.Cell(i, xcol).Text) = Trait) Or (IsNumeric(Trim(Grid1.Cell(i, xcol).Text))) Or (j > Listinterv.Count - 1) Then
-                                                            j = j + 1
-                                Exit For
-                            End If
+            If fr = lr And fc = lc Then ' And Grid1.Cell(fr, fc).ForeColor <> Color.Black
+                If IsNumeric(Trim(Grid1.Cell(fr, fc).Text)) Or Trim(Grid1.Cell(fr, fc).Text) = Trait Then
+                    xcol = fc
+                    j = 0
+                    For i = fr + 1 To Grid1.Rows - 1
+                        If (Trim(Grid1.Cell(i, xcol).Text) = Trait) Or (IsNumeric(Trim(Grid1.Cell(i, xcol).Text))) Or (j > Listinterv.Count - 1) Then
                             j = j + 1
-                        Next
-                        '
-                        ' lecture de l'intervalle
-                        If j <= Listinterv.Count - 1 And i <= Grid1.Rows - 1 Then
-                            a = Listinterv.Item(j)
-                            IntervH.Text = Trim(a)
-                            IntervH.Refresh()
-
-                            If Trim(a) <> "b5" Then
-                                If listConson.Contains(Trim(a)) Then ' 
-                                    IntervH.ForeColor = Color.Green ' REGLE 1
-                                Else
-                                    If Grid1.Cell(1, xcol).Text <> "1" And Grid1.Cell(1, xcol).Text <> "3" And Not Ligature.Checked Then ' si pas temps 1 et pas temps 3 et si on n'est pas en écriture d'une ligature on est sur temps faiblen
-                                        IntervH.ForeColor = Color.Green ' REGLE 2, 5 et 6
-                                    Else
-                                        IntervH.ForeColor = Color.Red ' REGLE 2
-                                    End If
-                                End If
+                            Exit For
+                        End If
+                        j = j + 1
+                    Next
+                    '
+                    ' lecture de l'intervalle
+                    If j <= Listinterv.Count - 1 And i <= Grid1.Rows - 1 Then
+                        a = Listinterv.Item(j)
+                        IntervH.Text = Trim(a)
+                        IntervH.Refresh()
+                        ' Expression des règles par les couleurs
+                        If Trim(a) <> "b5" Then
+                            If listConson.Contains(Trim(a)) Then ' 
+                                IntervH.ForeColor = Color.Green ' REGLE 1
+                                IntervH.Refresh()
                             Else
-                                IntervH.ForeColor = Color.Red ' REGLE SUR b5
+                                If Grid1.Cell(1, xcol).Text <> "1" And Grid1.Cell(1, xcol).Text <> "3" And Not Ligature.Checked Then ' si pas temps 1 et pas temps 3 et si on n'est pas en écriture d'une ligature on est sur temps faiblen
+                                    IntervH.ForeColor = Color.Green ' REGLE 2, 5 et 6
+                                    IntervH.Refresh()
+                                Else
+                                    IntervH.ForeColor = Color.Red ' REGLE 2
+                                    IntervH.Refresh()
+                                End If
                             End If
                         Else
-                            IntervH.ForeColor = Color.Black
-                            IntervH.Text = Trim("---")
+                            IntervH.ForeColor = Color.Red ' REGLE SUR b5
+                            IntervH.Refresh()
                         End If
+                    Else
+                        IntervH.ForeColor = Color.Black
+                        IntervH.Refresh()
+                        IntervH.Text = Trim("---")
                     End If
                 End If
             End If
         End If
+        'End If
     End Sub
+    Function CalcIntervSouris(_row As Integer, _col As Integer) As String
+        Dim i, j As Integer
+        Dim a As String = "---"
+
+        ' calcul du nombre de demi - ton (lignes de grid1) entre la cellule survolée et la note située en dessous
+        j = 0
+        For i = _row + 1 To Grid1.Rows - 1
+            If (Trim(Grid1.Cell(i, _col).Text) = Trait) Or (IsNumeric(Trim(Grid1.Cell(i, _col).Text))) Or (j > Listinterv.Count - 1) Then
+                j = j + 1
+                Exit For
+            End If
+            j = j + 1
+        Next
+        ' 
+        'If (My.Computer.Keyboard.CtrlKeyDown And My.Computer.Keyboard.AltKeyDown) Or (My.Computer.Keyboard.ShiftKeyDown) Then
+        If (ToucheC) Or (ToucheV) Then
+            For i = i + 1 To Grid1.Rows - 1
+                If (Trim(Grid1.Cell(i, _col).Text) = Trait) Or (IsNumeric(Trim(Grid1.Cell(i, _col).Text))) Or (j > Listinterv.Count - 1) Then
+                    j = j + 1
+                    Exit For
+                End If
+                j = j + 1
+            Next
+        End If
+        '
+        If (ToucheV) Then
+            For i = i + 1 To Grid1.Rows - 1
+                If (Trim(Grid1.Cell(i, _col).Text) = Trait) Or (IsNumeric(Trim(Grid1.Cell(i, _col).Text))) Or (j > Listinterv.Count - 1) Then
+                    j = j + 1
+                    Exit For
+                End If
+                j = j + 1
+            Next
+        End If
+        ' interprétation des résultats
+        If j <= Listinterv.Count - 1 Then ' And i <= Grid1.Rows - 1
+            a = Listinterv.Item(j)
+        End If
+        Return a
+    End Function
     '
     ' calcul du saut mélodique entre 2 notes
     ' **************************************
@@ -7889,74 +9338,91 @@ Public Class PianoRoll
         '"g", "g#", "a", "a#", "b", "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"
         '}
         Dim Listinterv As New List(Of String) From {"uni", "b2", "2", "3m", "3", "4", "b5", "5", "b6", "6", "7b", "7",
-            "uni", "b2", "2", "3m", "3", "4", "b5", "5", "b6", "6", "7b", "7", "oct"}
+        "uni", "b2", "2", "3m", "3", "4", "b5", "5", "b6", "6", "7b", "7", "oct"}
         Dim listAutorise As New List(Of String) From {"b2", "2", "3m", "3", "4", "5", "6", "oct"}
         Dim i, j As Integer
         Dim a, b As String
         Dim flag As Boolean = False
         Dim IntervMel As Integer
+        Dim CoulCours As New Color
         '
         If e.Button <> MouseButtons.Right Then
+
             fr = lr
             fc = lc
             '
-            Dim ligne1 As Integer = fr ' ligne1 = ligne sur laquelle on clique
-            '
-            a = Trim(Grid1.Cell(fr, 0).Text)
-            a = LCase(Det_NoteSansOctv(a))
-            'a = LCase(Mid(a, 1, Len(a) - 1)) ' a est la note d'arrivée
-            'a = LCase(Mid(a, 1, 1)) ' a est la note d'arrivée
-            'If Len(a) > 1 And Mid(a, 2, 1) = "#" Then a = a + "#"
-            'ii = LTnotes.IndexOf(a)
-            '
-            For j = fc - 1 To 1 Step -1
-                For i = 6 To Grid1.Rows - 1
-                    If (IsNumeric(Grid1.Cell(i, j).Text) And Grid1.Cell(i, j).ForeColor = Couleurnote) Or j = 0 Then
-                        flag = True
-                        Exit For
-                    End If
+            fc = ColTête(fr, fc) ' décalage de la colonne vers la tête de note
+            If Trim(Grid1.Cell(fr, fc).Text) <> "" Then ' And Grid1.Cell(fr, fc).ForeColor <> Color.Black
+                CoulCours = Grid1.Cell(fr, fc).ForeColor ' couleur de la note de départ sur laquelle on clique
+                Dim ligne1 As Integer = fr ' ligne1 = ligne sur laquelle on clique
+                '
+                a = Trim(Grid1.Cell(fr, 0).Text)
+                a = LCase(Det_NoteSansOctv(a))
+                '
+                For j = fc - 1 To 1 Step -1
+                    'For i = Grid1.Rows - 1 To 6 Step -1
+                    For i = 6 To Grid1.Rows - 1
+                        If (IsNumeric(Grid1.Cell(i, j).Text) And Grid1.Cell(i, j).ForeColor = CoulCours) Or (j = 0) Then
+                            flag = True
+                            Exit For
+                        End If
+                    Next
+                    If flag Then Exit For
                 Next
-                If flag Then Exit For
-            Next
-            '
-            Dim ligne2 As Integer = i ' ligne2 = ligne de la note dont on cherche l'intervalle mélodique avec la note de ligne1
-            '
-            SautMel.ForeColor = Color.Black
-            SautMel.Text = Trim("---")
-            '
-            If flag Then
-                If i <= Grid1.Rows - 1 And j > 0 Then
-                    b = Trim(Grid1.Cell(i, 0).Text)
-                    b = LCase(Mid(b, 1, Len(b) - 1)) ' b est la note antérieure d'arrivée
-                    'jj = LTnotes.IndexOf(b)
-                    IntervMel = TrouverNote_Apartir_de(b, a, ligne2, ligne1)
-                    'IntervMel = Math.Abs(ii - jj)
-                    'If ligne1 > ligne2 Then IntervMel = 12 - IntervMel
-                    '
-                    ' intervalle mélodique
-                    If IntervMel <= Listinterv.Count - 1 Then
-                        a = Listinterv.Item(IntervMel)
-                        SautMel.Text = Trim(a)
-                        If Trim(a) <> "b5" Then
-                            If listAutorise.Contains(Trim(a)) Then ' 
-                                SautMel.ForeColor = Color.Green
-                                If ligne1 > ligne2 And Trim(a) = "6" Then
-                                    SautMel.ForeColor = Color.Red ' interdit si la sixte n'est pas montante
+                '
+                Dim ligne2 As Integer = i ' ligne2 = ligne d'arrivée de la note dont on cherche l'intervalle mélodique avec la note de départ sur ligne1
+                '
+                SautMel.ForeColor = Color.Black
+                SautMel.Text = Trim("---")
+                '
+                If flag Then
+                    If i <= Grid1.Rows - 1 And j > 0 Then
+                        b = Trim(Grid1.Cell(i, 0).Text)
+                        b = LCase(Mid(b, 1, Len(b) - 1)) ' b est la note antérieure d'arrivée
+                        IntervMel = TrouverNote_Apartir_de(b, a, ligne2, ligne1)
+                        ' intervalle mélodique
+                        If IntervMel <= Listinterv.Count - 1 Then
+                            a = Listinterv.Item(IntervMel)
+                            SautMel.Text = Trim(a)
+                            If Trim(a) <> "b5" Then
+                                If listAutorise.Contains(Trim(a)) Then ' 
+                                    SautMel.ForeColor = Color.Green
+                                    If ligne1 > ligne2 And Trim(a) = "6" Then
+                                        SautMel.ForeColor = Color.Red ' interdit si la sixte n'est pas montante
+                                        SautMel.Refresh()
+                                    End If
+                                Else
+                                    SautMel.ForeColor = Color.Red
+                                    SautMel.Refresh()
                                 End If
                             Else
-                                SautMel.ForeColor = Color.Red
+                                SautMel.ForeColor = Color.Red ' REGLE sur le b5
+                                SautMel.Refresh()
                             End If
                         Else
-                            SautMel.ForeColor = Color.Red ' REGLE sur le b5
+                            SautMel.ForeColor = Color.Black
+                            SautMel.Refresh()
+                            SautMel.Text = Trim("---")
                         End If
-                    Else
-                        SautMel.ForeColor = Color.Black
-                        SautMel.Text = Trim("---")
                     End If
                 End If
+            Else
+                IntervH.Text = "---"
+                SautMel.Text = "---"
             End If
         End If
     End Sub
+    Function ColTête(i As Integer, j As Integer) As Integer
+
+        If Trim(Grid1.Cell(i, j).Text) = Trait And Trim(Grid1.Cell(i, j).Text) <> "" Then
+
+            Do
+                j = j - 1
+            Loop Until IsNumeric(Grid1.Cell(i, j).Text) Or j <= 0
+        End If
+
+        Return j
+    End Function
     Function Det_NoteSansOctv(note As String) As String
         Dim i As Integer
         Dim a As String
@@ -8031,7 +9497,7 @@ Public Class PianoRoll
     ' *********************************************************************************************
     Function NotePrécedCons(ii As Integer, jj As Integer) As Boolean
         Dim Listinterv As New List(Of String) From {"uni", "b2", "2", "3m", "3", "4", "b5", "5", "b6", "6", "7b", "7",
-            "oct", "b9", "9", "3m", "3", "11", "11#", "5", "b13", "13"}
+        "oct", "b9", "9", "3m", "3", "11", "11#", "5", "b13", "13"}
         Dim listConson As New List(Of String) From {"uni", "3m", "3", "5", "b6", "6", "oct", "b13", "13"}
         Dim xrow, xcol As Integer
         Dim i, j As Integer
@@ -8061,8 +9527,8 @@ Public Class PianoRoll
             i = i + 1
             j = j + 1
         Loop Until IsNumeric(Trim(Grid1.Cell(i, xcol).Text)) Or
-                            Trim(Grid1.Cell(i, xcol).Text) = Trait _
-                            Or j > Listinterv.Count - 1 Or i >= Grid1.Rows - 1
+                        Trim(Grid1.Cell(i, xcol).Text) = Trait _
+                        Or j > Listinterv.Count - 1 Or i >= Grid1.Rows - 1
 
         If j <= Listinterv.Count - 1 Then
             a = Listinterv.Item(j)
@@ -8090,4 +9556,246 @@ Public Class PianoRoll
         Next j
         Return k
     End Function
+    ' ***********************************************************
+    ' ***********************************************************
+    ' *       Programmation des commentaires sur MouseMove      *
+    ' ***********************************************************
+    ' ***********************************************************
+
+    '' Gestion de la hauteur du titre H3
+    '' *********************************
+    '''' <summary>
+    '''' Code permettant de changer la dimension de H3
+    '''' en fonction de la longueur du texte qu'on y place.
+    '''' </summary>
+    '''' <param name="tb"></param>
+    'Private Sub AdjustTextBoxHeight(tb As TextBox)
+    '    ' Créer un objet Graphics pour mesurer le texte
+    '    Using g As Graphics = tb.CreateGraphics()
+    '        ' Mesurer la taille du texte avec la police actuelle
+    '        Dim textSize As SizeF = g.MeasureString(tb.Text, tb.Font, tb.Width)
+
+    '        ' Ajouter un espace pour le padding interne
+    '        Dim padding As Integer = tb.Height - tb.ClientSize.Height
+    '        Dim newHeight As Integer = CInt(Math.Ceiling(textSize.Height)) + padding
+
+    '        ' Ajuster la hauteur du TextBox
+    '        tb.Height = newHeight
+    '    End Using
+    'End Sub
+
+    'Private Sub H3_TextChanged(sender As Object, e As EventArgs)
+    '    AdjustTextBoxHeight(H3)
+    '    H2.Location = New Point(0, H1.Size.Height + H3.Size.Height + 15)
+    'End Sub
+    ' 
+    ' Grid1 : PIanoRoll
+    ' *****************
+    ' Evènenement déjà crée pour d'autres actions voir --> Sub Grid1_Mousemove(sender As Object, e As MouseEventArgs)
+
+
+    ' ListNoteType : longueur de notes
+    ' ********************************
+    Sub ListTypNote_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If CheckAide.Checked Then
+                If Langue = "fr" Then
+                    H1.Text = "Choix longueur de notes"
+                    H2.Text = "But : définir la longueur d'une note au moment de son écriture." + Chr(13) + Chr(13) + "Liste des types de notes : " + Chr(13) +
+              "RN : Ronde," + Chr(13) + "BL : Blanche," + Chr(13) + "NR : Noire," + Chr(13) + "CR : Croche," + Chr(13) + "DC : Double Croche"
+
+                Else
+                    H1.Text = "Choice of note length"
+                    H2.Text = "List of note types" + Chr(13) +
+              "WN : Whole Note," + Chr(13) + "HN : Half Note," + Chr(13) + "QN : Quarter Note," + Chr(13) + "EN : Eighth Note, " + Chr(13) + "SN : Sixteen Note"
+                End If
+            End If
+        End If
+    End Sub
+    Sub ListDynF1_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If CheckAide.Checked Then
+                If Langue = "fr" Then
+                    H1.Text = "Dynamique"
+                    H2.Text = "But : définir la dynamique d'une note ou de plusieurs notes." + Chr(13) + Chr(13) +
+                        "1- lors de son écriture." + Chr(13) +
+                        "2- pour modification de la dynamique d'une sélection de notes."
+                Else
+                    H1.Text = "Dynamics"
+                    H2.Text = "Purpose: to define the dynamics of one or several notes." + Chr(13) + Chr(13) +
+                        "1- when it is written." + Chr(13) +
+                        "2- to modify the dynamics of a selection of notes."
+                End If
+            End If
+        End If
+    End Sub
+    Sub OuvrirCalques_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If CheckAide.Checked Then
+                If Langue = "fr" Then
+                    H1.Text = "Calques MIDI"
+                    H2.Text = "But : ouvrir le formulaire des Calques MIDI et faire un choix de guides." + Chr(13) + Chr(13) +
+                                             "Il est possible de faire apparaître dans un PianoRoll différents guides harmoniques se matérialisant par des couleurs de lignes : " + Chr(13) +
+                 "1 - Gammes : lignes de couleur jaune," + Chr(13) +
+                 "2 - Accords : lignes de couleur rouge," + Chr(13) +
+                 "3 - Modes : lignes de couleur verte," + Chr(13) +
+                 "4 - Métriques : une nouvelle métrique se superpose à la métrique 4/4 de base."
+
+                Else
+                    H1.Text = "MIDI layers"
+                    H2.Text = "Purpose: open the MIDI Layers form and select guides." + Chr(13) + Chr(13) +
+                                             "Different harmonic guides can be displayed in PianoRoll, in the form of line colours:" + Chr(13) +
+                 "1 - Scales: yellow lines," + Chr(13) +
+                 "2 - Chords: red lines," + Chr(13) +
+                 "3 - Modes: green lines," + Chr(13) +
+                 "4 - Metrics: a new metric superimposed on the basic 4/4 metric."
+                End If
+            End If
+        End If
+    End Sub
+    Sub ActionsPianoR_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If CheckAide.Checked Then
+                If Langue = "fr" Then
+                    H1.Text = "Actions"
+                    H2.Text = "But : agir sur de grandes plages de mesures." + Chr(13) + Chr(13) + "Après avoir défini la plage de mesures, cet outil vous permet de  : " + Chr(13) +
+                 "1 - Effacer : effacer toutes les notes." + Chr(13) +
+                 "2 - Coller : coller toutes les notes de la plage à partir d'une mesure de destination." + Chr(13) +
+                 "3 - Coller vers : coller toutes les notes de la plage à partir d'une mesure de destination vers une autre piste de PianoRoll." + Chr(13) +
+                 "4 - Transposer : transposer par demi tons positifs ou négatifs toutes les notes d'une plage de mesures." + Chr(13) +
+                 "5 - Vélocités aléatoires : affecter des valeurs aléatoires de vélocités aux notes de la plage."
+                Else
+                    H1.Text = "Actions"
+                    H2.Text = "Purpose: act over wide measurement ranges." + Chr(13) + Chr(13) + "Après avoir défini la plage de mesures, cet outil vous permet de  : " + Chr(13) +
+                 "1 - Delete: delete all notes." + Chr(13) +
+                 "2 - Paste: paste all the notes in the range from a destination bar." + Chr(13) +
+                 "3 - Paste to: pastes all the notes in the range from a destination bar to another PianoRoll track." + Chr(13) +
+                 "4 - Transpose: transpose all the notes in a bar range by positive or negative semitones." + Chr(13) +
+                 "5 - Random velocities: assign random velocity values to the notes in the range."
+                End If
+            End If
+        End If
+    End Sub
+    Sub CadreCtrls_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If CheckAide.Checked Then
+                If Langue = "fr" Then
+                    H1.Text = "Graphes contrôleurs"
+                    H2.Text = "But : utilisation de contrôleurs MIDI par tracé de graphes." + Chr(13) + Chr(13) + "1 - Faire apparaître la zone des contrôleurs : cliquer sur CTRLs." + Chr(13) +
+                 "2 - Contrôleurs réservés : Modulation, Expression, Panoramique," + Chr(13) +
+                 "3 - Contrôleurs libres : N° 50, 51, 52, 53," + Chr(13) +
+                 "4 - Tracé d'un graphe : " + Chr(13) +
+                 "     - Standard : CTRL + Clic maintenu + déplacer," + Chr(13) +
+                 "     - Détaillé : cliquer dans une colonne et utiliser les touches P et M . "
+                Else
+                    H1.Text = "Controlers graphs"
+                    H2.Text = "Purpose: use MIDI controllers by drawing graphs." + Chr(13) + Chr(13) + "1 - Faire apparaître la zone des contrôleurs : cliquer sur CTRLs." + Chr(13) +
+                 "2 - Reserved controllers: Modulation, Expression, Panning," + Chr(13) +
+                 "3 - Free controllers: N° 50, 51, 52, 53," + Chr(13) +
+                 "4 - Drawing a graph : " + Chr(13) +
+                 "     - Standard: CTRL + Hold + Move," + Chr(13) +
+                 "     - Detailed: click in a column and use the P and M keys. "
+                End If
+            End If
+        End If
+    End Sub
+    Sub NotesAcc_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If CheckAide.Checked Then
+                If Langue = "fr" Then
+                    H1.Text = "Accords"
+                    H2.Text = "But : analyse d'une sélection de notes afin de déterminer le chiffrage de l'accord qu'elles forment." + Chr(13) + Chr(13) + "1 - Mode opératoire : sélectionner au moins 3 notes." + Chr(13) +
+                    "2 - Les notes analysées peuvent être présentes dans une même colonne ou dans des colonnes différentes (cas des arpèges)."
+                Else
+                    H1.Text = "Chords"
+                    H2.Text = "Purpose: analyse a selection of notes in order to determine the chord notation they form." + Chr(13) + Chr(13) +
+                    "1 - Procedure: select at least 3 notes." + Chr(13) +
+                    "2 - The notes analysed may be present in the same column or in different columns (in the case of arpeggios)."
+                End If
+            End If
+        End If
+    End Sub
+    Sub affinfobulle_MouseMove()
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If CheckAide.Checked Then
+                If Langue = "fr" Then
+                    H1.Text = "Intervalle sur souris"
+                    H2.Text = "But : déterminer l'intervalle harmonique entre 2 notes. L'intervalle apparaît sur le curseur de la souris sous la forme d'une bulle d'aide." + Chr(13) + Chr(13) +
+                        "- Cocher la case pour mettre en oeuvre le calcul de l'intervalle." + Chr(13) +
+                        "- Il est possible de déterminer l'intervalle entre 2 notes concécutives ou non. Envisageons les 4 notes suivantes : " + Chr(13) +
+                        "     Note 1 : 90--------" + Chr(13) +
+                        "     Note 2 : 90--------" + Chr(13) +
+                        "     Note 3 : 90--------" + Chr(13) +
+                        "     Note 4 : 90--------" + Chr(13) +
+                        "     1 - Pour avoir l'intervalle entre la Note 1 et la Note 2, il faut cliquer la Note 1." + Chr(13) +
+                        "     2 - Pour avoir l'intervalle entre la Note 1 et la Note 3, il faut appuyer sur la touche 'c' et cliquer la Note 1." + Chr(13) +
+                        "     3 - Pour avoir l'intervalle entre la Note 1 et la Note 4, il faut appuyer sur la touche 'v' et cliquer la Note 1." + Chr(13) +
+                        "     4 - ---> L'association des fonctions  'Intervalle sur souris' et 'Ecoute Polyphonique' fournit un moyen très performant d'écriture de contrepoint."
+
+                Else
+                    H1.Text = "Interval on mouse"
+                    H2.Text = "Purpose: determine the harmonic interval between 2 notes. The interval appears on the mouse cursor in the form of a tooltip." + Chr(13) + Chr(13) +
+                        "- Tick the box to activate the interval calculation." + Chr(13) +
+                        "- It is possible to determine the interval between 2 notes, which may or may not be consecutive. Consider the following 4 notes: " + Chr(13) +
+                        "     Note 1 : 90--------" + Chr(13) +
+                        "     Note 2 : 90--------" + Chr(13) +
+                        "     Note 3 : 90--------" + Chr(13) +
+                        "     Note 4 : 90--------" + Chr(13) +
+                        "     1 - To see the interval between Note 1 and Note 2, click Note 1." + Chr(13) +
+                        "     2 - To get the interval between Note 1 and Note 3, press the 'c' key and click Note 1." + Chr(13) +
+                        "     3 - To get the interval between Note 1 and Note 4, press the 'v' key and click Note 1." + Chr(13) +
+                        "     4 - ---> The combination of the 'Interval on Mouse' and 'Polyphonic Listening' functions provides a high-performance means of writing counterpoint.."
+                End If
+            End If
+        End If
+    End Sub
+    Private Sub JouerPoly_MouseMove(sender As Object, e As MouseEventArgs) Handles JouerPoly.MouseMove
+
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+            If CheckAide.Checked Then
+                If Langue = "fr" Then
+                    H1.Text = "Ecoute polyphonique"
+                    H2.Text = "But : écouter simultanément toutes les notes d'une même colonne." + Chr(13) + Chr(13) + "1 - Cliquer dans la colonne pour écouter simultanément toutes les notes présentes dans la colonne," + Chr(13) +
+                               "2 - La lecture détecte la présence d'une note sur toute sa longueur." + Chr(13) +
+                               "3 - Cette fonctionalité est très utile en cours d'écriture pour tester des accords, des arpèges et des contrepoints." + Chr(13) +
+                               "4 - ---> L'association des fonctions 'Ecoute Polyphonique' et 'Intervalle sur souris' fournit un moyen très performant d'écriture de contrepoint."
+
+                Else
+                    H1.Text = "Polyphonic listening"
+                    H2.Text = "Purpose: listen simultaneously to all the notes in the same column." + Chr(13) + Chr(13) +
+                               "1 - Click in the column to listen to all the notes in the column simultaneously." + Chr(13) +
+                               "2 - Playback detects the presence of a note along its entire length." + Chr(13) +
+                               "3 - This feature is very useful when writing to test chords, arpeggios and counterpoints." + Chr(13) +
+                               "4 - ---> The combination of the 'Polyphonic Listening' and 'Interval on Mouse' functions provides a very powerful means of writing counterpoint."
+                End If
+            End If
+        End If
+    End Sub
+    Sub CheckAide_MouseMove()
+        PanelAide.VerticalScroll.Value = PanelAide.VerticalScroll.Minimum
+        If My.Computer.Keyboard.ShiftKeyDown Then
+            If LangueIHM = "fr" Then
+                H1.Text = "Aide"
+                H2.Text = AIDE_TEXTE("fr")
+            Else
+                H1.Text = "Help"
+                H2.Text = AIDE_TEXTE("en")
+            End If
+        End If
+    End Sub
 End Class

@@ -46,6 +46,7 @@ Partial Class Transport
         Me.Remote = New System.Windows.Forms.CheckBox()
         Me.Bassemoins1 = New System.Windows.Forms.CheckBox()
         Me.Fournotes = New System.Windows.Forms.CheckBox()
+        Me.Repeter = New System.Windows.Forms.CheckBox()
         CType(Me.Début, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Terme, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Tempo, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -167,7 +168,7 @@ Partial Class Transport
         'Répéter
         '
         Me.Répéter.AutoSize = True
-        Me.Répéter.Location = New System.Drawing.Point(631, 14)
+        Me.Répéter.Location = New System.Drawing.Point(759, 14)
         Me.Répéter.Name = "Répéter"
         Me.Répéter.Size = New System.Drawing.Size(76, 17)
         Me.Répéter.TabIndex = 178
@@ -180,7 +181,7 @@ Partial Class Transport
         Me.ComboBox8.Font = New System.Drawing.Font("Arial", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ComboBox8.FormattingEnabled = True
         Me.ComboBox8.Items.AddRange(New Object() {"1", "2", "3", "4", "5", "6", "7", "8"})
-        Me.ComboBox8.Location = New System.Drawing.Point(713, 12)
+        Me.ComboBox8.Location = New System.Drawing.Point(841, 12)
         Me.ComboBox8.Name = "ComboBox8"
         Me.ComboBox8.Size = New System.Drawing.Size(45, 23)
         Me.ComboBox8.TabIndex = 179
@@ -190,7 +191,7 @@ Partial Class Transport
         '
         Me.Label7.AutoSize = True
         Me.Label7.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label7.Location = New System.Drawing.Point(318, 27)
+        Me.Label7.Location = New System.Drawing.Point(451, 27)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(48, 13)
         Me.Label7.TabIndex = 180
@@ -201,7 +202,7 @@ Partial Class Transport
         Me.LoopNumber.BackColor = System.Drawing.Color.Chocolate
         Me.LoopNumber.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LoopNumber.ForeColor = System.Drawing.Color.White
-        Me.LoopNumber.Location = New System.Drawing.Point(281, 5)
+        Me.LoopNumber.Location = New System.Drawing.Point(282, 5)
         Me.LoopNumber.Maximum = New Decimal(New Integer() {16, 0, 0, 0})
         Me.LoopNumber.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.LoopNumber.Name = "LoopNumber"
@@ -213,22 +214,23 @@ Partial Class Transport
         '
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.Location = New System.Drawing.Point(276, 27)
+        Me.Label8.Location = New System.Drawing.Point(282, 29)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(41, 13)
+        Me.Label8.Size = New System.Drawing.Size(30, 13)
         Me.Label8.TabIndex = 182
-        Me.Label8.Text = "Repeat"
+        Me.Label8.Text = "Loop"
         '
         'AuDessus
         '
         Me.AuDessus.AutoSize = True
         Me.AuDessus.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.AuDessus.Location = New System.Drawing.Point(412, 4)
+        Me.AuDessus.Location = New System.Drawing.Point(694, 15)
         Me.AuDessus.Name = "AuDessus"
         Me.AuDessus.Size = New System.Drawing.Size(46, 17)
         Me.AuDessus.TabIndex = 183
         Me.AuDessus.Text = "Top"
         Me.AuDessus.UseVisualStyleBackColor = True
+        Me.AuDessus.Visible = False
         '
         'Label2
         '
@@ -236,7 +238,7 @@ Partial Class Transport
         Me.Label2.BackColor = System.Drawing.Color.LemonChiffon
         Me.Label2.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label2.ForeColor = System.Drawing.Color.DarkRed
-        Me.Label2.Location = New System.Drawing.Point(410, 23)
+        Me.Label2.Location = New System.Drawing.Point(241, 31)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(44, 13)
         Me.Label2.TabIndex = 184
@@ -248,30 +250,32 @@ Partial Class Transport
         Me.LFinal.BackColor = System.Drawing.Color.Green
         Me.LFinal.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LFinal.ForeColor = System.Drawing.Color.SeaShell
-        Me.LFinal.Location = New System.Drawing.Point(366, 5)
+        Me.LFinal.Location = New System.Drawing.Point(494, 5)
         Me.LFinal.Maximum = New Decimal(New Integer() {4, 0, 0, 0})
         Me.LFinal.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.LFinal.Name = "LFinal"
         Me.LFinal.Size = New System.Drawing.Size(35, 21)
         Me.LFinal.TabIndex = 212
-        Me.LFinal.Value = New Decimal(New Integer() {2, 0, 0, 0})
+        Me.LFinal.Value = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.LFinal.Visible = False
         '
         'Label3
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Calibri", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(369, 27)
+        Me.Label3.Location = New System.Drawing.Point(497, 27)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(30, 13)
         Me.Label3.TabIndex = 213
         Me.Label3.Text = "Final"
+        Me.Label3.Visible = False
         '
         'Comp
         '
         Me.Comp.BackColor = System.Drawing.Color.Blue
         Me.Comp.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Comp.ForeColor = System.Drawing.Color.Linen
-        Me.Comp.Location = New System.Drawing.Point(324, 5)
+        Me.Comp.Location = New System.Drawing.Point(456, 6)
         Me.Comp.Maximum = New Decimal(New Integer() {8, 0, 0, 0})
         Me.Comp.Name = "Comp"
         Me.Comp.Size = New System.Drawing.Size(35, 21)
@@ -281,7 +285,7 @@ Partial Class Transport
         '
         Me.Remote.AutoSize = True
         Me.Remote.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Remote.Location = New System.Drawing.Point(631, 27)
+        Me.Remote.Location = New System.Drawing.Point(759, 27)
         Me.Remote.Name = "Remote"
         Me.Remote.Size = New System.Drawing.Size(113, 17)
         Me.Remote.TabIndex = 215
@@ -293,7 +297,7 @@ Partial Class Transport
         '
         Me.Bassemoins1.AutoSize = True
         Me.Bassemoins1.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Bassemoins1.Location = New System.Drawing.Point(458, 4)
+        Me.Bassemoins1.Location = New System.Drawing.Point(586, 4)
         Me.Bassemoins1.Name = "Bassemoins1"
         Me.Bassemoins1.Size = New System.Drawing.Size(83, 17)
         Me.Bassemoins1.TabIndex = 216
@@ -305,7 +309,7 @@ Partial Class Transport
         '
         Me.Fournotes.AutoSize = True
         Me.Fournotes.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Fournotes.Location = New System.Drawing.Point(457, 23)
+        Me.Fournotes.Location = New System.Drawing.Point(585, 23)
         Me.Fournotes.Name = "Fournotes"
         Me.Fournotes.Size = New System.Drawing.Size(69, 17)
         Me.Fournotes.TabIndex = 217
@@ -313,12 +317,23 @@ Partial Class Transport
         Me.Fournotes.UseVisualStyleBackColor = True
         Me.Fournotes.Visible = False
         '
+        'Repeter
+        '
+        Me.Repeter.AutoSize = True
+        Me.Repeter.Font = New System.Drawing.Font("Verdana", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Repeter.Location = New System.Drawing.Point(323, 7)
+        Me.Repeter.Name = "Repeter"
+        Me.Repeter.Size = New System.Drawing.Size(71, 17)
+        Me.Repeter.TabIndex = 218
+        Me.Repeter.Text = "Répéter"
+        Me.Repeter.UseVisualStyleBackColor = True
+        '
         'Transport
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(540, 52)
-        Me.ControlBox = False
+        Me.ClientSize = New System.Drawing.Size(833, 44)
+        Me.Controls.Add(Me.Repeter)
         Me.Controls.Add(Me.Fournotes)
         Me.Controls.Add(Me.Bassemoins1)
         Me.Controls.Add(Me.Remote)
@@ -386,4 +401,5 @@ Partial Class Transport
     Friend WithEvents Remote As CheckBox
     Friend WithEvents Bassemoins1 As CheckBox
     Friend WithEvents Fournotes As CheckBox
+    Friend WithEvents Repeter As CheckBox
 End Class

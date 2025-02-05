@@ -31,10 +31,10 @@
             'tbl = TableEventH(m, t, ct).Mode.Split()
             'If tbl(1) <> "MinH" Then
             Acc = TableEventH(m, t, ct).Accord
-                If Trim(Acc) <> "" Then
-                Else
+            If Trim(Acc) <> "" Then
+            Else
 
-                End If
+            End If
             'Else
             'ListBox1.
             'End If

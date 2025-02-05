@@ -5,8 +5,8 @@ Public Module Module1
 
     ' Numéro de version de publication
     ' ********************************
-    Public NumVersion As String = "v2.0.3.6"
-    Public Dateversion As String = "26/06/2024"
+    Public NumVersion As String = "v2.0.7.2"
+    Public Dateversion As String = "10/01/2025"
     '
     ' Constantes application
     ' **********************
@@ -14,6 +14,10 @@ Public Module Module1
     Public Const nbMesuresUtiles = nbMesures '- 8
     Public Const nbLignesGrid1 = nbMesures * 4
     Public Const nbColonnesGrid1 = 20 ' 17
+    ' Pour test
+    ' ********
+    Public AutorizeReset As Boolean = True
+
     ' Colonnes dans grid1
     ' *******************
     Public Const ColMesure = 1
@@ -42,7 +46,7 @@ Public Module Module1
     Public Const N_PisteDrums = 9
 
 
-    Public Const N_Courbexp = 8
+    Public Const N_Courbexp = 11
     Public Const N_Modes = 10
     ' 
     Public CoulHyperV As Color = Color.LightYellow
@@ -55,6 +59,11 @@ Public Module Module1
     Public CoulPRoll7 As Color = Color.Ivory
     Public CoulPRoll8 As Color = Color.LightGray
     Public CoulDrumEd As Color = Color.LightSkyBlue
+
+    '
+    ' Couleur de fon de compogrid
+    ' ***************************
+    Public CouleurFondG1 As Color = Color.FromArgb(240, 240, 240)
     '
     ' Variables pour chargement et le changement de langue
     ' ****************************************************
@@ -79,7 +88,8 @@ Public Module Module1
     ' Couleur des grilles
     ' *******************
     Public Couleur_Positions As Color = Color.AliceBlue
-    Public Couleur_Marqueurs As Color = Color.Beige
+    Public Couleur_Marqueurs As Color = Color.Beige ' couleur de la colonne Armures/Marqueurs quand il n'y a pas de marqueur
+    Public Coul_Marq As Color = Color.Green ' backcolor d'un marqueur dans la colonne Armures/Marqueurs
     Public Couleur_Tonalités As Color = Color.PaleTurquoise
     Public Couleur_Accords As Color = Color.Khaki
     Public Couleur_Gammes As Color = Color.Lavender
@@ -249,8 +259,6 @@ Public Module Module1
     Public ValMn As Integer = 64
     Public ValMx As Integer = 100
     Public VéloAléat_Chargé As Boolean = False
-
-
     Structure Signa
         Public Signature As String
         Public Position As Integer
@@ -724,4 +732,47 @@ Public Module Module1
             MessageHV.ShowDialog()
         End Try
     End Sub
+
+    Public Function TradTonaD(tona As String) As String
+        Dim a As String = tona
+        Select Case tona
+            Case "A# Major"
+                a = " Bb Major"
+            Case "D# Major"
+                a = " Eb Major"
+            Case "G# Major"
+                a = " Ab Major"
+        End Select
+        Return a
+    End Function
+    Public Function TradTonaD2(tona As String) As String
+        Dim a As String = Trim(tona)
+        Select Case tona
+            Case "A# Maj"
+                a = "Bb Maj"
+            Case "D# Maj"
+                a = "Eb Maj"
+            Case "G# Maj"
+                a = "Ab Maj"
+        End Select
+        Return a
+    End Function
+    Public Function AIDE_TEXTE(Langue As String) As String
+        Dim a As String = ""
+        If Langue = "fr" Then
+            a = "But : guide d'utilisation du logiciel HyperVoicing" + Chr(13) + Chr(13) +
+"1 - Cochez la case Afficher l'Aide dans la barre d'outils (inutile pour la Piste Batterie)." + Chr(13) +
+"2 - Maintenez touche Maj enfoncé et survolez un composant pour afficher son aide dans le panneau." + Chr(13) +
+"3 - Pour les onglets, survolez leur titre en maintenant Maj." + Chr(13) + Chr(13) +
+"Les 3 fonctions principales de l'application sont : " + Chr(13) +
+"1- Piste Accords :" + Chr(13) +
+"- Contient des sources d'accords et la Piste Accords." + Chr(13) +
+"- Comprend une grille de composition réunissant tous les éléments harmoniques." + Chr(13) +
+"- Propose une liste de gammes adaptées aux accords." + Chr(13) +
+"2 - Pistes PianoRolls : écriture mélodique avec système d'Aide à la Composition." + Chr(13) +
+"3 - Piste Batterie : création et assignation de patterns rythmiques."
+        Else
+        End If
+        Return a
+    End Function
 End Module
